@@ -1,0 +1,11 @@
+Metadata-Version: 1.2
+Name: cliprt
+Version: 0.2.0
+Summary: Client Information Reporting
+Home-page: http://github.com/mhodgesatuh/cliprt
+Author: Michael Hodves
+Author-email: mhodges2@gmail.com
+License: Apache License, Version 2.0
+Description: UNKNOWN
+Platform: UNKNOWN
+Requires-Python: >=3.6, 

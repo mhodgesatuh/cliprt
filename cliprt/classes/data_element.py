@@ -1,0 +1,160 @@
+#!/usr/bin/env python
+"""
+Project:    CLIPRT - Client Information Parsing and Reporting Tool.
+@author:    mhodges
+Copyright   2020 Michael Hodges
+"""
+class DataElement:
+    """
+    Each column of each client worksheet is considered to be a data 
+    element.  A single data element may be repeated across one or more 
+    client worksheets.
+    """
+    def __init__(self, name):
+        """
+        Prepare a new data element.
+        """
+        # Class attributes.
+        self.dest_de_format = None
+        self.dest_de_name = None
+        self.dest_ws_info = {}
+        self.fragment_idx = None
+        self.has_dest_ws = False
+        self.is_content = True
+        self.is_fragment = False
+        self.fragment_idx = int()
+        self.is_identifier = False
+        self.is_remapped = False
+        self.name = name
+
+    def __str__(self):
+        """
+        Display the contents of the data element for reporting purposes.
+        """
+        i = 0
+        str_val = {}
+        if self.is_remapped:
+            str_val[i] = self.util_format_dict_output(
+                'dest_de_name', 
+                self.dest_de_name
+                )
+            i+=1
+        if self.is_content:
+            str_val[i] = 'is_content'
+            i+=1
+        if self.is_identifier:
+            str_val[i] = 'is_identifier'
+            i+=1
+        if self.is_fragment:
+            str_val[i] = self.util_format_dict_output(
+                'fragment_idx', 
+                self.fragment_idx
+            )
+            i+=1
+        if not self.dest_de_format == None:
+            str_val[i] = self.util_format_dict_output(
+                'dest_de_format', 
+                self.dest_de_format
+            )
+            i+=1
+        for dest_ws_ind, dest_info in self.dest_ws_info.items():
+            str_val[i] = self.util_format_dict_output(
+                dest_ws_ind, 
+                dest_info
+            )
+            i+=1
+        if i == 0:
+            return ''
+        ret_val = ''
+        i = 0
+        delim = ', '
+        while i < len(str_val):
+            # Insert a delimitor between each attribute.
+            ret_val+='{}{}'.format(delim, str_val[i])
+            i+=1
+        # Remove leading delimitor.
+        return ret_val[len(delim):]
+
+    def add_dest_ws_ind(self, dest_ws_ind, dest_col_idx):
+        """
+        Each content data value is matched to a column for each
+        destination report. Example data:
+        """
+        if not dest_ws_ind in self.dest_ws_info:
+            self.dest_ws_info[dest_ws_ind] = {'col_idx': dest_col_idx}
+        if not self.has_dest_ws:
+            self.has_dest_ws = True
+
+    def get_col_by_dest_ws_ind(self, dest_ws_ind):
+        """
+        Each content data value may be matched to a column for each
+        destination report.  Depends on how the DED is configured for
+        reporting purposes.
+        """
+        if not dest_ws_ind in self.dest_ws_info:
+            # There is no destination worksheet specified for this data 
+            # eleement.
+            return False
+        return self.dest_ws_info[dest_ws_ind]['col_idx']
+
+    def get_identifier_type(self):
+        """
+        Select data elements are tagged as identifiers.  Remapped 
+        identifiers are typed by their destination data elements.
+        The number of unique types of identifiers is info used for
+        determining identity matches.
+        """
+        return self.dest_de_name \
+                if self.is_remapped \
+                else self.name
+
+    def is_mapped_to_dest_ws(self, dest_ws_ind):
+        """
+        Each data element to be included in the report is mapped to one 
+        or more destination reports.
+        """
+        return True if dest_ws_ind in self.dest_ws_info else False
+
+    def is_utilized(self):
+        """
+        The data element is not utilized unless it has a destination 
+        worksheet specified or it is remapped to a destination 
+        data element that does.
+        """
+        return True if not self.dest_de_name == None or self.has_dest_ws else False
+
+    def set_dest_de_name(self, de_name):
+        """
+        This data element will be remapped to the designated data 
+        element on the destination report worksheets.  Set the 
+        destination data element name.
+        """
+        self.dest_de_name = de_name
+        self.is_remapped = True
+
+    def set_to_fragment(self, fragment_idx):
+        """
+        Note that a data element is either content or a fragment.  It
+        must be one or the other.
+        """
+        self.fragment_idx = fragment_idx
+        self.is_content = False
+        self.is_fragment = True
+
+    def set_to_identifier(self):
+        """
+        If the data element is an identifier unset the content setting
+        so that it is only processed as an identifier.
+        """
+        self.is_identifier = True
+        self.is_content = False
+
+    def util_format_dict_output(self, key, val):
+        """
+        Format output as "{'key': val}"
+        """
+        if isinstance(val, str):
+            output_format = "{{'{}': '{}'}}"
+        else:
+            output_format = "{{'{}': {}}}"
+        return output_format.format(key, val, type(val))

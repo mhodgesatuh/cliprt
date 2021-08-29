@@ -1,0 +1,6 @@
+.vscode/
+docs/
+cliprt/__pycache__/
+cliprt/resources/lm_sample.xlsx
+cliprt/classes/__pycache__/
+cliprt/legacy/__pycache__/
