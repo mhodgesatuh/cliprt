@@ -30,7 +30,7 @@ class DestinationWorksheet:
         self.ws = None
         self.ws_name = self.DEST_WS_NAME_PREFIX + ws_ind
 
-        if not self.ws_name in wb:
+        if not self.ws_name in wb.sheetnames:
             self.ws = wb.create_sheet(title=self.ws_name)
         else:
             self.ws = wb[self.ws_name]

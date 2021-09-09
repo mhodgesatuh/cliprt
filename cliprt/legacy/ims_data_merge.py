@@ -2,17 +2,17 @@
 """
 Project:  CLIPRT - Client Information Parsing and Reporting Tool.
 Version:  0.1.1
-@author:    mhodges
+@author:  mhodges
 Copyright 2020 Michael Hodges
 
 Background:
-    Version 0.1.x implemented as procedural code while I focused on learning 
-    the syntax and the pythonista perspective.  Version 0.2+ was always 
-    intended to be object oriented (OO).
+    Version 0.1.x was implemented as procedural code while I focused on 
+    learning the syntax and the pythonista perspective.  Version 0.2+ was 
+    always intended to be object oriented (OO).
 
 Relevations:
     The structure of the procedural code mapped pretty easily to OO code. 
-    The OO code is much easier to optimize, refacter and debug, and a lot  
+    The OO code is much easier to optimize, refacter and debug, and a lot 
     more fun to implement overall as each object takes on its own
     personality.
 """

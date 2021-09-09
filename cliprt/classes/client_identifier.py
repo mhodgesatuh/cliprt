@@ -49,13 +49,8 @@ class ClientIdentifier:
         """
         Ensure that values are lowercase strings and easily searchable.
         """
-        if str_value == None:
-            # This shouldn't happen.
-            return None
-        if isinstance(str_value, str):
-            return str_value.strip().lower()
-        # This shouldn't happen either, but just in case.
-        return str(str_value)
+        return str_value.strip().lower() \
+            if isinstance(str_value, str) else str(str_value)
 
     def santize_phone_value(self):
         """

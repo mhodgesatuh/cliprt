@@ -47,7 +47,7 @@ class DataElementDictionaryProcessor:
         # Class attributes.
         self.de_fragments_list = {}
         self.ded = {}
-        self.ded_is_hydrated = False
+        self.ded_hydrated = False
         self.error = MessageRegistry()
         self.wb = wb
         self.ws = ws
@@ -101,6 +101,11 @@ class DataElementDictionaryProcessor:
 
         return True
 
+    def ded_is_hydrated(self):
+        """
+        """
+        return self.ded_hydrated
+
     def format_date(self, date_value):
         """
         Normalize the format of dates if possible.
@@ -129,7 +134,7 @@ class DataElementDictionaryProcessor:
             i+=1
         # Last name goes last.
         ret_value+=' '+name_pieces[0]
-        return ret_value
+        return ret_value.strip()
 
     def format_phone(self, data_value, area_code = '808', country_code = '1'):
         """
@@ -172,7 +177,7 @@ class DataElementDictionaryProcessor:
         and prepare the DED to be used for processing the client data
         worksheets and creating the destination reports.
         """
-        if self.ded_is_hydrated:
+        if self.ded_is_hydrated():
             # It is already hydrated.
             return
         if not self.ded_is_configured():
@@ -180,7 +185,7 @@ class DataElementDictionaryProcessor:
             raise Exception(self.error.msg(3007))
 
         # Determine column indicies for the required DED columns.
-        # Ensure that all the requierd DED columns are provided.
+        # Ensure that all the required DED columns are provided.
         # > col_headings[col_name] = col_idx
         col_headings = self.read_col_headings()
 
@@ -216,7 +221,7 @@ class DataElementDictionaryProcessor:
                 self.ded.pop(de_name)
 
         # Ensure all destintation data elements are in the ded.
-        self.ded_is_hydrated = self.validate_dest_de_list(col_headings)
+        self.ded_hydrated = self.validate_dest_de_list(col_headings)
 
     def parse_dest_de_format_str(self, de_name, dest_de_format_str):
         """
@@ -277,7 +282,7 @@ class DataElementDictionaryProcessor:
         """
         if not ws_dest_ind in self.dest_ws_registry.dest_ws_by_ind_list:
             # Autodetect and save new destination indicators.
-            self.dest_ws_registry.add_ws(self.wb, ws_dest_ind, self)
+            self.dest_ws_registry.add_ws(self.wb, ws_dest_ind, self.ws)
 
         # Each column heading is assigned the next available column.
         # Increment the index of the last data element column of the 
@@ -313,13 +318,13 @@ class DataElementDictionaryProcessor:
                 raise Exception(self.error.msg(3006).format(dest_de_format, de_name))
         else:
             # Save the destintion format designater to the DED.
-            self.ded[de_name].dest_de_format = dest_de_format
+            self.ded[de_name].set_dest_de_format(dest_de_format)
 
     def print_report(self):
         """
         Print the DED contents to the console.
         """
-        if not self.ded_is_hydrated:
+        if not self.ded_is_hydrated():
             self.hydrate_ded()
         print()
         print("----------------------------------------")
@@ -334,6 +339,9 @@ class DataElementDictionaryProcessor:
         """
         Get the column headings. Retain also the column index.
         """
+        if self.ws == None:
+            return False
+
         col_headings = {}
         for cell in self.ws[self.ws.min_row]:
             col_headings[cell.value] = cell.col_idx

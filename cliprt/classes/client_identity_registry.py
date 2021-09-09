@@ -4,7 +4,7 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
-from client_identity import ClientIdentity
+from cliprt.classes.client_identity import ClientIdentity
 
 class ClientIdentityRegistry:
     """
@@ -14,7 +14,7 @@ class ClientIdentityRegistry:
     """
     def __init__(self, dest_ws_registry, starting_client_idno=1000):
         """
-        Create a new identity registry and set the value of the initial
+        Create a new identitity registry and set the value of the initial
         client id number.
         """
         # Dependency injections.
@@ -27,7 +27,9 @@ class ClientIdentityRegistry:
     def create_identity(self):
         """
         There should be one unique identity for each client.  A client
-        id is a unique number that is associated with each client.    
+        id is a unique number that is associated with each client. 
+        Creation of an identity automatically adds it to the list in
+        the registry.   
         """
         client_idno = self.get_next_client_idno()
         identity = ClientIdentity(client_idno, self.dest_ws_registry)

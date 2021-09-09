@@ -16,7 +16,7 @@ from cliprt.classes.message_registry import MessageRegistry
 
 class ClientInformationWorkbook:
     """
-    The client information workbook orhestrates the various activities
+    The client information workbook orchestrates the various activities
     performed across the entire set of worksheets, including worksheet 
     creation as needed.  It is the primary backend to the cliprt command
     line user interface.
@@ -49,7 +49,7 @@ class ClientInformationWorkbook:
         self.wb_filename = wb_filename
 
         # The workbook may or may not have a DED worksheet when it is 
-        # iintially accessed.
+        # initially accessed.
         self.init_ded_processor()
 
     def create_client_reports(self, progress_reporting_is_disabled = False):
@@ -116,7 +116,7 @@ class ClientInformationWorkbook:
         de_names.sort()
         return de_names
 
-    def create_ded_worksheet(self):
+    def create_ded_worksheet(self, save_wb = True):
         """
         Create a fresh DED worksheet for configuration.
         """
@@ -133,8 +133,9 @@ class ClientInformationWorkbook:
         self.init_ded_processor()
         self.ded_processor.preconfig_ded_worksheet(de_names)
 
-        # Save the DED worksheet.
-        self.wb.save(self.wb_filename)
+        # Save the DED worksheet, unless running unit tests, for example.
+        if save_wb:
+            self.wb.save(self.wb_filename)
 
     def ded_is_configured(self):
         """
@@ -150,9 +151,11 @@ class ClientInformationWorkbook:
         """
         If the DED worksheet is available initialize the DED processor.
         """
-        if self.has_a_ded_ws():
-            self.ded_ws = self.wb[self.DED_WS_NAME]
-            self.ded_processor = DataElementDictionaryProcessor(self.wb, self.ded_ws, self.dest_ws_registry)
+        if not self.has_a_ded_ws():
+            return False
+        self.ded_ws = self.wb[self.DED_WS_NAME]
+        self.ded_processor = DataElementDictionaryProcessor(self.wb, self.ded_ws, self.dest_ws_registry)
+        return True
 
     def has_a_ded_ws(self):
         """

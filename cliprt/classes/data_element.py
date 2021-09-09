@@ -63,8 +63,6 @@ class DataElement:
                 dest_info
             )
             i+=1
-        if i == 0:
-            return ''
         ret_val = ''
         i = 0
         delim = ', '
@@ -104,9 +102,7 @@ class DataElement:
         The number of unique types of identifiers is info used for
         determining identity matches.
         """
-        return self.dest_de_name \
-                if self.is_remapped \
-                else self.name
+        return self.dest_de_name if self.is_remapped else self.name
 
     def is_mapped_to_dest_ws(self, dest_ws_ind):
         """
@@ -131,6 +127,14 @@ class DataElement:
         """
         self.dest_de_name = de_name
         self.is_remapped = True
+
+    def set_dest_de_format(self, de_format):
+        """
+        The destination data element formatting will determine the final
+        format of the data element when it is saved to the spreadsheet
+        cell.
+        """
+        self.dest_de_format = de_format
 
     def set_to_fragment(self, fragment_idx):
         """

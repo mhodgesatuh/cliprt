@@ -30,7 +30,7 @@ class ContentWorksheet:
 
     def __init__(self, wb, ws_name, ded_processor, identifier_registry, dest_ws_registry):
         """
-        Ready a content worksheet for proessing.
+        Ready a content worksheet for processing.
         """
         # Dependency injections.
         self.ded_processor = ded_processor

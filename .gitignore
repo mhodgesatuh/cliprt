@@ -1,6 +1,11 @@
 .vscode/
 docs/
-cliprt/__pycache__/
 cliprt/resources/lm_sample.xlsx
 cliprt/classes/__pycache__/
 cliprt/legacy/__pycache__/
+cliprt/tests/__pycache__/
+cliprt/__pycache__/
+.pytest_cache/
+a.pytest_cache/
+.coverage
+coverage.xml

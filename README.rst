@@ -1,12 +1,15 @@
 # Installation
+
 You will need run shell commands for the following statements.
 1. pip install openpyxl
 1. pip install python-dateutil
 
 # Getting Version 0.2.x of this utility to run
+
 TBD
 
 # Requirements
+
 - A single workbook with multiple worksheets, such that there is:
   - A single worksheet that provides the data element dictionary.
   - Multiple content worksheets that contain the client information.
@@ -48,7 +51,9 @@ Note: the report destination worksheets will be created at the end of
 the workbook.
 
 # Worksheets 
+
 ## Main Worksheets
+
 Worksheets come in 3 main flavors:
 1. DED Input - The data element dictionary (DED) worksheet used for providing
    reporting instructions.
@@ -65,10 +70,13 @@ Understanding the main worksheets:
 And there are additional, supplemental worksheets.
 
 ## Supplemental worksheet(s)
+
 1. Identity Matching Log - Log all identity matching activities. (not yet implemented)
 
 # The Data Element Dictionary (DED)
+
 ## The Required DED Column Headings
+
 - **"Data Element"**
   - The cell value is the name of the data element.
   - It is single valued.
@@ -117,6 +125,7 @@ single destination "name" column.
 - "fragment=2" is typically used for the last name format.
 
 ### Example Data Element Formats
+
 Example First Name:
 - "identifier,name,fragment=1"
 
@@ -130,26 +139,36 @@ _Bad example, don't do this.  It makes no sense; it's either one or the other._
 - "name,phone"
 
 # Development Notes
+
 ## Version: 0.1.0 - prototype, first release, currently under development
+
 - dynamic workbook destinations
 - multiple destinations per data element
 - format logic for: date, name, phone data
 - advanced format logic for: identifiers, fragments
 - destination logic for merging multiple source columns to a single destination column
 - advance logic for detecting identifier matches and merging client data
+
 ## Version 0.2.0 - first object oriended version
+
 - implement a report package that is proceduraly utilized by the main module.
 - accept the workbook name as a command line parameter instead of hard coding it.
 - If no DED is present generate one by reading the column heads from the content worksheets.
+
 ## Version 0.3.0 - future
+
 - add a logging feature
+
 ## Version 1.0.0 - future
+
 - Publish
+
 ## Version 2.0.0 - future
+
 - Integrate with a WordPress plugin.
 
-
 # References
+
 - https://foss.heptapod.net/openpyxl/openpyxl/-/tree/branch/3.0/openpyx
 - https://www.w3schools.com/python/python_dictionaries.asp 
 - https://docs.python.org/3/reference/index.html
