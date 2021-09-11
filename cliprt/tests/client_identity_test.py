@@ -22,7 +22,6 @@ class ClientIdentityTest:
     ded_processor.hydrate_ded()
     client_id = ClientIdentity('9999', dest_ws_registry)
 
-
     def init_test(self):
         """
         """

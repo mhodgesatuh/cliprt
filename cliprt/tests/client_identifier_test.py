@@ -22,13 +22,28 @@ class ClientIdentifierTest:
     # Identifier types in the DED to create a client.
     ded_processor.hydrate_ded()
     client_id = ClientIdentifier('phone', '1-800-123-1234', ded_processor.ded)
+    client_id.save_client_idno('9989')
 
     def init_test(self):
         """
         """
         assert str(self.client_id) == 'phone::18001231234'
 
-    def save_client_idno_test(self):
+    def repr_test(self):
+        """
+        """
+        assert self.client_id.__repr__() == 'phone::18001231234'
 
-        self.client_id.save_client_idno('9989')
+    def save_client_idno_test(self):
+        """
+        """
         assert '9989' in self.client_id.client_ids
+
+    def add_identifier_to_registry_test(self):
+        """
+        """
+        identifier = ClientIdentifier('phone', '1-999-123-9999', self.ded_processor.ded)
+        id_registry = self.client_info.identifier_registry
+        if not identifier.key in id_registry.identifier_list.items():
+            id_registry.identifier_list[identifier.key] = identifier
+        assert False

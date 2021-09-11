@@ -43,14 +43,14 @@ class DataElementDictionaryProcessorTest:
     def init_test(self):
         """
         """
-        assert self.client_info.has_a_ded_ws() == True
-        assert self.ded_processor.ded_is_configured() == True
+        assert self.client_info.has_a_ded_ws()
+        assert self.ded_processor.ded_is_configured()
 
-        assert self.preconfig_client_info.has_a_ded_ws() == True
-        assert self.preconfig_ded_processor.ded_is_configured() == False
+        assert self.preconfig_client_info.has_a_ded_ws()
+        assert not self.preconfig_ded_processor.ded_is_configured()
 
-        assert self.noded_client_info.has_a_ded_ws() == False
-        assert self.noded_ded_processor.ded_is_configured() == False
+        assert not self.noded_client_info.has_a_ded_ws()
+        assert not self.noded_ded_processor.ded_is_configured()
 
     def create_ded_worksheet_test(self):
         """
@@ -84,7 +84,7 @@ class DataElementDictionaryProcessorTest:
         """
         """
         self.ded_processor.hydrate_ded()
-        assert self.ded_processor.ded_is_hydrated() == True
+        assert self.ded_processor.ded_is_hydrated()
 
     def hydrate_preconfig_ded_test(self):
         """
@@ -110,4 +110,4 @@ class DataElementDictionaryProcessorTest:
         """
         col_headings = self.ded_processor.read_col_headings()
         assert len(col_headings) >= len(self.ded_processor.COL_HEADINGS)
-        assert self.ded_processor.validate_dest_de_list(col_headings) == True
+        assert self.ded_processor.validate_dest_de_list(col_headings)

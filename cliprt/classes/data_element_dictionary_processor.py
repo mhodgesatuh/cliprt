@@ -210,14 +210,14 @@ class DataElementDictionaryProcessor:
             de_name = self.util_str_normalize(de_cell.value)
             if not de_name in self.ded:
                 # Start a new data element.
-                self.ded[de_name] = DataElement(de_name)
+                self.ded[de_name] = DataElement(de_name, self.ded)
 
             # Process the rest of the data element configuration.
             self.read_de_config(col_headings, de_name, de_cell.row)
 
-            # Remove the data element from the DED if it is not 
-            # utilized.
-            if not self.ded[de_name].is_utilized():
+            # Remove the data element from the DED if it does not 
+            # not have a destination worksheet.
+            if not self.ded[de_name].has_dest_ws():
                 self.ded.pop(de_name)
 
         # Ensure all destintation data elements are in the ded.

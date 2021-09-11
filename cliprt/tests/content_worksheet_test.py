@@ -4,6 +4,7 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2021 Michael Hodges
 """
+from IPython.utils.capture import capture_output
 from cliprt.classes.client_identifier import ClientIdentifier
 from cliprt.classes.client_identity_resolver import ClientIdentityResolver
 from cliprt.classes.data_element_fragments_assembler import DataElementFragmentsAssembler as FragAssembler
@@ -49,6 +50,15 @@ class ContentWorksheetTest:
         assert len(self.content_ws.dest_ws_registry.dest_ws_by_ind_list) == 2
         assert len(self.content_ws.dest_ws_registry.dest_ws_list) == 2
         assert len(self.content_ws.dest_ws_registry.dest_ws_names) == 2
+
+    def client_report_test(self):
+        """
+        """
+        #self.content_ws.build_etl_map()
+        with capture_output() as captured:
+            self.content_ws.client_report()
+        captured()
+        assert len(captured.stdout) > 100
 
     def util_str_normalize_test(self):
         """

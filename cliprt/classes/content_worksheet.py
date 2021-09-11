@@ -87,7 +87,7 @@ class ContentWorksheet:
             if dest_de.is_fragment:
                 # Fatal error: invalid mapping to destination fragment.
                 raise Exception(self.error.msg(5002).format(ws_de_name, dest_de_name))
-            if not dest_de.has_dest_ws:
+            if not dest_de.has_dest_ws():
                 # Fatal error: there must be a destination worksheet.
                 raise Exception(self.error.msg(5000).format(ws_cell.value, dest_de_name))
 
@@ -112,7 +112,7 @@ class ContentWorksheet:
                 # If none of the above, it's content.
                 self.content_cols[ws_cell.column] = ws_de_name
 
-    def client_report(self, progress_reporting_is_disabled):
+    def client_report(self, progress_reporting_is_disabled = False):
         """
         Create the destination report worksheets.
         """

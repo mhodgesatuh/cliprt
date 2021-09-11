@@ -12,7 +12,7 @@ from cliprt.classes.client_information_workbook import ClientInformationWorkbook
 from cliprt.classes.data_element_dictionary_processor import DataElementDictionaryProcessor
 from cliprt.classes.destination_worksheets_registry import DestinationWorksheetsRegistry
 
-class ClientIdentifierRegistryText:
+class ClientIdentifierRegistryTest:
 
     wb_file = 'cliprt/tests/test_workbook.xlsx'
     client_info = ClientInformationWorkbook(wb_file)
@@ -22,12 +22,13 @@ class ClientIdentifierRegistryText:
         client_info.ded_ws, 
         dest_ws_registry
     )
-    client_info.create_client_reports(False)
-
+    ded_processor.hydrate_ded()
+    client_id_registry = ClientIdentityRegistry(dest_ws_registry)
     identifier_registry = ClientIdentifierRegistry(client_id_registry)
 
     def add_identifier_test(self):
         """
         """
-        client_id = ClientIdentifier()
-        assert False
+        identifier = ClientIdentifier('email', 'tester@tst.biz', self.ded_processor.ded)
+        self.identifier_registry.add_identifier(identifier)
+        assert len(self.identifier_registry.identifier_list) == 1

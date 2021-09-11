@@ -10,16 +10,18 @@ class DataElement:
     element.  A single data element may be repeated across one or more 
     client worksheets.
     """
-    def __init__(self, name):
+    def __init__(self, name, ded_processor):
         """
         Prepare a new data element.
-        """
+        """        
+        # Dependency injections.
+        self.ded_processor = ded_processor
+
         # Class attributes.
         self.dest_de_format = None
         self.dest_de_name = None
         self.dest_ws_info = {}
         self.fragment_idx = None
-        self.has_dest_ws = False
         self.is_content = True
         self.is_fragment = False
         self.fragment_idx = int()
@@ -80,8 +82,6 @@ class DataElement:
         """
         if not dest_ws_ind in self.dest_ws_info:
             self.dest_ws_info[dest_ws_ind] = {'col_idx': dest_col_idx}
-        if not self.has_dest_ws:
-            self.has_dest_ws = True
 
     def get_col_by_dest_ws_ind(self, dest_ws_ind):
         """
@@ -111,13 +111,21 @@ class DataElement:
         """
         return True if dest_ws_ind in self.dest_ws_info else False
 
-    def is_utilized(self):
+    def has_dest_ws(self):
         """
         The data element is not utilized unless it has a destination 
-        worksheet specified or it is remapped to a destination 
-        data element that does.
+        worksheet specified or it is remapped to a destination data
+        element that does.
         """
-        return True if not self.dest_de_name == None or self.has_dest_ws else False
+        # If there is no destination data element is there a worksheet
+        # associated with this data element?
+        if self.dest_de_name == None:
+            return True if len(self.dest_ws_info) > 0 else False
+        
+        # Does the destination data element have an associated 
+        # worksheet?
+        dest_de_ws_info = self.ded_processor[self.dest_de_name].dest_ws_info
+        return True if len(dest_de_ws_info) > 0 else False
 
     def set_dest_de_name(self, de_name):
         """
