@@ -9,8 +9,6 @@ from cliprt.classes.message_registry import MessageRegistry
 class MessageRegistryTest():
     """
     """
-    # Tests
-
     def init_test(self):
         """
         """

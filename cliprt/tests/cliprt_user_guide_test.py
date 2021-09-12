@@ -5,14 +5,17 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 Copyright   2021 Michael Hodges
 """
 from IPython.utils.capture import capture_output
-from cliprt.classes.cliprt_help import CliprtHelp
+from cliprt.classes.cliprt_user_guide import CliprtUserGuide
 
-class CliprtHelpTest:
-
+class CliprtUserGuideTest:
+    """
+    User guide test harness.
+    """
     def init_test(self):
         """
+        Unit test
         """
         with capture_output() as captured:
-            CliprtHelp('./cliprt/resources');
+            CliprtUserGuide('./cliprt/resources');
         captured()
         assert len(captured.stdout) > 100

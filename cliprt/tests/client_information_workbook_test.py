@@ -16,7 +16,11 @@ from cliprt.classes.message_registry import MessageRegistry
 
 class ClientInformationWorkbook:
     """
+    Client information worrkbook test harness.
     """
+    # Dependencies
+
+    # Test data
 
     def __init__(self):
         """
@@ -44,39 +48,6 @@ class ClientInformationWorkbook:
 
     def init_test(self):
         """
+        Unit test
         """
-    
-
-    def create_client_reports_test(self):
-        """
-        """
-        
-    def create_content_ws_names_list(self):
-        """
-        """
-
-    def create_de_names_list_test(self):
-        """
-        """
-
-    def create_ded_worksheet_test(self):
-        """
-        """
-        
-
-    def ded_is_configured_test(self):
-        """
-        """
-
-    def init_ded_processor_test(self):
-        """
-        """
-
-    def has_a_ded_ws_test(self):
-        """
-        """
-    
-    def print_ded_report_test(self):
-        """
-        """
-        assert False
+        False

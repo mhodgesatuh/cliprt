@@ -9,7 +9,7 @@ import os
 import sys
 
 from cliprt.classes.client_information_workbook import ClientInformationWorkbook
-from cliprt.classes.cliprt_help import CliprtHelp
+from cliprt.classes.cliprt_user_guide import CliprtUserGuide
 
 if sys.version_info[0] < 3:
     raise Exception('Error: Python version 3 is required. Found version {}.'.format(sys.version_info[0]))
@@ -37,7 +37,7 @@ def user_requests(prompt_a, prompt_b):
         if user_input in ['y', 'yes']:
             return True
         if user_input in ['h', 'help']:
-            CliprtHelp()
+            CliprtUserGuide()
             continue
         if user_input in ['q', 'quit', 'e', 'exit']:
             print(EXIT_MSG)
@@ -60,7 +60,7 @@ while cliprting:
             print(EXIT_MSG)
             sys.exit(0)
         if workbook_file.lower() in ['h', 'help']:
-            CliprtHelp()
+            CliprtUserGuide()
             continue
         if os.path.exists(workbook_file):
             print('  ...opening workbook...', end='')

@@ -10,7 +10,10 @@ from cliprt.classes.destination_worksheets_registry import DestinationWorksheets
 from cliprt.classes.data_element_dictionary_processor import DataElementDictionaryProcessor
 
 class DataElementTest:
-
+    """
+    Data element unit testing harness.
+    """
+    # Dependencies.
     wb_file = 'cliprt/tests/test_workbook.xlsx'
     client_info = ClientInformationWorkbook(wb_file)
     dest_ws_registry = DestinationWorksheetsRegistry()
@@ -21,12 +24,15 @@ class DataElementTest:
     )
     ded_processor.hydrate_ded()
 
+    # Test data.
+
     data_element = DataElement('test_de', ded_processor.ded)
     data_element.add_dest_ws_ind('fb', 1)
 
     remapped_data_element = DataElement('remapped_de', ded_processor.ded)
     remapped_data_element.add_dest_ws_ind('fb', 2)
     remapped_data_element.set_dest_de_name('dest_de')
+    remapped_data_element.set_dest_de_format('phone')
 
     nodest_data_element = DataElement('nodest_de', ded_processor.ded)
 
@@ -38,6 +44,7 @@ class DataElementTest:
 
     def init_test(self):
         """
+        Unit test
         """
         assert self.data_element.is_content
         assert self.data_element.is_mapped_to_dest_ws('fb')
@@ -48,11 +55,13 @@ class DataElementTest:
 
     def str_test(self):
         """
+        Unit test
         """
         assert self.data_element.__str__() == \
             "is_content, {'fb': {'col_idx': 1}}"
         assert self.remapped_data_element.__str__() == \
-            "{'dest_de_name': 'dest_de'}, is_content, {'fb': {'col_idx': 2}}"
+            "{'dest_de_name': 'dest_de'}, is_content, {'dest_de_format': 'phone'}, " + \
+            "{'fb': {'col_idx': 2}}"
         assert self.frag_data_element.__str__() == \
             "{'fragment_idx': 1}"
         aa = self.identifier_data_element.__str__()
@@ -61,6 +70,7 @@ class DataElementTest:
     
     def add_dest_ws_ind_test(self):
         """
+        Unit test
         """
         # Test duplication avoidance.
         self.data_element.add_dest_ws_ind('fb', 1)
@@ -68,12 +78,14 @@ class DataElementTest:
     
     def get_col_by_dest_ws_ind_test(self):
         """
+        Unit test
         """
         assert self.data_element.get_col_by_dest_ws_ind('fb') == 1
         assert not self.data_element.get_col_by_dest_ws_ind('zz')
 
     def get_identifier_type_test(self):
         """
+        Unit test
         """
         assert self.data_element.get_identifier_type() == \
             self.data_element.name
@@ -82,11 +94,13 @@ class DataElementTest:
 
     def has_dest_ws_test(self):
         """
+        Unit test
         """
         assert not self.nodest_data_element.has_dest_ws()
 
     def set_dest_de_name_test(self):
         """
+        Unit test
         """
         assert self.remapped_data_element.dest_de_name == 'dest_de'
         assert self.remapped_data_element.is_remapped
@@ -94,6 +108,7 @@ class DataElementTest:
 
     def set_to_fragment_test(self):
         """
+        Unit test
         """
         assert self.frag_data_element.fragment_idx == 1
         assert not self.frag_data_element.is_content
@@ -101,6 +116,7 @@ class DataElementTest:
 
     def set_to_identifier_test(self):
         """
+        Unit test
         """
         self.data_element.set_to_identifier()
         assert not self.data_element.is_content
@@ -108,6 +124,9 @@ class DataElementTest:
 
     def util_format_dict_output_test(self):
         """
+        Unit test
         """
-        assert self.data_element.util_format_dict_output('key', 'val') == "{'key': 'val'}"
-        assert self.data_element.util_format_dict_output('key', 999) == "{'key': 999}"
+        assert self.data_element.util_format_dict_output('key', 'val') == \
+            "{'key': 'val'}"
+        assert self.data_element.util_format_dict_output('key', 999) == \
+            "{'key': 999}"

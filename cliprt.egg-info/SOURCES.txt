@@ -15,7 +15,7 @@ cliprt/classes/client_identity.py
 cliprt/classes/client_identity_registry.py
 cliprt/classes/client_identity_resolver.py
 cliprt/classes/client_information_workbook.py
-cliprt/classes/cliprt_help.py
+cliprt/classes/cliprt_user_guide.py
 cliprt/classes/content_worksheet.py
 cliprt/classes/data_element.py
 cliprt/classes/data_element_dictionary_processor.py
