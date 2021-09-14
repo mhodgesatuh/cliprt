@@ -104,7 +104,7 @@ class DataElementTest:
         """
         assert self.remapped_data_element.dest_de_name == 'dest_de'
         assert self.remapped_data_element.is_remapped
-        assert self.remapped_data_element.dest_de_format == None
+        assert self.remapped_data_element.dest_de_format == 'phone'
 
     def set_to_fragment_test(self):
         """

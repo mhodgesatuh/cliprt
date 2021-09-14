@@ -54,7 +54,7 @@ class ClientIdentifier:
 
     def santize_phone_value(self):
         """
-        Find the numberic portions of the string and join them.
+        Find the numeric portions of the string and join them.
         """
         self.de_value = ''.join(re.findall("\d+", self.de_value))
 

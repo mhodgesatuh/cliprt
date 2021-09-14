@@ -52,7 +52,7 @@ class ClientInformationWorkbook:
         # initially accessed.
         self.init_ded_processor()
 
-    def create_client_reports(self, progress_reporting_is_disabled = False):
+    def create_client_reports(self, progress_reporting_is_disabled = False, save_wb = True):
         """
         Utilize and process the various worksheets in the workbook in
         order to create the destination report worksheets.
@@ -69,6 +69,7 @@ class ClientInformationWorkbook:
         self.create_content_ws_names_list()
 
         # Process contents of each client data worksheet.
+        #ContentWorksheet()
         for ws_name in self.content_ws_names:
             ContentWorksheet(
                 self.wb,
@@ -76,10 +77,11 @@ class ClientInformationWorkbook:
                 self.ded_processor, 
                 self.identifier_registry,
                 self.dest_ws_registry
-                ).client_report(progress_reporting_is_disabled)
+            ).client_report(progress_reporting_is_disabled)
         
         # Save the client report worksheets.
-        self.wb.save(self.wb_filename)
+        if save_wb:
+            self.wb.save(self.wb_filename)
         
     def create_content_ws_names_list(self):
         """

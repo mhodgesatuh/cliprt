@@ -25,7 +25,7 @@ class ClientIdentifierTest:
     ded_processor.hydrate_ded()
 
     # Test data
-    client_id = ClientIdentifier('phone', '1-800-123-1234', ded_processor.ded)
+    client_id = ClientIdentifier('phone', '1 (800) 123-1234', ded_processor.ded)
     client_id.save_client_idno('9989')
 
     def init_test(self):
@@ -40,18 +40,14 @@ class ClientIdentifierTest:
         """
         assert self.client_id.__repr__() == 'phone::18001231234'
 
+    def make_searchable_test(self):
+        """
+        Unit test.
+        """
+        assert self.client_id.make_searchable(' aBcD ') == 'abcd'
+    
     def save_client_idno_test(self):
         """
         Unit test
         """
         assert '9989' in self.client_id.client_ids
-
-    def add_identifier_to_registry_test(self):
-        """
-        Unit test
-        """
-        identifier = ClientIdentifier('phone', '1-999-123-9999', self.ded_processor.ded)
-        id_registry = self.client_info.identifier_registry
-        if not identifier.key in id_registry.identifier_list.items():
-            id_registry.identifier_list[identifier.key] = identifier
-        assert False

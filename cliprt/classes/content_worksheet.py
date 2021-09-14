@@ -258,7 +258,7 @@ class ContentWorksheet:
                         dest_col_idx, 
                         dest_de_value, 
                         dest_de_format
-                        )
+                    )
 
                 # Copy the content columns to the destination worksheet.
                 for col_idx, dest_de_name in self.content_cols.items():

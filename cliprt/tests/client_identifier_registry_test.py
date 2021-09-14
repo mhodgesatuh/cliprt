@@ -13,7 +13,10 @@ from cliprt.classes.data_element_dictionary_processor import DataElementDictiona
 from cliprt.classes.destination_worksheets_registry import DestinationWorksheetsRegistry
 
 class ClientIdentifierRegistryTest:
-
+    """
+    Client identifier registry test harness.
+    """
+    # Dependencies
     wb_file = 'cliprt/tests/test_workbook.xlsx'
     client_info = ClientInformationWorkbook(wb_file)
     dest_ws_registry = DestinationWorksheetsRegistry()
@@ -24,11 +27,14 @@ class ClientIdentifierRegistryTest:
     )
     ded_processor.hydrate_ded()
     client_id_registry = ClientIdentityRegistry(dest_ws_registry)
+
+    # Test data
     identifier_registry = ClientIdentifierRegistry(client_id_registry)
+    identifier = ClientIdentifier('email', 'tester@tst.biz', ded_processor.ded)
 
     def add_identifier_test(self):
         """
+        Unit test
         """
-        identifier = ClientIdentifier('email', 'tester@tst.biz', self.ded_processor.ded)
-        self.identifier_registry.add_identifier(identifier)
+        self.identifier_registry.add_identifier(self.identifier)
         assert len(self.identifier_registry.identifier_list) == 1

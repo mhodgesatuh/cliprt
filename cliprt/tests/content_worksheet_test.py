@@ -15,7 +15,10 @@ from cliprt.classes.client_information_workbook import ClientInformationWorkbook
 from cliprt.classes.content_worksheet import ContentWorksheet
 
 class ContentWorksheetTest:
-
+    """
+    Content worksheet test harness.
+    """
+    # Dependencies
     wb_file = 'cliprt/tests/test_workbook.xlsx'
     client_info = ClientInformationWorkbook(wb_file)
     dest_ws_registry = DestinationWorksheetsRegistry()
@@ -25,10 +28,9 @@ class ContentWorksheetTest:
         dest_ws_registry
     )
     client_id_registry = ClientIdentifierRegistry(dest_ws_registry)
-
-    # Hydrate the DED before testing the ContentWorksheet methods.
     ded_processor.hydrate_ded()
 
+    # Test data
     content_ws_name = client_info.wb.sheetnames[2]
     content_ws = ContentWorksheet(
         ded_processor.wb, 
@@ -40,6 +42,7 @@ class ContentWorksheetTest:
 
     def build_etl_map_test(self):
         """
+        Unit test
         """
         # First populate the DED
 
@@ -53,6 +56,7 @@ class ContentWorksheetTest:
 
     def client_report_test(self):
         """
+        Unit test
         """
         #self.content_ws.build_etl_map()
         with capture_output() as captured:
@@ -62,5 +66,6 @@ class ContentWorksheetTest:
 
     def util_str_normalize_test(self):
         """
+        Unit test
         """       
         assert self.content_ws.util_str_normalize('ABC_efg') == 'abc efg'
