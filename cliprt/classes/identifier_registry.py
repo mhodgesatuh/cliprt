@@ -4,20 +4,17 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
-class ClientIdentifierRegistry:
+class IdentifierRegistry:
     """
     Client identities are composed of a unique combination of multiple 
     client identifiers. A specific identifier may be shared by one or
     client identities, for example, a married couple sharing a single 
     email address.
     """    
-    def __init__(self, client_id_registry):
+    def __init__(self):
         """
         Create a new client identity registry.
         """
-        # Dependency injection.
-        self.client_id_registry = client_id_registry
-
         # Class attributes.
         self.identifier_list = {}
 

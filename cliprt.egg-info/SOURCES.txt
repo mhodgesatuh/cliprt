@@ -10,9 +10,9 @@ cliprt.egg-info/requires.txt
 cliprt.egg-info/top_level.txt
 cliprt/classes/__init__.py
 cliprt/classes/client_identifier.py
-cliprt/classes/client_identifier_registry.py
+cliprt/classes/identifier_registry.py
 cliprt/classes/client_identity.py
-cliprt/classes/client_identity_registry.py
+cliprt/classes/client_registry.py
 cliprt/classes/client_identity_resolver.py
 cliprt/classes/client_information_workbook.py
 cliprt/classes/cliprt_user_guide.py

@@ -13,15 +13,15 @@ class ClientIdentityResolver:
     determine of the data matches an existing client identity or 
     belongs to a new client identity.
     """
-    def __init__(self, identifier_registry):
+    def __init__(self, client_registry, identifier_registry):
         """
         Create a new identity resolver.
         """
         # Dependency injections.
-        self.identifier_registry = identifier_registry
+        self.client_reg = client_registry
+        self.identifier_reg = identifier_registry
 
         # Class attributes.
-        self.client_id_registry = identifier_registry.client_id_registry
         self.matched_identifier_types = []
         self.identifier_matched = []
         self.identifier_unmatched = []
@@ -40,7 +40,7 @@ class ClientIdentityResolver:
                 # Ignore useless email identifiers.
                 return
 
-        if identifier.key in self.identifier_registry.identifier_list:
+        if identifier.key in self.identifier_reg.identifier_list:
             self.identifier_matched.append(identifier)
             if not identifier.type in self.matched_identifier_types:
                 # Track the number of unique identifier types found. 
@@ -50,7 +50,7 @@ class ClientIdentityResolver:
         else:
             # Save the identifier value since it doesn't match any 
             # existing saved identifier.
-            self.identifier_registry.add_identifier(identifier)
+            self.identifier_reg.add_identifier(identifier)
             self.identifier_unmatched.append(identifier)
 
     def client_idno_matcher(self, client_idno_sets):
@@ -99,7 +99,7 @@ class ClientIdentityResolver:
         registry search, this is a new identity to be add to the 
         registry.
         """
-        return self.client_id_registry.create_identity()
+        return self.client_reg.create_identity()
 
     def is_useful_email_identifier(self, de_value):
         """
@@ -128,7 +128,7 @@ class ClientIdentityResolver:
         """
         client_id_sets = []
         for identifier in self.identifier_matched:
-            idno_set = self.identifier_registry.identifier_list[identifier.key].client_ids
+            idno_set = self.identifier_reg.identifier_list[identifier.key].client_ids
             client_id_sets.append(idno_set)
         return self.client_idno_matcher(client_id_sets)
 
@@ -150,7 +150,7 @@ class ClientIdentityResolver:
             # Determine which is the most likely match for the 
             # current row of client data.
             client_idno = self.match_existing_identity()
-            identity = self.client_id_registry.get_identity_by_idno(client_idno)
+            identity = self.client_reg.get_identity_by_idno(client_idno)
 
         # Now that we have a client id, the identifiers can be updated
         # to reflect the new client id with which they are now 

@@ -4,6 +4,8 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
+from cliprt.classes.data_element_dictionary_settings import DataElementDictionarySettings
+
 class DestinationWorksheet:
     """
     Prepare a new report destination worksheet.  Create it if it does
@@ -12,16 +14,14 @@ class DestinationWorksheet:
     """
     DEST_WS_NAME_PREFIX = 'comm_report_for_'
 
-    def __init__(self, wb, ws_ind, ded_processor):
+    def __init__(self, wb, ws_ind):
         """
         Start a new destination worksheet, or reset an existing one
         if it has been left behind from a previous report creation
         request.
         """
-        # Dependency injections.
-        self.ded_processor = ded_processor
-
         # Class attributes.
+        self.ded_settings = DataElementDictionarySettings()
         self.dest_de_list = {}
         self.dest_ind = ws_ind
         self.first_row_idx = 1
@@ -76,15 +76,15 @@ class DestinationWorksheet:
         """
         if cell_data == None:
             # If there's no new data there's nothing to do.
-            return
+            return True
 
         # Format the new cell data if a data format has been provided.
-        if data_format == self.ded_processor.DATE_FORMAT:
-            formatted_data = self.ded_processor.format_date(cell_data)
-        elif data_format == self.ded_processor.NAME_FORMAT:
-            formatted_data = self.ded_processor.format_name(cell_data)
-        elif data_format == self.ded_processor.PHONE_FORMAT:
-            formatted_data = self.ded_processor.format_phone(cell_data)
+        if data_format == self.ded_settings.DATE_FORMAT:
+            formatted_data = self.ded_settings.format_date(cell_data)
+        elif data_format == self.ded_settings.NAME_FORMAT:
+            formatted_data = self.ded_settings.format_name(cell_data)
+        elif data_format == self.ded_settings.PHONE_FORMAT:
+            formatted_data = self.ded_settings.format_phone(cell_data)
         else:
             formatted_data = str(cell_data)
 
@@ -98,7 +98,8 @@ class DestinationWorksheet:
         else:
             # Update the cell value.
             self.ws.cell(row_idx, col_idx, value='{}, {}'.format(cell_value, formatted_data))
-
+        return True
+        
     def update_column_headings(self):
         """
         Update the columns heads based on the information provided by 

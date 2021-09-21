@@ -7,8 +7,8 @@ Copyright   2020 Michael Hodges
 import openpyxl
 import os.path
 
-from cliprt.classes.client_identifier_registry import ClientIdentifierRegistry
-from cliprt.classes.client_identity_registry import ClientIdentityRegistry
+from cliprt.classes.identifier_registry import IdentifierRegistry
+from cliprt.classes.client_registry import ClientRegistry
 from cliprt.classes.content_worksheet import ContentWorksheet
 from cliprt.classes.data_element_dictionary_processor import DataElementDictionaryProcessor
 from cliprt.classes.destination_worksheets_registry import DestinationWorksheetsRegistry
@@ -21,6 +21,9 @@ class ClientInformationWorkbook:
     creation as needed.  It is the primary backend to the cliprt command
     line user interface.
     """
+    # Dependencies
+    error = MessageRegistry()
+
     # Internal worksheets names.
     DED_WS_NAME = 'Data Elements'
     INTERNAL_WS_NAMES = [DED_WS_NAME]
@@ -40,11 +43,10 @@ class ClientInformationWorkbook:
         # Class attributes.
         self.ded_processor = None
         self.ded_ws = None
-        self.dest_ws_registry = DestinationWorksheetsRegistry()
-        self.client_id_registry = ClientIdentityRegistry(self.dest_ws_registry)
+        self.dest_ws_reg = DestinationWorksheetsRegistry()
+        self.client_reg = ClientRegistry(self.dest_ws_reg)
         self.content_ws_names = []
-        self.error = MessageRegistry()
-        self.identifier_registry = ClientIdentifierRegistry(self.client_id_registry)
+        self.identifier_reg = IdentifierRegistry()
         self.wb = openpyxl.load_workbook(filename=wb_filename)
         self.wb_filename = wb_filename
 
@@ -52,7 +54,7 @@ class ClientInformationWorkbook:
         # initially accessed.
         self.init_ded_processor()
 
-    def create_client_reports(self, progress_reporting_is_disabled = False):
+    def create_client_reports(self, progress_reporting_is_disabled = False, save_wb = True):
         """
         Utilize and process the various worksheets in the workbook in
         order to create the destination report worksheets.
@@ -63,7 +65,7 @@ class ClientInformationWorkbook:
 
         # Create or reset the destination worksheets in preparation for
         # the next round of reports.
-        self.ded_processor.dest_ws_registry.prep_worksheets()
+        self.ded_processor.dest_ws_reg.prep_worksheets()
         
         # Create the list of client data content worksheets.
         self.create_content_ws_names_list()
@@ -74,12 +76,14 @@ class ClientInformationWorkbook:
                 self.wb,
                 ws_name,
                 self.ded_processor, 
-                self.identifier_registry,
-                self.dest_ws_registry
-                ).client_report(progress_reporting_is_disabled)
+                self.client_reg,
+                self.identifier_reg,
+                self.dest_ws_reg
+            ).client_report(progress_reporting_is_disabled)
         
         # Save the client report worksheets.
-        self.wb.save(self.wb_filename)
+        if save_wb:
+            self.wb.save(self.wb_filename)
         
     def create_content_ws_names_list(self):
         """
@@ -90,7 +94,7 @@ class ClientInformationWorkbook:
             if ws_name in self.INTERNAL_WS_NAMES:
                 # Ignore the internal worksheets.
                 continue
-            if ws_name in self.dest_ws_registry.dest_ws_names:
+            if ws_name in self.dest_ws_reg.dest_ws_names:
                 # Ignore any existing destination worksheets.
                 continue
             # Save the data content worksheet name.
@@ -154,7 +158,7 @@ class ClientInformationWorkbook:
         if not self.has_a_ded_ws():
             return False
         self.ded_ws = self.wb[self.DED_WS_NAME]
-        self.ded_processor = DataElementDictionaryProcessor(self.wb, self.ded_ws, self.dest_ws_registry)
+        self.ded_processor = DataElementDictionaryProcessor(self.wb, self.ded_ws, self.dest_ws_reg)
         return True
 
     def has_a_ded_ws(self):

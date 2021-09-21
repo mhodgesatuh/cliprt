@@ -4,20 +4,19 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
-from dateutil.parser import *
 from datetime import *
-
 from cliprt.classes.data_element import DataElement
 from cliprt.classes.message_registry import MessageRegistry
+from cliprt.classes.data_element_dictionary_settings import DataElementDictionarySettings
 
 class DataElementDictionaryProcessor:
 
     # Required DED column headings.
     COL_HEADINGS = ['Data Element', 'Dest WS', 'Dest Element', 'DE Format']
-    DE_COL_NAME = 0
-    DEST_WS_COL_NAME = 1
-    DEST_DE_COL_NAME = 2
-    DE_FORMAT_COL_NAME = 3
+    DE_COL_IDX = 0
+    DEST_WS_COL_IDX = 1
+    DEST_DE_COL_IDX = 2
+    DE_FORMAT_COL_IDX = 3
 
     # Data element designations overloaded into data element formats.
     FRAGMENT_DESIGNATION = 'fragment'
@@ -35,16 +34,17 @@ class DataElementDictionaryProcessor:
         DATE_FORMAT, 
         NAME_FORMAT, 
         PHONE_FORMAT
-        ]
+    ]
     
     def __init__(self, wb, ws, dest_ws_registry):
         """
         Read the date element dictionary worksheet and hydrate the DED.
         """
         # Dependency injections.
-        self.dest_ws_registry = dest_ws_registry
+        self.dest_ws_reg = dest_ws_registry
 
         # Class attributes.
+        self.settings = DataElementDictionarySettings()
         self.de_fragments_list = {}
         self.ded = {}
         self.ded_hydrated = False
@@ -69,14 +69,15 @@ class DataElementDictionaryProcessor:
 
         # Check config for at least 1 2-character report destination 
         # indicator.
-        col_idx = col_headings[self.COL_HEADINGS[self.DEST_WS_COL_NAME]]
+        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DEST_WS_COL_IDX]]
         ws_columns = self.ws.iter_cols(
-            min_col=col_idx, 
-            max_col=col_idx, 
+            min_col=col_idx,
+            max_col=col_idx,
             min_row=self.ws.min_row+1)
         de_column = list(ws_columns)[0]
         for de_cell in de_column:
-            if not de_cell.value == None and len(de_cell.value) >= 2:
+            if not de_cell == None and not de_cell.value == None \
+                    and len(de_cell.value) >= 2:
                 dest_ws_found = True
                 break
         if not dest_ws_found:
@@ -85,14 +86,16 @@ class DataElementDictionaryProcessor:
             return False
 
         # Check config for at least 1 asigned identifier.
-        col_idx = col_headings[self.COL_HEADINGS[self.DE_FORMAT_COL_NAME]]
+        i = self.settings.COL_HEADINGS[self.settings.DE_FORMAT_COL_IDX]
+        col_idx = col_headings[i]
         ws_columns = self.ws.iter_cols(
             min_col=col_idx, 
             max_col=col_idx, 
             min_row=self.ws.min_row+1)
         de_column = list(ws_columns)[0]
         for de_cell in de_column:
-            if not de_cell == None and self.IDENTIFIER_DESIGNATION in de_cell.value:
+            if not de_cell == None and not de_cell.value == None and \
+                    self.settings.IDENTIFIER_DESIGNATION in de_cell.value:
                 identifier_found = True
                 break
         if not identifier_found:
@@ -105,71 +108,6 @@ class DataElementDictionaryProcessor:
         """
         """
         return self.ded_hydrated
-
-    def format_date(self, date_value):
-        """
-        Normalize the format of dates if possible.
-        """
-        date_obj = parse(date_value)
-        return date_obj.strftime("%m/%d/%Y")
-
-    def format_name(self, data_value):
-        """
-        Normalize the format of names if possible.
-        """
-        name_pieces = data_value.split(",")
-
-        # If there are no pieces there's nothing to do.
-        if len(name_pieces) <= 1:
-            return data_value
-
-        # Convert format 'last, first' to 'first last'.
-        ret_value = ''
-
-        # Start with the 2nd piece.
-        # No problem if there are extra commas.
-        i = 1
-        while i < len(name_pieces):
-            ret_value+=name_pieces[i]
-            i+=1
-        # Last name goes last.
-        ret_value+=' '+name_pieces[0]
-        return ret_value.strip()
-
-    def format_phone(self, data_value, area_code = '808', country_code = '1'):
-        """
-        Normalize the format of phone numbers if possible.
-        """
-        # Digits only.
-        pho_no = ''.join(i for i in data_value if i.isdigit())
-
-        # Output mask: 1-999-123-4567
-        pho_mask = '{}-{}-{}-{}'
-
-        # Format known phone number data lengths.
-        if len(pho_no) == 7:
-            return pho_mask.format(
-                country_code, 
-                area_code, 
-                pho_no[0:3], 
-                pho_no[3:7]
-                )
-        elif len(pho_no) == 10:
-            return pho_mask.format(
-                country_code, 
-                pho_no[0:3], 
-                pho_no[3:6], 
-                pho_no[6:10]
-                )
-        elif len(pho_no) == 11:
-            return pho_mask.format(
-                pho_no[0:1], 
-                pho_no[1:4], 
-                pho_no[4:7], 
-                pho_no[7:11]
-                )
-        else:
-            return data_value
 
     def hydrate_ded(self):
         """
@@ -190,7 +128,7 @@ class DataElementDictionaryProcessor:
         col_headings = self.read_col_headings()
 
         # Get the DED column of data element names.
-        col_idx = col_headings[self.COL_HEADINGS[self.DE_COL_NAME]]
+        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DE_COL_IDX]]
         ws_columns = self.ws.iter_cols(
             min_col=col_idx, 
             max_col=col_idx, 
@@ -213,10 +151,12 @@ class DataElementDictionaryProcessor:
                 self.ded[de_name] = DataElement(de_name, self.ded)
 
             # Process the rest of the data element configuration.
-            self.read_de_config(col_headings, de_name, de_cell.row)
+            ret_status = self.read_de_config(col_headings, de_name, de_cell.row)
+            if not ret_status == True:
+                raise Exception(self.error.msg(ret_status))
 
             # Remove the data element from the DED if it does not 
-            # not have a destination worksheet.
+            # have a destination worksheet.
             if not self.ded[de_name].has_dest_ws():
                 self.ded.pop(de_name)
 
@@ -243,10 +183,10 @@ class DataElementDictionaryProcessor:
 
                 # Currently the assigned index is only relevant for 
                 # a "fragment", the rest are ignored.
-                if dest_de_format == self.FRAGMENT_DESIGNATION:
+                if dest_de_format == self.settings.FRAGMENT_DESIGNATION:
                     if not dest_de_format_part[1].isdigit():
                         # Fatal error
-                        raise Exception(self.error.msg(3003).format(de_name, self.DE_WS_NAME))
+                        raise Exception(self.error.msg(3003).format(de_name, self.ws.title))
 
                     # Save the fragment index for later.
                     self.de_fragments_list[de_name] = int(dest_de_format_part[1])
@@ -254,9 +194,18 @@ class DataElementDictionaryProcessor:
             # Add the clean destination format to the list.
             dest_de_format_list.append(dest_de_format)
 
-            if self.IDENTIFIER_DESIGNATION in dest_de_format_list and self.FRAGMENT_DESIGNATION in dest_de_format_list:
-                # Fatal error, fragments can only reference an identifier.
-                raise Exception(self.error.msg(3004).format(dest_de_format, de_name))
+            # todo:
+                # Fatal error, fragments require a destination data 
+                # element for assembly.
+                # raise Exception(self.error.msg(3004).format(dest_de_format, de_name))
+
+            # todo: 
+                # a fragment cannot be an identifier.  The dest de can though.  3008
+                # raise Exception(self.error.msg(3008).format(dest_de_format, de_name))
+
+            # todo:
+                # a fragment should not contain a format type, the dest de can though.  
+                # raise Exception(self.error.msg(3009).format(dest_de_format, de_name))
         
         return dest_de_format_list
 
@@ -266,7 +215,7 @@ class DataElementDictionaryProcessor:
         """
         # Add the required DED column headings.
         col_idx = 1
-        for col_heading in self.COL_HEADINGS:
+        for col_heading in self.settings.COL_HEADINGS:
             self.ws.cell(1, col_idx, value=col_heading)
             col_idx+=1
         # Add the list of data element names to the first column.
@@ -280,19 +229,19 @@ class DataElementDictionaryProcessor:
         For each data element more than one destination worksheet may be
         specified in the DED worksheet.
         """
-        if not ws_dest_ind in self.dest_ws_registry.dest_ws_by_ind_list:
+        if not ws_dest_ind in self.dest_ws_reg.dest_ws_by_ind_list:
             # Autodetect and save new destination indicators.
-            self.dest_ws_registry.add_ws(self.wb, ws_dest_ind, self.ws)
+            self.dest_ws_reg.add_ws(self.wb, ws_dest_ind)
 
         # Each column heading is assigned the next available column.
         # Increment the index of the last data element column of the 
         # specified destination worksheet.
-        dest_col_idx = self.dest_ws_registry.get_next_col_idx(ws_dest_ind)
+        dest_col_idx = self.dest_ws_reg.get_next_col_idx(ws_dest_ind)
         self.ded[de_name].add_dest_ws_ind(ws_dest_ind, dest_col_idx)
 
         # This will be used to create the column headings for each 
         # of the destination worksheets.
-        self.dest_ws_registry.add_de_name(ws_dest_ind, de_name, dest_col_idx)
+        self.dest_ws_reg.add_de_name(ws_dest_ind, de_name, dest_col_idx)
 
     def process_dest_de_format(self, de_name, dest_de_format):
         """
@@ -303,14 +252,14 @@ class DataElementDictionaryProcessor:
         found.
         """
         # Validate the destination format designater.
-        if not dest_de_format in self.VALID_DE_FORMATS:
+        if not dest_de_format in self.settings.VALID_DE_FORMATS:
             # Fatal error, invalid destination format
-            raise Exception(self.error.msg(3005).format(dest_de_format, de_name, self.VALID_DE_FORMATS))
+            raise Exception(self.error.msg(3005).format(dest_de_format, de_name, self.settings.VALID_DE_FORMATS))
 
         # Check for the overload identifier and fragment designaters.
-        if dest_de_format == self.IDENTIFIER_DESIGNATION:
+        if dest_de_format == self.settings.IDENTIFIER_DESIGNATION:
             self.ded[de_name].set_to_identifier()
-        elif dest_de_format == self.FRAGMENT_DESIGNATION:
+        elif dest_de_format == self.settings.FRAGMENT_DESIGNATION:
             if de_name in self.de_fragments_list:
                 self.ded[de_name].set_to_fragment(self.de_fragments_list[de_name])
             else:
@@ -346,7 +295,7 @@ class DataElementDictionaryProcessor:
         for cell in self.ws[self.ws.min_row]:
             col_headings[cell.value] = cell.col_idx
         # Ensure that all of the required named columns are available.  
-        for self.ded_col_heading in self.COL_HEADINGS:
+        for self.ded_col_heading in self.settings.COL_HEADINGS:
             if self.ded_col_heading not in col_headings:
                 if evaluate_only:
                     # No fatal error to be thrown.
@@ -375,25 +324,25 @@ class DataElementDictionaryProcessor:
         # -------
         # Dest WS
         # -------
-        col_idx = col_headings[self.COL_HEADINGS[self.DEST_WS_COL_NAME]]
+        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DEST_WS_COL_IDX]]
         dest_ws_indicators = self.util_str_normalize(
             self.ws.cell(row=de_row_idx, column=col_idx).value)
 
         # ------------
         # Dest Element
         # ------------
-        col_idx = col_headings[self.COL_HEADINGS[self.DEST_DE_COL_NAME]]
+        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DEST_DE_COL_IDX]]
         dest_element = self.util_str_normalize(
             self.ws.cell(row=de_row_idx, column=col_idx).value)
 
         if dest_ws_indicators == None and dest_element == None:
                 # Skip elements that have neither a defined destination
                 # worksheet nor are mapped to another data element.
-            return
+            return True
 
         if not dest_ws_indicators == None and not dest_element == None:
             # Fatal error
-            raise Exception(self.error.msg(3001).format(de_name, self.DE_WS_NAME))
+            raise Exception(self.error.msg(3001).format(de_name))
 
         if not dest_element == None:
             # Add the data element name and its information to the data 
@@ -403,7 +352,7 @@ class DataElementDictionaryProcessor:
         # ---------
         # DE Format
         # ---------
-        col_idx = col_headings[self.COL_HEADINGS[self.DE_FORMAT_COL_NAME]]
+        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DE_FORMAT_COL_IDX]]
         dest_de_format_str = self.util_str_normalize(self.ws.cell(row=de_row_idx, column=col_idx).value)
         if not dest_de_format_str == None:
             dest_de_format_list = self.parse_dest_de_format_str(de_name, dest_de_format_str)
@@ -414,9 +363,11 @@ class DataElementDictionaryProcessor:
         if not dest_element == None:
             # Data elements not mapped to a destination elements are
             # not included in the destination reports.
-            return
+            return True
         for ws_dest_ind in self.util_make_list(dest_ws_indicators):
-            self.process_dest_ind(de_name, ws_dest_ind)        
+            self.process_dest_ind(de_name, ws_dest_ind) 
+
+        return True       
 
     def util_str_normalize(self, str_value):
         """
@@ -438,7 +389,7 @@ class DataElementDictionaryProcessor:
         all of the destination data elements are in the dictionary.
         """
         # Get the destination data elements column of data element names.
-        col_idx = col_headings[self.COL_HEADINGS[self.DEST_DE_COL_NAME]]
+        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DEST_DE_COL_IDX]]
         ws_columns = self.ws.iter_cols(
             min_col=col_idx, 
             max_col=col_idx, 
@@ -457,7 +408,7 @@ class DataElementDictionaryProcessor:
             # lowercase to reduce sensitivity to typos in the DED.
             dest_de_name = de_cell.value.lower()
             if not dest_de_name in self.ded:
-                raise Exception(self.error.msg(3002).format(dest_de_name, self.DE_WS_NAME))
+                raise Exception(self.error.msg(3002).format(dest_de_name))
 
         # Hydration completed and validated.
         return True

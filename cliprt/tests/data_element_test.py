@@ -6,40 +6,31 @@ Copyright   2021 Michael Hodges
 """
 from cliprt.classes.data_element import DataElement
 from cliprt.classes.client_information_workbook import ClientInformationWorkbook
-from cliprt.classes.destination_worksheets_registry import DestinationWorksheetsRegistry
-from cliprt.classes.data_element_dictionary_processor import DataElementDictionaryProcessor
 
 class DataElementTest:
     """
     Data element unit testing harness.
     """
-    # Dependencies.
     wb_file = 'cliprt/tests/test_workbook.xlsx'
     client_info = ClientInformationWorkbook(wb_file)
-    dest_ws_registry = DestinationWorksheetsRegistry()
-    ded_processor = DataElementDictionaryProcessor(
-        client_info.wb, 
-        client_info.ded_ws, 
-        dest_ws_registry
-    )
-    ded_processor.hydrate_ded()
+    client_info.ded_processor.hydrate_ded()
 
     # Test data.
 
-    data_element = DataElement('test_de', ded_processor.ded)
+    data_element = DataElement('test_de', client_info.ded_processor.ded)
     data_element.add_dest_ws_ind('fb', 1)
 
-    remapped_data_element = DataElement('remapped_de', ded_processor.ded)
+    remapped_data_element = DataElement('remapped_de', client_info.ded_processor.ded)
     remapped_data_element.add_dest_ws_ind('fb', 2)
     remapped_data_element.set_dest_de_name('dest_de')
     remapped_data_element.set_dest_de_format('phone')
 
-    nodest_data_element = DataElement('nodest_de', ded_processor.ded)
+    nodest_data_element = DataElement('nodest_de', client_info.ded_processor.ded)
 
-    frag_data_element = DataElement('frag_de', ded_processor.ded)
+    frag_data_element = DataElement('frag_de', client_info.ded_processor.ded)
     frag_data_element.set_to_fragment(1)
 
-    identifier_data_element = DataElement('identifier_de', ded_processor.ded)
+    identifier_data_element = DataElement('identifier_de', client_info.ded_processor.ded)
     identifier_data_element.set_to_identifier()
 
     def init_test(self):
@@ -104,7 +95,7 @@ class DataElementTest:
         """
         assert self.remapped_data_element.dest_de_name == 'dest_de'
         assert self.remapped_data_element.is_remapped
-        assert self.remapped_data_element.dest_de_format == None
+        assert self.remapped_data_element.dest_de_format == 'phone'
 
     def set_to_fragment_test(self):
         """

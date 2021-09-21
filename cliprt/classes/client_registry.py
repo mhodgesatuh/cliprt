@@ -6,7 +6,7 @@ Copyright   2020 Michael Hodges
 """
 from cliprt.classes.client_identity import ClientIdentity
 
-class ClientIdentityRegistry:
+class ClientRegistry:
     """
     The client identifier registry keeps track of all client id's and
     provide the next available client id number when a new client 
@@ -18,7 +18,7 @@ class ClientIdentityRegistry:
         client id number.
         """
         # Dependency injections.
-        self.dest_ws_registry = dest_ws_registry
+        self.dest_ws_reg = dest_ws_registry
 
         # Class attributes.
         self.client_id_list = {}
@@ -32,13 +32,13 @@ class ClientIdentityRegistry:
         the registry.   
         """
         client_idno = self.get_next_client_idno()
-        identity = ClientIdentity(client_idno, self.dest_ws_registry)
+        identity = ClientIdentity(client_idno, self.dest_ws_reg)
         self.client_id_list[client_idno] = identity
         return identity
 
     def get_identity_by_idno(self, client_idno):
         """
-        Return the client identifier.
+        Return the client id.
         """
         if client_idno in self.client_id_list:
             return self.client_id_list[client_idno]

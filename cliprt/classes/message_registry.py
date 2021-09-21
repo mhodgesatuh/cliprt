@@ -37,13 +37,15 @@ class MessageRegistry:
         self.message[1005] = 'Error: the DED is not available or not ready.'
         # data element dictionary
         self.message[3000] = 'WS Error: required column heading {} not found in worksheet {}.\nUnable to continue.'
-        self.message[3001] = 'DED Error: specify either a "Dest WS" or a "Dest Element" for {}, but not both.\nUnable to continue.  See example worksheet {} for comparison.'
+        self.message[3001] = 'DED Error: specify either a "Dest WS" or a "Dest Element" for {}, but not both.\nUnable to continue.  See example worksheet in /resources for comparison.'
         self.message[3002] = 'DED Error: see column "Dest Element" for invalid entry "{}".  It must reference a entry in the colum "Data Element".\nUnable to continue until you correct the worksheet.'
         self.message[3003] = 'DED Error: Destination format error for {} in worksheet {}. Fragment="n" where "n" is an integer is required.\nUnable to continue.'
-        self.message[3004] = 'DED Error: invalid destination format "{}" specified for "{}". A fragment can only reference an identifier.\nUnable to continue until you remove "identifier".'
+        self.message[3004] = 'DED Error: invalid destination format "{}" specified for "{}". A fragment must reference a destination data element for assembly.\nUnable to continue until you correct the worksheet.'
         self.message[3005] = 'DED Error: invalid destination format "{}" specified for "{}".\nUnable to continue.  Valid values: {}.'
         self.message[3006] = 'DED Error: invalid destination format "{}" specified for "{}".  fragment="n" expected.\nUnable to continue.  Valid values: {}.'
         self.message[3007] = 'DED Error: the Data Element worksheet has not been configured.  There are as yet no reporting requirements provided.'
+        self.message[3008] = 'DED Error: invalid destination format "{}" specified for "{}". A fragment cannot be an identifier.\nUnable to continue until you correct the worksheet.'
+        self.message[3009] = 'DED Error: invalid destination format "{}" specified for "{}". A fragment cannot specify a format type.\nUnable to continue until you correct the worksheet.'
         # client information workbook
         self.message[4000] = 'Error: the Data Element worksheet, "{}", must designate the destination report indicators.  Configuration is incomplete.'
         # content work sheet
@@ -54,6 +56,7 @@ class MessageRegistry:
 
     def msg(self, idx):
         """
-        Return message content.
+        Return message content. 
+        Format is: (Ennnn) Error text.
         """
-        return self.message[idx]
+        return '(E{}) {}'.format(idx, self.message[idx])

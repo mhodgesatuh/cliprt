@@ -4,10 +4,9 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
-from cliprt.classes.client_identifier import ClientIdentifier
+from cliprt.classes.identifier import Identifier
 from cliprt.classes.client_identity_resolver import ClientIdentityResolver
 from cliprt.classes.data_element_fragments_assembler import DataElementFragmentsAssembler as FragAssembler
-from cliprt.classes.destination_worksheet import DestinationWorksheet
 from cliprt.classes.message_registry import MessageRegistry
 
 class ContentWorksheet:
@@ -28,14 +27,23 @@ class ContentWorksheet:
     # Display progress interval size.
     PROGRESS_INCREMENT = 50
 
-    def __init__(self, wb, ws_name, ded_processor, identifier_registry, dest_ws_registry):
+    def __init__(
+        self, 
+        wb, 
+        ws_name, 
+        ded_processor, 
+        client_registry, 
+        identifier_registry, 
+        dest_ws_registry
+    ):
         """
         Ready a content worksheet for processing.
         """
         # Dependency injections.
         self.ded_processor = ded_processor
-        self.identifier_registry = identifier_registry
-        self.dest_ws_registry = dest_ws_registry
+        self.client_reg = client_registry
+        self.identifier_reg = identifier_registry
+        self.dest_ws_reg = dest_ws_registry
 
         # Class attributes.
         self.content_cols = {}
@@ -194,7 +202,7 @@ class ContentWorksheet:
             if de_value in ['', None]:
                 # Ignore empty identifiers.
                 continue
-            identifier = ClientIdentifier(de_name, de_value, self.ded)
+            identifier = Identifier(de_name, de_value, self.ded)
             client_id_resolver.assess_identifier(identifier)
 
         # Resolve the client's identity.  None returned if there are no
@@ -229,8 +237,14 @@ class ContentWorksheet:
 
             # Process the identifiers in order to determine if this is
             # a new or a previously identified client.
-            client_id_resolver = ClientIdentityResolver(self.identifier_registry)
-            identity = self.process_row_de_identifiers(client_id_resolver, row_idx)
+            client_id_resolver = ClientIdentityResolver(
+                self.client_reg, 
+                self.identifier_reg
+            )
+            identity = self.process_row_de_identifiers(
+                client_id_resolver, 
+                row_idx
+            )
             if identity == None:
                 # Skip rows that lack any identifier information.
                 continue
@@ -252,13 +266,13 @@ class ContentWorksheet:
                         continue
                     dest_de_value = identifier.de_value
                     dest_de_format = self.ded[dest_de_name].dest_de_format
-                    self.dest_ws_registry.update_dest_ws_cell(
+                    self.dest_ws_reg.update_dest_ws_cell(
                         dest_ws_ind, 
                         dest_row_idx, 
                         dest_col_idx, 
                         dest_de_value, 
                         dest_de_format
-                        )
+                    )
 
                 # Copy the content columns to the destination worksheet.
                 for col_idx, dest_de_name in self.content_cols.items():
@@ -279,7 +293,7 @@ class ContentWorksheet:
                         # for this data eleement.
                         continue
                     dest_de_format = self.ded[dest_de_name].dest_de_format
-                    self.dest_ws_registry.update_dest_ws_cell(
+                    self.dest_ws_reg.update_dest_ws_cell(
                         dest_ws_ind, 
                         dest_row_idx, 
                         dest_col_idx, 
@@ -300,7 +314,7 @@ class ContentWorksheet:
                         continue
                     dest_de_value = frag_info.assembled_value()
                     dest_de_format = self.ded[dest_de_name].dest_de_format
-                    self.dest_ws_registry.update_dest_ws_cell(
+                    self.dest_ws_reg.update_dest_ws_cell(
                         dest_ws_ind, 
                         dest_row_idx, 
                         dest_col_idx, 

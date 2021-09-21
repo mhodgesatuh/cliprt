@@ -6,7 +6,7 @@ Copyright   2020 Michael Hodges
 """
 from cliprt.classes.destination_worksheet import DestinationWorksheet
 
-class DestinationWorksheetsRegistry:
+class DestinationWorksheetsRegistry: 
     """
     The registry of destination worksheets is created when the DED is 
     created and provides the list of destinations worksheets to be
@@ -15,7 +15,13 @@ class DestinationWorksheetsRegistry:
     def __init__(self):
         """
         Prepare a new registry for tracking the destination worksheets.
+        ---
+        Note that the DED processor requires the destination worksheet
+        registry as one of its dependencies.  Consequently, the DED
+        process has to be passed to any of this registry's methods that
+        might need it.
         """
+
         # Class attributes.
         self.dest_ws_by_ind_list = {}
         self.dest_ws_list = {}
@@ -28,7 +34,7 @@ class DestinationWorksheetsRegistry:
         """
         self.dest_ws_by_ind_list[ws_ind].add_de_name(de_name, col_idx)
 
-    def add_ws(self, wb, ws_ind, ded_processor):
+    def add_ws(self, wb, ws_ind):
         """
         As each destination worksheet is discovered add it to the 
         destination worksheet repository.
@@ -37,7 +43,7 @@ class DestinationWorksheetsRegistry:
             # Already added.
             return
         
-        self.dest_ws_by_ind_list[ws_ind] = DestinationWorksheet(wb, ws_ind, ded_processor)
+        self.dest_ws_by_ind_list[ws_ind] = DestinationWorksheet(wb, ws_ind)
         self.dest_ws_list[ws_ind] = self.dest_ws_by_ind_list[ws_ind].ws_name
 
         # Update the list of destination worksheet names.  

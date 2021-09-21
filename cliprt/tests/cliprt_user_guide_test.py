@@ -16,6 +16,6 @@ class CliprtUserGuideTest:
         Unit test
         """
         with capture_output() as captured:
-            CliprtUserGuide('./cliprt/resources');
+            CliprtUserGuide('./cliprt/resources')
         captured()
         assert len(captured.stdout) > 100

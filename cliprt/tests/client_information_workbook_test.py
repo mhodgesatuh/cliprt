@@ -4,50 +4,40 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2021 Michael Hodges
 """
+import pytest
+from mock import patch, Mock
 import openpyxl
-import os.path
-
-from cliprt.classes.client_identifier_registry import ClientIdentifierRegistry
-from cliprt.classes.client_identity_registry import ClientIdentityRegistry
-from cliprt.classes.content_worksheet import ContentWorksheet
-from cliprt.classes.data_element_dictionary_processor import DataElementDictionaryProcessor
-from cliprt.classes.destination_worksheets_registry import DestinationWorksheetsRegistry
+from cliprt.classes.client_information_workbook import ClientInformationWorkbook
 from cliprt.classes.message_registry import MessageRegistry
 
-class ClientInformationWorkbook:
+class ClientInformationWorkbookTest:
     """
-    Client information worrkbook test harness.
+    Client information workbook test harness.
     """
-    # Dependencies
+    error = MessageRegistry()
 
-    # Test data
+    wb_file = 'cliprt/tests/test_workbook.xlsx'
+    client_info = ClientInformationWorkbook(wb_file)
 
-    def __init__(self):
-        """
-        Ensure that the workbook exists.  Set everything up for 
-        processing the workbook.
-        """
-        if not os.path.exists(wb_filename):
-            # Fatal error
-            raise Exception(self.error.msg(1000).format(wb_filename))
-
-        # Class attributes.
-        self.ded_processor = None
-        self.ded_ws = None
-        self.dest_ws_registry = DestinationWorksheetsRegistry()
-        self.client_id_registry = ClientIdentityRegistry(self.dest_ws_registry)
-        self.content_ws_names = []
-        self.error = MessageRegistry()
-        self.identifier_registry = ClientIdentifierRegistry(self.client_id_registry)
-        self.wb = openpyxl.load_workbook(filename=wb_filename)
-        self.wb_filename = wb_filename
-
-        # The workbook may or may not have a DED worksheet when it is 
-        # iintially accessed.
-        self.init_ded_processor()
-
-    def init_test(self):
+    def init_bad_file_test(self):
         """
         Unit test
         """
-        False
+        with pytest.raises(Exception) as excinfo:
+            client_info_wb = ClientInformationWorkbook('bad_file_name')
+        assert 'E1000' in excinfo.value.args[0]
+
+    def create_client_reports_test(self):
+        """
+        Unit test
+        """
+        #self.client_info.create_client_reports(False, False)
+
+    def create_content_ws_names_list_test(self):
+        """
+        Unit test
+        """
+        # Ignore an existing destination worksheets.
+        self.client_info.dest_ws_reg.dest_ws_names.append('dest_ws')
+        self.client_info.create_content_ws_names_list()
+        assert not 'dest_ws' in self.client_info.content_ws_names

@@ -6,7 +6,7 @@ Copyright   2020 Michael Hodges
 """
 import re
 
-class ClientIdentifier:
+class Identifier:
     """
     Each client's identity is comprised of a unique set of client
     identifiers.
@@ -54,7 +54,7 @@ class ClientIdentifier:
 
     def santize_phone_value(self):
         """
-        Find the numberic portions of the string and join them.
+        Find the numeric portions of the string and join them.
         """
         self.de_value = ''.join(re.findall("\d+", self.de_value))
 

@@ -9,3 +9,4 @@ cliprt/__pycache__/
 a.pytest_cache/
 .coverage
 coverage.xml
+cliprt/tests/~$test_workbook.xlsx
