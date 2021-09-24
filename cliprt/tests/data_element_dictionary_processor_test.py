@@ -72,21 +72,19 @@ class DataElementDictionaryProcessorTest:
                 continue
             cell.value = cell.value.replace(old_str, new_str)
 
-    def _set_test_data_row(self, ws, values=[None]):
+    def _test_data_row(self, ws, values=[None, None], test_row=4):
         """
-        Load or clear test data as needed for custom testing.
+        Insert or remove test data as needed for custom testing.
         """
-        # First available row for adding new test data.
-        test_row = ws.max_row
-
-        if values[0] == None:
+        if values[0] == None and values[1] == None:
             ws.delete_rows(test_row, 1)
             return
 
-        ws.cell(test_row, self.de_idx).value = values[0]
-        ws.cell(test_row, self.dest_ws_idx).value = values[1]
-        ws.cell(test_row, self.dest_de_idx).value = values[2]
-        ws.cell(test_row, self.format_idx).value = values[3]
+        ws.insert_rows(test_row, 1)
+        ws.cell(row=test_row, column=self.de_idx, value=values[0])
+        ws.cell(row=test_row, column=self.dest_ws_idx, value=values[1])
+        ws.cell(row=test_row, column=self.dest_de_idx, value=values[2])
+        ws.cell(row=test_row, column=self.format_idx, value=values[3])
 
     def init_test(self):
         """
@@ -109,49 +107,42 @@ class DataElementDictionaryProcessorTest:
         """
         Unit test
         """
-        # Shorthand
         test_ded = self.client_info.ded_processor
+
+        # todo: incomplete test
+        # dest_ws column: no destination worksheet specified
+        self._dehydrate_ded(test_ded)
+        test_values = ['no dest_ws', None, 'name', 'name']
+        self._test_data_row(test_ded.ws, test_values)
+        test_ded.hydrate_ded()
+        self._test_data_row(test_ded.ws)
 
         # dest_de column: one or the other, not both dest_de and dest_ws
         self._dehydrate_ded(test_ded)
-        test_values = [
-            'bad dest_ws',
-            'fb',
-            'name',
-            None
-        ]
-        self._set_test_data_row(test_ded.ws, test_values)
+        test_values = ['bad dest_ws', 'fb', 'name', None]
+        self._test_data_row(test_ded.ws, test_values)
         with pytest.raises(Exception) as excinfo:
             test_ded.hydrate_ded()
         assert 'E3001' in excinfo.value.args[0]
-        self._set_test_data_row(test_ded.ws)
+        self._test_data_row(test_ded.ws)
 
         # de_format column: invalid format: date, name, phone only
         self._dehydrate_ded(test_ded)
-        test_values = [
-            'bad de_format',
-            'fb',
-            None,
-            'email'
-        ]
-        self._set_test_data_row(test_ded.ws, test_values)
-
+        test_values = ['bad de_format', 'fb', None, 'email']
+        self._test_data_row(test_ded.ws, test_values)
         with pytest.raises(Exception) as excinfo:
             test_ded.hydrate_ded()
         assert 'E3005' in excinfo.value.args[0]
-        self._set_test_data_row(test_ded.ws)
+        self._test_data_row(test_ded.ws)
 
-        # dest_ws column: no destination worksheet specified
+        # data element name column: missing name.
         self._dehydrate_ded(test_ded)
-        test_values = [
-            'no dest_ws',
-            None,
-            'name',
-            'name'
-        ]
-        self._set_test_data_row(test_ded.ws, test_values)
-        test_ded.hydrate_ded()
-        self._set_test_data_row(test_ded.ws)
+        test_values = [None, 'fb', None, None]
+        self._test_data_row(test_ded.ws, test_values)
+        with pytest.raises(Exception) as excinfo:
+            test_ded.hydrate_ded()
+        assert 'E3010' in excinfo.value.args[0]
+        self._test_data_row(test_ded.ws)
 
         # dest_ws column: no dest element should be specified
 
@@ -177,8 +168,9 @@ class DataElementDictionaryProcessorTest:
 
         # Assert that the right number of columns headings were created.
         # Create a new DED processor since the workbook has been updaed.
-        col_headings = self.noded_client_info.ded_processor.read_col_headings()
-        assert len(col_headings) == len(self.noded_client_info.ded_processor.COL_HEADINGS)
+        test_ded = self.noded_client_info.ded_processor
+        col_headings = test_ded.read_col_headings()
+        assert len(col_headings) == len(test_ded.COL_HEADINGS)
 
     def ded_is_configured_test(self):
         """
@@ -210,12 +202,10 @@ class DataElementDictionaryProcessorTest:
         assert not self.client_info.ded_is_configured()  
         self.client_info.ded_processor.ws.cell(1, 1, value=saved_val)
 
-
     def hydrate_ded_test(self):
         """
         Unit test
         """
-        # Shorthand
         test_ded = self.client_info.ded_processor
 
         # Hydrate when already hydrated test.
@@ -232,10 +222,10 @@ class DataElementDictionaryProcessorTest:
             None,
             None
         ]
-        self._set_test_data_row(test_ded.ws, test_values)
+        self._test_data_row(test_ded.ws, test_values)
         test_ded.hydrate_ded()
         assert not 'no dest_ws' in test_ded.ded
-        self._set_test_data_row(test_ded.ws)
+        self._test_data_row(test_ded.ws)
 
     def hydrate_preconfig_ded_test(self):
         """
@@ -254,11 +244,18 @@ class DataElementDictionaryProcessorTest:
         captured()
         assert len(captured.stdout) > 100
 
+    def read_col_headings_test(self):
+        """
+        Unit test
+        """
+    
+
     def util_str_normalize_test(self):
         """
         Unit test
         """
-        assert 'abc def' == self.client_info.ded_processor.util_str_normalize('Abc_deF')
+        test_ded = self.client_info.ded_processor
+        assert 'abc def' == test_ded.util_str_normalize('Abc_deF')
     
     def util_make_list_test(self):
         """
@@ -272,16 +269,33 @@ class DataElementDictionaryProcessorTest:
         """
         Unit test
         """
+        test_ded = self.preconfig_client_info.ded_processor
         with pytest.raises(Exception) as excinfo:
-            col_headings = self.preconfig_client_info.ded_processor.read_col_headings()
-            self.preconfig_client_info.ded_processor.validate_dest_de_list(col_headings)
+            col_headings = test_ded.read_col_headings()
+            test_ded.validate_dest_de_list(col_headings)
         assert 'E3002' in excinfo.value.args[0]
+
+    def process_dest_de_format_test(self):
+        """
+        Unit test
+        """
+        test_ded = self.client_info.ded_processor
+
+        # Bad format test.
+        with pytest.raises(Exception) as excinfo:
+            test_ded.process_dest_de_format('bad_de', 'bad_format')
+        assert 'E3005' in excinfo.value.args[0]
+
+        # Bad fragment test.
+        with pytest.raises(Exception) as excinfo:
+            test_ded.process_dest_de_format('bad_de', 'fragment')
+        assert 'E3006' in excinfo.value.args[0]
+
 
     def parse_dest_de_format_str_test(self):
         """
         Unit test
         """
-        # Shorthand
         test_ded = self.client_info.ded_processor
 
         # Bad fragment index test.
@@ -290,5 +304,3 @@ class DataElementDictionaryProcessorTest:
         assert 'E3003' in excinfo.value.args[0]
 
         # Fragments required a destination data element for assembly.
-
-    

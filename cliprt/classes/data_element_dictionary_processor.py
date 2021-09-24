@@ -140,8 +140,7 @@ class DataElementDictionaryProcessor:
         for de_cell in de_column:
 
             if de_cell.value == None:
-                # Skip rows that are missing the data element name.
-                continue
+                raise Exception(self.error.msg(3010).format(self.ws.title, de_cell.coordinate))
 
             # Ensure values used for comparisons are shifted to 
             # lowercase to reduce sensitivity to typos in the DED.
@@ -151,9 +150,7 @@ class DataElementDictionaryProcessor:
                 self.ded[de_name] = DataElement(de_name, self.ded)
 
             # Process the rest of the data element configuration.
-            ret_status = self.read_de_config(col_headings, de_name, de_cell.row)
-            if not ret_status == True:
-                raise Exception(self.error.msg(ret_status))
+            self.read_de_config(col_headings, de_name, de_cell.row)
 
             # Remove the data element from the DED if it does not 
             # have a destination worksheet.
@@ -257,14 +254,14 @@ class DataElementDictionaryProcessor:
             raise Exception(self.error.msg(3005).format(dest_de_format, de_name, self.settings.VALID_DE_FORMATS))
 
         # Check for the overload identifier and fragment designaters.
-        if dest_de_format == self.settings.IDENTIFIER_DESIGNATION:
+        if dest_de_format == self.settings.IDENTIFIER_DESIGNATION: # todo: is this right?
             self.ded[de_name].set_to_identifier()
         elif dest_de_format == self.settings.FRAGMENT_DESIGNATION:
             if de_name in self.de_fragments_list:
                 self.ded[de_name].set_to_fragment(self.de_fragments_list[de_name])
             else:
                 # Fatal error, invalid destination format
-                raise Exception(self.error.msg(3006).format(dest_de_format, de_name))
+                raise Exception(self.error.msg(3006).format(dest_de_format, de_name, self.settings.VALID_DE_FORMATS))
         else:
             # Save the destintion format designater to the DED.
             self.ded[de_name].set_dest_de_format(dest_de_format)
@@ -336,9 +333,9 @@ class DataElementDictionaryProcessor:
             self.ws.cell(row=de_row_idx, column=col_idx).value)
 
         if dest_ws_indicators == None and dest_element == None:
-                # Skip elements that have neither a defined destination
-                # worksheet nor are mapped to another data element.
-            return True
+            # Skip elements that have neither a defined destination
+            # worksheet nor are mapped to another data element.
+            return
 
         if not dest_ws_indicators == None and not dest_element == None:
             # Fatal error
@@ -363,11 +360,9 @@ class DataElementDictionaryProcessor:
         if not dest_element == None:
             # Data elements not mapped to a destination elements are
             # not included in the destination reports.
-            return True
+            return
         for ws_dest_ind in self.util_make_list(dest_ws_indicators):
             self.process_dest_ind(de_name, ws_dest_ind) 
-
-        return True       
 
     def util_str_normalize(self, str_value):
         """
