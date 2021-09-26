@@ -52,58 +52,6 @@ class DataElementDictionaryProcessor:
         self.wb = wb
         self.ws = ws
 
-    def ded_is_configured(self):
-        """
-        The DED must be configured with the reporting requirements.
-        a) Dest WS column: 1 or more report destinations.
-            Valid report destinations are at least 2 characters longs.
-        b) DE Format column: 1 or "identifier" data elements.
-        """
-        col_headings = self.read_col_headings(evaluate_only = True)
-        if col_headings == False:
-            return False
-
-        # Both need to be true for the config check to pass.
-        dest_ws_found = False
-        identifier_found = False
-
-        # Check config for at least 1 2-character report destination 
-        # indicator.
-        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DEST_WS_COL_IDX]]
-        ws_columns = self.ws.iter_cols(
-            min_col=col_idx,
-            max_col=col_idx,
-            min_row=self.ws.min_row+1)
-        de_column = list(ws_columns)[0]
-        for de_cell in de_column:
-            if not de_cell == None and not de_cell.value == None \
-                    and len(de_cell.value) >= 2:
-                dest_ws_found = True
-                break
-        if not dest_ws_found:
-            # Configuration is incomplete.  There are no report 
-            # destinations.
-            return False
-
-        # Check config for at least 1 asigned identifier.
-        i = self.settings.COL_HEADINGS[self.settings.DE_FORMAT_COL_IDX]
-        col_idx = col_headings[i]
-        ws_columns = self.ws.iter_cols(
-            min_col=col_idx, 
-            max_col=col_idx, 
-            min_row=self.ws.min_row+1)
-        de_column = list(ws_columns)[0]
-        for de_cell in de_column:
-            if not de_cell == None and not de_cell.value == None and \
-                    self.settings.IDENTIFIER_DESIGNATION in de_cell.value:
-                identifier_found = True
-                break
-        if not identifier_found:
-            # Configuration is incomplete.  There are no identifiers. 
-            return False
-
-        return True
-
     def ded_is_hydrated(self):
         """
         """
@@ -118,16 +66,29 @@ class DataElementDictionaryProcessor:
         if self.ded_is_hydrated():
             # It is already hydrated.
             return
-        if not self.ded_is_configured():
-            # Fatal error, the DED configuration is incomplete.
-            raise Exception(self.error.msg(3007))
 
         # Determine column indicies for the required DED columns.
         # Ensure that all the required DED columns are provided.
         # > col_headings[col_name] = col_idx
         col_headings = self.read_col_headings()
 
-        # Get the DED column of data element names.
+        # todo: new logic should throw exceptions if a bad
+        #   ded row is found.
+        self.hydrate_ded_by_de(col_headings)
+        self.hydrate_ded_by_dest_de(col_headings)
+        self.hydrate_ded_by_de_format(col_headings)
+        self.hydration_validation()
+
+        self.ded_hydrated = self.validate_dest_de_list(col_headings)
+
+    def hydrate_ded_by_de(self, col_headings):
+        """
+        Data Element - specifies the data element name.
+        Dest WS - specifies a 2-3 character reference value for each
+            report destination, e.g.: fb for FaceBook.  Can be
+            multivalued (comma delimited).
+        """
+        # Get the DED worksheet column of data element names.
         col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DE_COL_IDX]]
         ws_columns = self.ws.iter_cols(
             min_col=col_idx, 
@@ -135,33 +96,132 @@ class DataElementDictionaryProcessor:
             min_row=self.ws.min_row+1)
         de_column = list(ws_columns)[0]
 
-        # From each cell get the data element name and associated 
-        # information.
+        # From each row get the data element name and associated 
+        # destination worksheet indicator and save to the DED.
         for de_cell in de_column:
-
             if de_cell.value == None:
-                # Skip rows that are missing the data element name.
-                continue
+                raise Exception(self.error.msg(3010).format(self.ws.title, de_cell.coordinate))
 
             # Ensure values used for comparisons are shifted to 
             # lowercase to reduce sensitivity to typos in the DED.
             de_name = self.util_str_normalize(de_cell.value)
             if not de_name in self.ded:
-                # Start a new data element.
+                # Update the DED.
                 self.ded[de_name] = DataElement(de_name, self.ded)
 
-            # Process the rest of the data element configuration.
-            ret_status = self.read_de_config(col_headings, de_name, de_cell.row)
-            if not ret_status == True:
-                raise Exception(self.error.msg(ret_status))
+            # If destination worksheet indicators are specified, save
+            # them to the DED.
+            col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DEST_WS_COL_IDX]]
+            dest_ws_cell = self.ws.cell(row=de_cell.row, column=col_idx)
+            if dest_ws_cell.value == None:
+                continue
+            for ws_dest_ind in self.util_make_list(dest_ws_cell.value):
+                # Update the DED.
+                self.process_dest_ind(de_name, ws_dest_ind) 
 
-            # Remove the data element from the DED if it does not 
-            # have a destination worksheet.
-            if not self.ded[de_name].has_dest_ws():
-                self.ded.pop(de_name)
+    def hydrate_ded_by_dest_de(self, col_headings):
+        """
+        Dest Element - maps the content data element to a different
+            data element in the report (not multivalued).
+        """
+        # Get the DED worksheet column of destination data element 
+        # names.
+        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DEST_DE_COL_IDX]]
+        ws_columns = self.ws.iter_cols(
+            min_col=col_idx, 
+            max_col=col_idx, 
+            min_row=self.ws.min_row+1)
+        de_column = list(ws_columns)[0]
 
-        # Ensure all destintation data elements are in the ded.
-        self.ded_hydrated = self.validate_dest_de_list(col_headings)
+        # From each row get the destination data element name and save
+        # to the DED.
+        for dest_de_cell in de_column:
+            if dest_de_cell.value == None:
+                continue
+
+            # Add the destination data element name and its information to the data 
+            # element dictionary.
+            dest_de_name = self.util_str_normalize(dest_de_cell.value)
+            
+            de_col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DE_COL_IDX]]
+            de_cell = self.ws.cell(row=dest_de_cell.row, column=de_col_idx)
+            de_name = self.util_str_normalize(de_cell.value)
+
+            # Update the DED.
+            self.ded[de_name].set_dest_de_name(dest_de_name)
+
+    def hydrate_ded_by_de_format(self, col_headings):
+        """
+        DE Format - is overloaded with the following:
+            1. date, name, phone: any of which will be used to help
+                with the output format of the raw content data.
+            2. "identifier" to indicate that the content data will
+                also be used for identity matching.
+            3. "fragemnt=n" to indicate that content data needs to be
+                combined into a single report destination value, e.g.:
+                map first name and last name to a full name value at
+                the report destination.
+        """
+        # Get the DED worksheet column of data element formats.
+        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DE_FORMAT_COL_IDX]]
+        ws_columns = self.ws.iter_cols(
+            min_col=col_idx, 
+            max_col=col_idx, 
+            min_row=self.ws.min_row+1)
+        de_column = list(ws_columns)[0]
+
+        # From each row get the destination data element name and save
+        # to the DED.
+        for de_format_cell in de_column:
+            if de_format_cell.value == None:
+                continue
+
+            de_col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DE_COL_IDX]]
+            de_cell = self.ws.cell(row=de_format_cell.row, column=de_col_idx)
+            de_name = self.util_str_normalize(de_cell.value)
+
+            dest_de_format_str = self.util_str_normalize(de_format_cell.value)
+            if not dest_de_format_str == None:
+                dest_de_format_list = self.parse_dest_de_format_str(de_name, dest_de_format_str)
+                for dest_de_format in dest_de_format_list:
+                    self.process_dest_de_format(de_name, dest_de_format)
+
+    def hydration_validation(self):
+        """
+        Valid the DED elements to ensure the user input is correct and 
+        complete.
+        """
+        identifier_cnt = 0
+        dest_ws_found = False
+
+        for de_name, de in self.ded.items():
+
+            if de.is_identifier:
+                identifier_cnt += 1
+
+            if not dest_ws_found and len(de.dest_ws_info) > 0:
+                dest_ws_found = True
+
+            if len(de.dest_ws_info) == 0 and de.dest_de_name == None:
+                raise Exception(self.error.msg(3012).format(de_name))
+            
+            if not len(de.dest_ws_info) == 0 and not de.dest_de_name == None:
+                raise Exception(self.error.msg(3001).format(de_name))
+
+            if not de.dest_de_name == None and ',' in de.dest_de_name:
+                raise Exception(self.error.msg(3013).format(de_name, de.dest_de_name))
+
+            if not de.dest_de_name == None and not de.dest_de_name in self.ded:
+                raise Exception(self.error.msg(3002).format(de.dest_de_name))
+
+            if not de.dest_de_format == None and not de.dest_de_format in self.settings.VALID_DE_FORMATS:
+                raise Exception(self.error.msg(3005).format(de.dest_de_format, de_name, self.settings.VALID_DE_FORMATS))
+    
+        if identifier_cnt == 0:
+            raise Exception(self.error.msg(3011))
+
+        if not dest_ws_found:
+            raise Exception(self.error.msg(3014))
 
     def parse_dest_de_format_str(self, de_name, dest_de_format_str):
         """
@@ -224,6 +284,21 @@ class DataElementDictionaryProcessor:
             self.ws.cell(row_idx, 1, value=de_name)
             row_idx+=1
 
+    def print_report(self):
+        """
+        Print the DED contents to the console.
+        """
+        if not self.ded_is_hydrated():
+            self.hydrate_ded()
+        print()
+        print("----------------------------------------")
+        print("Report: Client Data Elemement Dictionary")
+        print('> ded[]')
+        print("----------------------------------------")
+        for de_name, de_instance in self.ded.items():
+            print('{} : {}'.format(de_name, de_instance))
+        print()
+
     def process_dest_ind(self, de_name, ws_dest_ind):
         """
         For each data element more than one destination worksheet may be
@@ -257,32 +332,17 @@ class DataElementDictionaryProcessor:
             raise Exception(self.error.msg(3005).format(dest_de_format, de_name, self.settings.VALID_DE_FORMATS))
 
         # Check for the overload identifier and fragment designaters.
-        if dest_de_format == self.settings.IDENTIFIER_DESIGNATION:
+        if dest_de_format == self.settings.IDENTIFIER_DESIGNATION: # todo: is this right?
             self.ded[de_name].set_to_identifier()
         elif dest_de_format == self.settings.FRAGMENT_DESIGNATION:
             if de_name in self.de_fragments_list:
                 self.ded[de_name].set_to_fragment(self.de_fragments_list[de_name])
             else:
                 # Fatal error, invalid destination format
-                raise Exception(self.error.msg(3006).format(dest_de_format, de_name))
+                raise Exception(self.error.msg(3006).format(dest_de_format, de_name, self.settings.VALID_DE_FORMATS))
         else:
             # Save the destintion format designater to the DED.
             self.ded[de_name].set_dest_de_format(dest_de_format)
-
-    def print_report(self):
-        """
-        Print the DED contents to the console.
-        """
-        if not self.ded_is_hydrated():
-            self.hydrate_ded()
-        print()
-        print("----------------------------------------")
-        print("Report: Client Data Elemement Dictionary")
-        print('> ded[]')
-        print("----------------------------------------")
-        for de_name, de_instance in self.ded.items():
-            print('{} : {}'.format(de_name, de_instance))
-        print()
 
     def read_col_headings(self, evaluate_only = False):
         """
@@ -294,18 +354,21 @@ class DataElementDictionaryProcessor:
         col_headings = {}
         for cell in self.ws[self.ws.min_row]:
             col_headings[cell.value] = cell.col_idx
+
         # Ensure that all of the required named columns are available.  
-        for self.ded_col_heading in self.settings.COL_HEADINGS:
-            if self.ded_col_heading not in col_headings:
+        for ded_col_heading in self.settings.COL_HEADINGS:
+            if ded_col_heading not in col_headings:
                 if evaluate_only:
                     # No fatal error to be thrown.
                     return False
                 # Fatal error
-                raise Exception(self.error.msg(3000).format(self.ded_col_heading, self.DE_WS_NAME,))
+                raise Exception(self.error.msg(3000).format(ded_col_heading, self.ws.title))
         return col_headings
 
     def read_de_config(self, col_headings, de_name, de_row_idx):
         """
+        todo: this function will be refactor into hydrate_ded_by_*
+
         Dest WS - specifies a 2-3 character reference value for each
             report destination, e.g.: fb for FaceBook.  Can be
             multivalued (comma delimited).
@@ -336,9 +399,9 @@ class DataElementDictionaryProcessor:
             self.ws.cell(row=de_row_idx, column=col_idx).value)
 
         if dest_ws_indicators == None and dest_element == None:
-                # Skip elements that have neither a defined destination
-                # worksheet nor are mapped to another data element.
-            return True
+            # Skip elements that have neither a defined destination
+            # worksheet nor are mapped to another data element.
+            return
 
         if not dest_ws_indicators == None and not dest_element == None:
             # Fatal error
@@ -361,20 +424,11 @@ class DataElementDictionaryProcessor:
 
         # Process each indicator's specified worksheet.
         if not dest_element == None:
-            # Data elements not mapped to a destination elements are
+            # Data elements not mapped to a destination element are
             # not included in the destination reports.
-            return True
+            return
         for ws_dest_ind in self.util_make_list(dest_ws_indicators):
             self.process_dest_ind(de_name, ws_dest_ind) 
-
-        return True       
-
-    def util_str_normalize(self, str_value):
-        """
-        Lowercase strings logic with a None protection to ensure string
-        comparisons work as expected. Also replace underscores with spaces.
-        """
-        return None if str_value == None else str_value.replace('_',' ').lower()
     
     def util_make_list(self, str_value):
         """
@@ -383,8 +437,16 @@ class DataElementDictionaryProcessor:
         """
         return None if str_value == None else str_value.replace(' ','').split(',')
 
+    def util_str_normalize(self, str_value):
+        """
+        Lowercase strings logic with a None protection to ensure string
+        comparisons work as expected. Also replace underscores with spaces.
+        """
+        return None if str_value == None else str_value.replace('_',' ').lower()
+
     def validate_dest_de_list(self, col_headings):
         """
+        todo: this is obsolete
         The DED must be complete before it can be reviewed to ensure that
         all of the destination data elements are in the dictionary.
         """

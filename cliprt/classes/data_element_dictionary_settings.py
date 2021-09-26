@@ -37,6 +37,9 @@ class DataElementDictionarySettings:
         PHONE_FORMAT
     ]
 
+    # Minimum number of required identifiers in the DED.
+    IDENTIFIERS_MIN = 2
+
     def format_date(self, date_value):
         """
         Normalize the format of dates if possible.

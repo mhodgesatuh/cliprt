@@ -142,15 +142,12 @@ class ClientInformationWorkbook:
         if save_wb:
             self.wb.save(self.wb_filename)
 
-    def ded_is_configured(self):
+    def ded_is_verified(self):
         """
-        Check to see if the DED has been configured.
+        Verify that the DED has been configured correctly.
         """
-        if self.ded_processor == None:
-            # The DED worksheet isn't available or the DED processor
-            # has not been instantiated yet.
-            return False
-        return True if self.ded_processor.ded_is_configured() else False
+        self.ded_processor.hydration_validation()
+        return True
 
     def init_ded_processor(self):
         """

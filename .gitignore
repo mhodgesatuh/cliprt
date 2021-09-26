@@ -10,3 +10,4 @@ a.pytest_cache/
 .coverage
 coverage.xml
 cliprt/tests/~$test_workbook.xlsx
+cliprt/tests/~$test_noded_workbook.xlsx
