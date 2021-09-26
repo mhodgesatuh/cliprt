@@ -166,12 +166,6 @@ class DataElementDictionaryProcessorTest:
         captured()
         assert len(captured.stdout) > 100
 
-    def read_col_headings_test(self):
-        """
-        Unit test
-        """
-    
-
     def util_str_normalize_test(self):
         """
         Unit test
