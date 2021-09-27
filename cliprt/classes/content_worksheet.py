@@ -68,7 +68,8 @@ class ContentWorksheet:
         ws_top_row = list(self.ws.iter_rows(
             min_row=self.ws.min_row, 
             max_row=self.ws.min_row
-            ))[0]
+            )
+        )[0]
         for ws_cell in ws_top_row:
 
             if ws_cell.value == None:

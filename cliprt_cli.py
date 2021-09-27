@@ -92,8 +92,10 @@ while cliprting:
     """
     The Data Element Dictionary is available.
     """
-    # Verify the DED.  Exceptions will be thrown if any errors are encountered.
-    client_info_wb.ded_is_verified()
+    # Verify the DED configuration.  Exceptions will be thrown if any 
+    # errors are encountered.
+    client_info_wb.ded_processor.hydrate_ded()
+    client_info_wb.ded_processor.hydration_validation()
     """
     The Data Element Dictionary is verified. 
     Ready to create the client report (destination) worksheets.

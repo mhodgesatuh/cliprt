@@ -38,6 +38,7 @@ class MessageRegistry:
         self.message[1004] = 'Error: you first need to intialize and configure the DED worksheet.'
         self.message[1005] = 'Error: the DED is not available or not ready.'
         # data element dictionary
+        self.message[2500] = 'DED Error: invalid Dest Element" for {}. Dest Element must not be a list: "{}"; only one allowed.' + utc
         self.message[3000] = 'WS Error: required column heading {} not found in worksheet {}.' + utc
         self.message[3001] = 'DED Error: specify either a "Dest WS" or a "Dest Element" for {}, but not both.' + utc
         self.message[3002] = 'DED Error: see column "Dest Element" for invalid entry "{}". It must reference a entry in the colum "Data Element".' + utc
@@ -45,12 +46,11 @@ class MessageRegistry:
         self.message[3004] = 'DED Error: invalid destination format "{}" specified for "{}". A fragment must reference a destination data element for assembly.' + utc
         self.message[3005] = 'DED Error: invalid destination format "{}" specified for "{}".\nValid values: {}.' + utc
         self.message[3006] = 'DED Error: invalid destination format "{}" specified for "{}". fragment="n" expected.\nValid values: {}.' + utc
-        self.message[3008] = 'DED Error: invalid destination format "{}" specified for "{}". A fragment cannot be an identifier.' + utc
-        self.message[3009] = 'DED Error: invalid destination format "{}" specified for "{}". A fragment cannot specify a format type.' + utc
+        self.message[3008] = 'DED Error: invalid destination format specified for "{}". A fragment cannot be an identifier.' + utc
+        self.message[3009] = 'DED Error: invalid Dest Element "{}" specified for "{}". An identifier cannot be remapped to another Dest Element.' + utc
         self.message[3010] = 'DED Error: no data element name specified for worksheet "{}", cell "{}". Review the row and remove it if not needed.' + utc
         self.message[3011] = 'DED Error: the Data Element worksheet is incomplete. There are as yet no identifiers provided.'
         self.message[3012] = 'DED Error: specify either a "Dest WS" or a "Dest Element" for {}.' + utc
-        self.message[3013] = 'DED Error: invalid Dest Element" for {}. Dest Element must not be a list: "{}"; only one allowed.' + utc
         self.message[3014] = 'DED Error: the Data Element worksheet is incomplete. There are as yet no destination worksheets provided.'
         # client information workbook
         self.message[4000] = 'Error: the Data Element worksheet, "{}", must designate the destination report indicators.  Configuration is incomplete.'

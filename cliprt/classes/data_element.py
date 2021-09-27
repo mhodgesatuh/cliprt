@@ -113,19 +113,9 @@ class DataElement:
 
     def has_dest_ws(self):
         """
-        The data element is not utilized unless it has a destination 
-        worksheet specified or it is remapped to a destination data
-        element that does.
+        Determine if the data element has at least one destination worksheet.
         """
-        # If there is no destination data element is there a worksheet
-        # associated with this data element?
-        if self.dest_de_name == None:
-            return True if len(self.dest_ws_info) > 0 else False
-        
-        # Does the destination data element have an associated 
-        # worksheet?
-        dest_de_ws_info = self.ded_processor[self.dest_de_name].dest_ws_info
-        return True if len(dest_de_ws_info) > 0 else False
+        return True if len(self.dest_ws_info) > 0 else False
 
     def set_dest_de_name(self, de_name):
         """

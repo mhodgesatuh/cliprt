@@ -44,6 +44,16 @@ class DataElementDictionaryProcessorTest:
         ded_processor.ded = {}
         ded_processor.ded_hydrated = False
 
+        # To make testing more resilient, also delete row 4 if it is not
+        # set to "birthday" because if it isn't there's still test data
+        # left from a previous test.
+        if not ded_processor.ws.cell(row=4, column=self.de_idx).value == "birthday":
+            ded_processor.ws.delete_rows(4, 1)
+
+        # To make testing more resilient, also ensure that the 
+        # temporary identifiers are restored.
+        self._remove_identifiers_temporarily(ded_processor.ws, action="restore")
+
     def _remove_identifiers_temporarily(self, ws, action="remove"):
         """
         Temporarily replace all identifiers from the worksheet in order 
@@ -98,23 +108,30 @@ class DataElementDictionaryProcessorTest:
         """
         test_ded = self.client_info.ded_processor
 
+        """
+        todo: it appears that a logic change is required before enforcing this.
+            ['E3004', ['bad frag', None, 'name', 'name,fragment=1']],
+        """
         test_cases = [
-            [['not two dests', 'fb', 'name', 'name'], 'E3001'],
-            [['bad de format', 'fb', None, 'bad_format'], 'E3005'],
-            [[None, 'fb', None, None], 'E3010'],
-            [['no dest', None, None, None], 'E3012'],
-            [['bad dest de', None, 'bad_dest_de', None], 'E3002'],
-            [['bad dest  list', None, 'name,client', None], 'E3013'],
+            ['E2500', ['bad dest list', None, 'name,client', None]], 
+            ['E3001', ['not two dests', 'fb', 'name', 'name']],
+            ['E3002', ['bad dest de', None, 'dest_de', None]],
+            ['E3005', ['bad de format', 'fb', None, 'bad_format']],
+            ['E3008', ['bad frag', None, 'name', 'identifier,fragment=1']],   
+            ['E3009', ['bad dest de id', None, 'name', 'identifier']],   
+            ['E3010', [None, 'fb', None, None]],
+            ['E3012', ['no dest', None, None, None]],
         ]
-        for test_values, thrown_value in test_cases:
+        for thrown_error_code, test_values in test_cases:
             self._dehydrate_ded(test_ded)
             self._test_data_row(test_ded.ws, test_values)
             with pytest.raises(Exception) as excinfo:
                 test_ded.hydrate_ded()
-            assert thrown_value in excinfo.value.args[0]
+            assert thrown_error_code in excinfo.value.args[0]
             self._test_data_row(test_ded.ws)
 
-        # Test for a is missing a required column heading.
+        # Test for a missing a required column heading.
+        self._dehydrate_ded(test_ded)
         saved_val = self.client_info.ded_processor.ws.cell(1, 1).value
         self.client_info.ded_processor.ws.cell(1, 1, value='tmp_val')
         with pytest.raises(Exception) as excinfo:
@@ -122,13 +139,16 @@ class DataElementDictionaryProcessorTest:
         assert 'E3000' in excinfo.value.args[0]
         self.client_info.ded_processor.ws.cell(1, 1, value=saved_val)
 
-        # Test for an insufficient number of indicaters.
+        # Test for an sufficient number of indicaters.
         self._dehydrate_ded(test_ded)
         self._remove_identifiers_temporarily(test_ded.ws)
         with pytest.raises(Exception) as excinfo:
             test_ded.hydrate_ded()
         assert 'E3011' in excinfo.value.args[0]
         self._remove_identifiers_temporarily(test_ded.ws, action='restore')
+
+        # Ensure the DED is reset before running any additional tests.
+        self._dehydrate_ded(test_ded)
 
     def create_ded_worksheet_test(self):
         """
@@ -161,6 +181,7 @@ class DataElementDictionaryProcessorTest:
         """
         Unit test
         """
+        self._dehydrate_ded(self.client_info.ded_processor)
         with capture_output() as captured:
             self.client_info.ded_processor.print_report()
         captured()

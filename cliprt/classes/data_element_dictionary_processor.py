@@ -72,14 +72,13 @@ class DataElementDictionaryProcessor:
         # > col_headings[col_name] = col_idx
         col_headings = self.read_col_headings()
 
-        # todo: new logic should throw exceptions if a bad
-        #   ded row is found.
         self.hydrate_ded_by_de(col_headings)
         self.hydrate_ded_by_dest_de(col_headings)
         self.hydrate_ded_by_de_format(col_headings)
         self.hydration_validation()
 
-        self.ded_hydrated = self.validate_dest_de_list(col_headings)
+        # Success: the user configured DED was processed.
+        self.ded_hydrated = True
 
     def hydrate_ded_by_de(self, col_headings):
         """
@@ -190,6 +189,10 @@ class DataElementDictionaryProcessor:
         """
         Valid the DED elements to ensure the user input is correct and 
         complete.
+
+        # todo:
+            # each fragment for a dest_de must have a unique index
+            # there mmust be at least 2 fragments per dest_de
         """
         identifier_cnt = 0
         dest_ws_found = False
@@ -202,26 +205,48 @@ class DataElementDictionaryProcessor:
             if not dest_ws_found and len(de.dest_ws_info) > 0:
                 dest_ws_found = True
 
-            if len(de.dest_ws_info) == 0 and de.dest_de_name == None:
-                raise Exception(self.error.msg(3012).format(de_name))
+            if not de.dest_de_name == None and ',' in de.dest_de_name:
+                raise Exception(self.error.msg(2500).format(de_name, de.dest_de_name))
             
             if not len(de.dest_ws_info) == 0 and not de.dest_de_name == None:
                 raise Exception(self.error.msg(3001).format(de_name))
 
-            if not de.dest_de_name == None and ',' in de.dest_de_name:
-                raise Exception(self.error.msg(3013).format(de_name, de.dest_de_name))
-
             if not de.dest_de_name == None and not de.dest_de_name in self.ded:
                 raise Exception(self.error.msg(3002).format(de.dest_de_name))
+    
+            # todo: might take a logic change before this is useful
+            #if de.is_fragment and not de.dest_de_format == None:
+            #    raise Exception(self.error.msg(3004).format(de.dest_de_format, de_name))
 
             if not de.dest_de_format == None and not de.dest_de_format in self.settings.VALID_DE_FORMATS:
                 raise Exception(self.error.msg(3005).format(de.dest_de_format, de_name, self.settings.VALID_DE_FORMATS))
-    
+
+            if de.is_identifier and de.is_fragment:
+                raise Exception(self.error.msg(3008).format(de_name))
+
+            if de.is_identifier and not de.dest_de_name == None:
+                raise Exception(self.error.msg(3009).format(de.dest_de_name, de_name))
+
+            if len(de.dest_ws_info) == 0 and de.dest_de_name == None:
+                raise Exception(self.error.msg(3012).format(de_name))
+
         if identifier_cnt == 0:
             raise Exception(self.error.msg(3011))
 
         if not dest_ws_found:
             raise Exception(self.error.msg(3014))
+
+        """
+        todo: hard to handle these here and then to successfully unit test, unless
+            the unit test for no identifiers is removed.  That test creates bad
+            dest DE's, which foils the unit test for no identifiers.
+        if dest_de.is_fragment:
+            # Fatal error: invalid mapping to destination fragment.
+            raise Exception(self.error.msg(5002).format(ws_de_name, dest_de_name))
+        if not dest_de.has_dest_ws():
+            # Fatal error: there must be a destination worksheet.
+            raise Exception(self.error.msg(5000).format(ws_cell.value, dest_de_name))
+        """
 
     def parse_dest_de_format_str(self, de_name, dest_de_format_str):
         """
@@ -253,19 +278,6 @@ class DataElementDictionaryProcessor:
 
             # Add the clean destination format to the list.
             dest_de_format_list.append(dest_de_format)
-
-            # todo:
-                # Fatal error, fragments require a destination data 
-                # element for assembly.
-                # raise Exception(self.error.msg(3004).format(dest_de_format, de_name))
-
-            # todo: 
-                # a fragment cannot be an identifier.  The dest de can though.  3008
-                # raise Exception(self.error.msg(3008).format(dest_de_format, de_name))
-
-            # todo:
-                # a fragment should not contain a format type, the dest de can though.  
-                # raise Exception(self.error.msg(3009).format(dest_de_format, de_name))
         
         return dest_de_format_list
 
@@ -364,71 +376,6 @@ class DataElementDictionaryProcessor:
                 # Fatal error
                 raise Exception(self.error.msg(3000).format(ded_col_heading, self.ws.title))
         return col_headings
-
-    def read_de_config(self, col_headings, de_name, de_row_idx):
-        """
-        todo: this function will be refactor into hydrate_ded_by_*
-
-        Dest WS - specifies a 2-3 character reference value for each
-            report destination, e.g.: fb for FaceBook.  Can be
-            multivalued (comma delimited).
-        Dest Element - maps the content data element to a different
-            data element in the report (not multivalued).
-        DE Format - is overloaded with the following:
-            1. date, name, phone: any of which will be used to help
-                with the output format of the raw content data.
-            2. "identifier" to indicate that the content data will
-                also be used for identity matching.
-            3. "fragemnt=n" to indicate that content data needs to be
-                combined into a single report destination value, e.g.:
-                map first name and last name to a full name value at
-                the report destination.
-        """
-        # -------
-        # Dest WS
-        # -------
-        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DEST_WS_COL_IDX]]
-        dest_ws_indicators = self.util_str_normalize(
-            self.ws.cell(row=de_row_idx, column=col_idx).value)
-
-        # ------------
-        # Dest Element
-        # ------------
-        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DEST_DE_COL_IDX]]
-        dest_element = self.util_str_normalize(
-            self.ws.cell(row=de_row_idx, column=col_idx).value)
-
-        if dest_ws_indicators == None and dest_element == None:
-            # Skip elements that have neither a defined destination
-            # worksheet nor are mapped to another data element.
-            return
-
-        if not dest_ws_indicators == None and not dest_element == None:
-            # Fatal error
-            raise Exception(self.error.msg(3001).format(de_name))
-
-        if not dest_element == None:
-            # Add the data element name and its information to the data 
-            # element dictionary.
-            self.ded[de_name].set_dest_de_name(dest_element)
-
-        # ---------
-        # DE Format
-        # ---------
-        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DE_FORMAT_COL_IDX]]
-        dest_de_format_str = self.util_str_normalize(self.ws.cell(row=de_row_idx, column=col_idx).value)
-        if not dest_de_format_str == None:
-            dest_de_format_list = self.parse_dest_de_format_str(de_name, dest_de_format_str)
-            for dest_de_format in dest_de_format_list:
-                self.process_dest_de_format(de_name, dest_de_format)
-
-        # Process each indicator's specified worksheet.
-        if not dest_element == None:
-            # Data elements not mapped to a destination element are
-            # not included in the destination reports.
-            return
-        for ws_dest_ind in self.util_make_list(dest_ws_indicators):
-            self.process_dest_ind(de_name, ws_dest_ind) 
     
     def util_make_list(self, str_value):
         """
@@ -443,34 +390,3 @@ class DataElementDictionaryProcessor:
         comparisons work as expected. Also replace underscores with spaces.
         """
         return None if str_value == None else str_value.replace('_',' ').lower()
-
-    def validate_dest_de_list(self, col_headings):
-        """
-        todo: this is obsolete
-        The DED must be complete before it can be reviewed to ensure that
-        all of the destination data elements are in the dictionary.
-        """
-        # Get the destination data elements column of data element names.
-        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DEST_DE_COL_IDX]]
-        ws_columns = self.ws.iter_cols(
-            min_col=col_idx, 
-            max_col=col_idx, 
-            min_row=self.ws.min_row+1)
-        de_column = list(ws_columns)[0]
-
-        # Check each row of the column for a destination data element
-        # and if found validate it against the DED.
-        for de_cell in de_column:
-
-            if de_cell.value == None:
-                # Skip rows that don't have a destination data element.
-                continue
-
-            # Ensure values used for comparisons are shifted to 
-            # lowercase to reduce sensitivity to typos in the DED.
-            dest_de_name = de_cell.value.lower()
-            if not dest_de_name in self.ded:
-                raise Exception(self.error.msg(3002).format(dest_de_name))
-
-        # Hydration completed and validated.
-        return True
