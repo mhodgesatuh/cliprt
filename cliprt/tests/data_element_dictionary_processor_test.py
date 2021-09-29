@@ -110,17 +110,23 @@ class DataElementDictionaryProcessorTest:
 
         """
         todo: it appears that a logic change is required before enforcing this.
-            ['E3004', ['bad frag', None, 'name', 'name,fragment=1']],
+            ['E3214', ['bad frag', None, 'name', 'name,fragment=1']],
+
+        Once this part is solid, can remove the checks later that are already 
+        performed here.  The DED data can be considered solid once the DED
+        configuration validation function is complete.
         """
         test_cases = [
-            ['E2500', ['bad dest list', None, 'name,client', None]], 
-            ['E3001', ['not two dests', 'fb', 'name', 'name']],
-            ['E3002', ['bad dest de', None, 'dest_de', None]],
-            ['E3005', ['bad de format', 'fb', None, 'bad_format']],
-            ['E3008', ['bad frag', None, 'name', 'identifier,fragment=1']],   
-            ['E3009', ['bad dest de id', None, 'name', 'identifier']],   
-            ['E3010', [None, 'fb', None, None]],
-            ['E3012', ['no dest', None, None, None]],
+            ['E3150', [None, 'fb', None, None]],
+            ['E3170', ['bad dest list', None, 'name,client', None]], 
+            ['E3204', ['not two dests', 'fb', 'name', 'name']],
+            ['E3207', ['bad dest de', None, 'dest_de', None]],
+            ['E3210', ['bad frag', None, 'name', 'fragment=a']],   
+            ['E3217', ['bad de format', 'fb', None, 'bad_format']],
+            ['E3223', ['bad frag', None, 'name', 'identifier,fragment=1']],   
+            ['E3226', ['bad dest de id', None, 'name', 'identifier']],   
+            ['E3232', ['no dest', None, None, None]],
+            ['E3238', ['bad dest de', None, 'last name', None]],
         ]
         for thrown_error_code, test_values in test_cases:
             self._dehydrate_ded(test_ded)
@@ -130,13 +136,13 @@ class DataElementDictionaryProcessorTest:
             assert thrown_error_code in excinfo.value.args[0]
             self._test_data_row(test_ded.ws)
 
-        # Test for a missing a required column heading.
+        # Test for a missing required column heading.
         self._dehydrate_ded(test_ded)
         saved_val = self.client_info.ded_processor.ws.cell(1, 1).value
         self.client_info.ded_processor.ws.cell(1, 1, value='tmp_val')
         with pytest.raises(Exception) as excinfo:
             self.client_info.ded_processor.read_col_headings()
-        assert 'E3000' in excinfo.value.args[0]
+        assert 'E3200' in excinfo.value.args[0]
         self.client_info.ded_processor.ws.cell(1, 1, value=saved_val)
 
         # Test for an sufficient number of indicaters.
@@ -144,7 +150,7 @@ class DataElementDictionaryProcessorTest:
         self._remove_identifiers_temporarily(test_ded.ws)
         with pytest.raises(Exception) as excinfo:
             test_ded.hydrate_ded()
-        assert 'E3011' in excinfo.value.args[0]
+        assert 'E3229' in excinfo.value.args[0]
         self._remove_identifiers_temporarily(test_ded.ws, action='restore')
 
         # Ensure the DED is reset before running any additional tests.
@@ -211,12 +217,12 @@ class DataElementDictionaryProcessorTest:
         # Bad format test.
         with pytest.raises(Exception) as excinfo:
             test_ded.process_dest_de_format('bad_de', 'bad_format')
-        assert 'E3005' in excinfo.value.args[0]
+        assert 'E3217' in excinfo.value.args[0]
 
         # Bad fragment test.
         with pytest.raises(Exception) as excinfo:
             test_ded.process_dest_de_format('bad_de', 'fragment')
-        assert 'E3006' in excinfo.value.args[0]
+        assert 'E3220' in excinfo.value.args[0]
 
     def parse_dest_de_format_str_test(self):
         """
@@ -227,7 +233,7 @@ class DataElementDictionaryProcessorTest:
         # Bad fragment index test.
         with pytest.raises(Exception) as excinfo:
             test_ded.parse_dest_de_format_str('bad frag_idx', 'name,fragment=')
-        assert 'E3003' in excinfo.value.args[0]
+        assert 'E3210' in excinfo.value.args[0]
 
         # Fragments required a destination data element for assembly.
         # todo

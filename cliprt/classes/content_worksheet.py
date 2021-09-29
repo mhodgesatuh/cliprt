@@ -95,7 +95,7 @@ class ContentWorksheet:
             # Verify ETL integrity.
             if dest_de.is_fragment:
                 # Fatal error: invalid mapping to destination fragment.
-                raise Exception(self.error.msg(5002).format(ws_de_name, dest_de_name))
+                raise Exception(self.error.msg(5006).format(ws_de_name, dest_de_name))
             if not dest_de.has_dest_ws():
                 # Fatal error: there must be a destination worksheet.
                 raise Exception(self.error.msg(5000).format(ws_cell.value, dest_de_name))
@@ -192,7 +192,7 @@ class ContentWorksheet:
             # Fatal error: identifiers are required since this is client
             # information.  Identifiers identify which client the data
             # belongs too.
-            raise Exception(self.error.msg(5003).format(self.wb.active.title))
+            raise Exception(self.error.msg(5012).format(self.wb.active.title))
 
         # Process the identifiers.
         for de_name, col_idx in self.identifier_col_names.items():

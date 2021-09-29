@@ -99,7 +99,7 @@ class DataElementDictionaryProcessor:
         # destination worksheet indicator and save to the DED.
         for de_cell in de_column:
             if de_cell.value == None:
-                raise Exception(self.error.msg(3010).format(self.ws.title, de_cell.coordinate))
+                raise Exception(self.error.msg(3150).format(self.ws.title, de_cell.coordinate))
 
             # Ensure values used for comparisons are shifted to 
             # lowercase to reduce sensitivity to typos in the DED.
@@ -202,39 +202,44 @@ class DataElementDictionaryProcessor:
             if de.is_identifier:
                 identifier_cnt += 1
 
-            if not dest_ws_found and len(de.dest_ws_info) > 0:
+            if not dest_ws_found and de.has_dest_ws():
                 dest_ws_found = True
 
             if not de.dest_de_name == None and ',' in de.dest_de_name:
-                raise Exception(self.error.msg(2500).format(de_name, de.dest_de_name))
+                raise Exception(self.error.msg(3170).format(de_name, de.dest_de_name))
             
-            if not len(de.dest_ws_info) == 0 and not de.dest_de_name == None:
-                raise Exception(self.error.msg(3001).format(de_name))
+            if de.has_dest_ws() and not de.dest_de_name == None:
+                raise Exception(self.error.msg(3204).format(de_name))
 
             if not de.dest_de_name == None and not de.dest_de_name in self.ded:
-                raise Exception(self.error.msg(3002).format(de.dest_de_name))
+                raise Exception(self.error.msg(3207).format(de.dest_de_name))
     
             # todo: might take a logic change before this is useful
             #if de.is_fragment and not de.dest_de_format == None:
-            #    raise Exception(self.error.msg(3004).format(de.dest_de_format, de_name))
+            #    raise Exception(self.error.msg(3214).format(de.dest_de_format, de_name))
 
             if not de.dest_de_format == None and not de.dest_de_format in self.settings.VALID_DE_FORMATS:
-                raise Exception(self.error.msg(3005).format(de.dest_de_format, de_name, self.settings.VALID_DE_FORMATS))
+                raise Exception(self.error.msg(3217).format(de.dest_de_format, de_name, self.settings.VALID_DE_FORMATS))
 
             if de.is_identifier and de.is_fragment:
-                raise Exception(self.error.msg(3008).format(de_name))
+                raise Exception(self.error.msg(3223).format(de_name))
 
             if de.is_identifier and not de.dest_de_name == None:
-                raise Exception(self.error.msg(3009).format(de.dest_de_name, de_name))
+                raise Exception(self.error.msg(3226).format(de.dest_de_name, de_name))
 
-            if len(de.dest_ws_info) == 0 and de.dest_de_name == None:
-                raise Exception(self.error.msg(3012).format(de_name))
+            if not de.has_dest_ws() and de.dest_de_name == None:
+                raise Exception(self.error.msg(3232).format(de_name))
+
+            # Dest_de must reference a DE with a defined dest_ws
+            # todo: doesn't work
+            if not de.dest_de_name == None and not self.ded[de.dest_de_name].has_dest_ws():
+                raise Exception(self.error.msg(3238).format(de.dest_de_name, de_name))
 
         if identifier_cnt == 0:
-            raise Exception(self.error.msg(3011))
+            raise Exception(self.error.msg(3229))
 
         if not dest_ws_found:
-            raise Exception(self.error.msg(3014))
+            raise Exception(self.error.msg(3235))
 
         """
         todo: hard to handle these here and then to successfully unit test, unless
@@ -242,7 +247,7 @@ class DataElementDictionaryProcessor:
             dest DE's, which foils the unit test for no identifiers.
         if dest_de.is_fragment:
             # Fatal error: invalid mapping to destination fragment.
-            raise Exception(self.error.msg(5002).format(ws_de_name, dest_de_name))
+            raise Exception(self.error.msg(5006).format(ws_de_name, dest_de_name))
         if not dest_de.has_dest_ws():
             # Fatal error: there must be a destination worksheet.
             raise Exception(self.error.msg(5000).format(ws_cell.value, dest_de_name))
@@ -271,7 +276,7 @@ class DataElementDictionaryProcessor:
                 if dest_de_format == self.settings.FRAGMENT_DESIGNATION:
                     if not dest_de_format_part[1].isdigit():
                         # Fatal error
-                        raise Exception(self.error.msg(3003).format(de_name, self.ws.title))
+                        raise Exception(self.error.msg(3210).format(de_name, self.ws.title))
 
                     # Save the fragment index for later.
                     self.de_fragments_list[de_name] = int(dest_de_format_part[1])
@@ -341,7 +346,7 @@ class DataElementDictionaryProcessor:
         # Validate the destination format designater.
         if not dest_de_format in self.settings.VALID_DE_FORMATS:
             # Fatal error, invalid destination format
-            raise Exception(self.error.msg(3005).format(dest_de_format, de_name, self.settings.VALID_DE_FORMATS))
+            raise Exception(self.error.msg(3217).format(dest_de_format, de_name, self.settings.VALID_DE_FORMATS))
 
         # Check for the overload identifier and fragment designaters.
         if dest_de_format == self.settings.IDENTIFIER_DESIGNATION: # todo: is this right?
@@ -351,14 +356,14 @@ class DataElementDictionaryProcessor:
                 self.ded[de_name].set_to_fragment(self.de_fragments_list[de_name])
             else:
                 # Fatal error, invalid destination format
-                raise Exception(self.error.msg(3006).format(dest_de_format, de_name, self.settings.VALID_DE_FORMATS))
+                raise Exception(self.error.msg(3220).format(dest_de_format, de_name, self.settings.VALID_DE_FORMATS))
         else:
             # Save the destintion format designater to the DED.
             self.ded[de_name].set_dest_de_format(dest_de_format)
 
     def read_col_headings(self, evaluate_only = False):
         """
-        Get the column headings. Retain also the column index.
+        Get the column headings and retain the column indices.
         """
         if self.ws == None:
             return False
@@ -374,7 +379,7 @@ class DataElementDictionaryProcessor:
                     # No fatal error to be thrown.
                     return False
                 # Fatal error
-                raise Exception(self.error.msg(3000).format(ded_col_heading, self.ws.title))
+                raise Exception(self.error.msg(3200).format(ded_col_heading, self.ws.title))
         return col_headings
     
     def util_make_list(self, str_value):
