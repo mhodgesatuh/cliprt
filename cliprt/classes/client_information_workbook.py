@@ -22,7 +22,7 @@ class ClientInformationWorkbook:
     line user interface.
     """
     # Dependencies
-    error = MessageRegistry()
+    cliprt = MessageRegistry()
 
     # Internal worksheets names.
     DED_WS_NAME = 'Data Elements'
@@ -38,7 +38,7 @@ class ClientInformationWorkbook:
         """
         if not os.path.exists(wb_filename):
             # Fatal error
-            raise Exception(self.error.msg(1000).format(wb_filename))
+            raise Exception(self.cliprt.msg(1000).format(wb_filename))
 
         # Class attributes.
         self.ded_processor = None
@@ -127,7 +127,7 @@ class ClientInformationWorkbook:
         """
         if self.DED_WS_NAME in self.wb:
             # The DED worksheet already exists.
-            return
+            return False
         
         # Create the DED worksheet.
         self.ded_ws = self.wb.create_sheet(title=self.DED_WS_NAME, index=0)
@@ -142,12 +142,13 @@ class ClientInformationWorkbook:
         if save_wb:
             self.wb.save(self.wb_filename)
 
+        return True
+
     def ded_is_verified(self):
         """
         Verify that the DED has been configured correctly.
         """
-        self.ded_processor.hydration_validation()
-        return True
+        return self.ded_processor.hydration_validation()
 
     def init_ded_processor(self):
         """

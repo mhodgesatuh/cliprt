@@ -49,7 +49,7 @@ class ContentWorksheet:
         self.content_cols = {}
         self.de_names = []
         self.ded = ded_processor.ded
-        self.error = MessageRegistry()
+        self.cliprt = MessageRegistry()
         self.frag_assembler_list = {}
         self.identifier_col_names = {}
         self.wb = wb
@@ -92,14 +92,6 @@ class ContentWorksheet:
                 dest_de_name = ws_de_name
                 dest_de = self.ded[ws_de_name]
 
-            # Verify ETL integrity.
-            if dest_de.is_fragment:
-                # Fatal error: invalid mapping to destination fragment.
-                raise Exception(self.error.msg(5006).format(ws_de_name, dest_de_name))
-            if not dest_de.has_dest_ws():
-                # Fatal error: there must be a destination worksheet.
-                raise Exception(self.error.msg(5000).format(ws_cell.value, dest_de_name))
-
             # ETL mapping.
             if not dest_de_name in self.de_names:
                 self.de_names.append(dest_de_name)
@@ -130,12 +122,13 @@ class ContentWorksheet:
             self.print_progress_report()
 
         if len(self.content_cols) + len(self.identifier_col_names) < self.MIN_REQUIRED_COLUMNS:
-            # Skip worksheets with insufficient to report.
+            # Skip worksheets with insufficient data to report.
             if not progress_reporting_is_disabled:
-                print('Info: insufficient content to report for worksheet {}.'.format(self.ws_name))
-            return
+                print(self.cliprt.msg(5000).format(self.ws_name))
+            return False
 
         self.process_ws_rows(progress_reporting_is_disabled)
+        return True
 
     def print_frag_assembler_list(self):
         """
@@ -166,7 +159,7 @@ class ContentWorksheet:
         """
         if len(self.frag_assembler_list) == 0:
             # There are no fragments to process.
-            return
+            return False
 
         for dest_de_name, fragments_assembler in self.frag_assembler_list.items():
             # Get each data element fragment name, look up its worksheet 
@@ -183,6 +176,7 @@ class ContentWorksheet:
                 frag_idx = self.ded[fragment_name].fragment_idx
                 # Provide the data value to the fragment assembler.
                 self.frag_assembler_list[dest_de_name].add_fragment_value(frag_idx, frag_value)
+        return True
 
     def process_row_de_identifiers(self, client_id_resolver, row_idx):
         """
@@ -192,7 +186,7 @@ class ContentWorksheet:
             # Fatal error: identifiers are required since this is client
             # information.  Identifiers identify which client the data
             # belongs too.
-            raise Exception(self.error.msg(5012).format(self.wb.active.title))
+            raise Exception(self.cliprt.msg(5012).format(self.wb.active.title))
 
         # Process the identifiers.
         for de_name, col_idx in self.identifier_col_names.items():
@@ -222,7 +216,12 @@ class ContentWorksheet:
         row_idx = self.ws.min_row
 
         # Scale the progress bar update threshold.
-        progress_threshold = int(self.ws.max_row/self.PROGRESS_INCREMENT)
+        if self.ws.max_row >self.PROGRESS_INCREMENT:
+            # Large content worksheets.
+            progress_threshold = int(self.ws.max_row/self.PROGRESS_INCREMENT)
+        else:
+            # Small content worksheets.
+            progress_threshold = 2
 
         # Process each row of the content worksheet.
         while row_idx < self.ws.max_row:

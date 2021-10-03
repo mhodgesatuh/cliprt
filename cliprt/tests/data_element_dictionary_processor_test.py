@@ -50,8 +50,8 @@ class DataElementDictionaryProcessorTest:
         if not ded_processor.ws.cell(row=4, column=self.de_idx).value == "birthday":
             ded_processor.ws.delete_rows(4, 1)
 
-        # To make testing more resilient, also ensure that the 
-        # temporary identifiers are restored.
+        # To make testing more resilient, also ensure that the original
+        # identifiers are restored.
         self._remove_identifiers_temporarily(ded_processor.ws, action="restore")
 
     def _remove_identifiers_temporarily(self, ws, action="remove"):
@@ -60,11 +60,11 @@ class DataElementDictionaryProcessorTest:
         to test for a DED that has no defined identifiers.
         """
         if action == 'restore':
-            old_str = 'fragment=999'
+            old_str = self.settings.UNIT_TEST_TMP_DESIGNATION
             new_str = 'identifier'
         else:
             old_str = 'identifier'
-            new_str = 'fragment=999'
+            new_str = self.settings.UNIT_TEST_TMP_DESIGNATION
 
         col_idx = self.settings.DE_FORMAT_COL_IDX + 1
         ws_columns = ws.iter_cols(
@@ -107,23 +107,16 @@ class DataElementDictionaryProcessorTest:
         Unit test
         """
         test_ded = self.client_info.ded_processor
-
-        """
-        todo: it appears that a logic change is required before enforcing this.
-            ['E3214', ['bad frag', None, 'name', 'name,fragment=1']],
-
-        Once this part is solid, can remove the checks later that are already 
-        performed here.  The DED data can be considered solid once the DED
-        configuration validation function is complete.
-        """
         test_cases = [
             ['E3150', [None, 'fb', None, None]],
             ['E3170', ['bad dest list', None, 'name,client', None]], 
             ['E3204', ['not two dests', 'fb', 'name', 'name']],
             ['E3207', ['bad dest de', None, 'dest_de', None]],
             ['E3210', ['bad frag', None, 'name', 'fragment=a']],   
+            ['E3212', ['bad frag', None, 'client', 'fragment=1']],   
+            ['E3214', ['bad frag', None, None, 'name,fragment=1']],
+            ['E3215', ['bad frag', None, 'name', 'identifier,fragment=1']],   
             ['E3217', ['bad de format', 'fb', None, 'bad_format']],
-            ['E3223', ['bad frag', None, 'name', 'identifier,fragment=1']],   
             ['E3226', ['bad dest de id', None, 'name', 'identifier']],   
             ['E3232', ['no dest', None, None, None]],
             ['E3238', ['bad dest de', None, 'last name', None]],

@@ -22,4 +22,5 @@ class MessageRegistryTest():
         Unit test
         """
         message_registry = MessageRegistry()
-        assert len(message_registry.msg(1000)) > 1
+        assert message_registry.msg(1000)[0:8] == '(E1000) ' 
+        assert message_registry.msg(5000)[0:8] == '(W5000) '

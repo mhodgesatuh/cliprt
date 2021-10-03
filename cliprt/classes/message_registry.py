@@ -26,7 +26,9 @@ class MessageRegistry:
 
     def assign_message_content(self):
         """
-        Assign message content.
+        Assign message content.  Message begin with one of the following:
+            o 'Error: '
+            o 'Warning: '
         """
         utc = '\nUnable to continue until you correct the worksheet. See example the worksheet in /resources.'
 
@@ -38,31 +40,32 @@ class MessageRegistry:
         self.message[1004] = 'Error: you first need to intialize and configure the DED worksheet.'
         self.message[1005] = 'Error: the DED is not available or not ready.'
         # data element dictionary
-        self.message[3150] = 'DED Error: no data element name specified for worksheet "{}", cell "{}". Review the row and remove it if not needed.' + utc
-        self.message[3170] = 'DED Error: invalid Dest Element" for {}. Dest Element must not be a list: "{}"; only one allowed.' + utc
-        self.message[3200] = 'WS Error: required column heading {} not found in worksheet {}.' + utc
-        self.message[3204] = 'DED Error: specify either a "Dest WS" or a "Dest Element" for {}, but not both.' + utc
-        self.message[3207] = 'DED Error: see column "Dest Element" for invalid entry "{}". It must reference a entry in the colum "Data Element".' + utc
-        self.message[3210] = 'DED Error: Destination format error for {} in worksheet {}. Fragment="n" where "n" is an integer is required.' + utc
-        self.message[3214] = 'DED Error: invalid destination format "{}" specified for "{}". A fragment must reference a destination data element for assembly.' + utc
-        self.message[3217] = 'DED Error: invalid destination format "{}" specified for "{}".\nValid values: {}.' + utc
-        self.message[3220] = 'DED Error: invalid destination format "{}" specified for "{}". fragment="n" expected.\nValid values: {}.' + utc
-        self.message[3223] = 'DED Error: invalid destination format specified for "{}". A fragment cannot be an identifier.' + utc
-        self.message[3226] = 'DED Error: invalid Dest Element "{}" specified for "{}". An identifier cannot be remapped to another Dest Element.' + utc
-        self.message[3229] = 'DED Error: the Data Element worksheet is incomplete. There are as yet no identifiers provided.'
-        self.message[3232] = 'DED Error: specify either a "Dest WS" or a "Dest Element" for {}.' + utc
-        self.message[3235] = 'DED Error: the Data Element worksheet is incomplete. There are as yet no destination worksheets provided.'
-        self.message[3238] = 'DED Error: invalid Dest Element "{}" specified for "{}". A Dest Element must have a destination worksheet specified.' + utc
+        self.message[3150] = 'Error: no data element name specified for worksheet "{}", cell "{}". Review the row and remove it if not needed.' + utc
+        self.message[3170] = 'Error: invalid Dest Element" for "{}". Dest Element must not be a list: "{}"; only one allowed.' + utc
+        self.message[3200] = 'Error: required column heading "{}" not found in worksheet "{}".' + utc
+        self.message[3204] = 'Error: specify either a "Dest WS" or a "Dest Element" for "{}", but not both.' + utc
+        self.message[3207] = 'Error: see column "Dest Element" for invalid entry "{}". It must reference a entry in the colum "Data Element".' + utc
+        self.message[3210] = 'Error: Destination format error for "{}" in worksheet "{}". Fragment="n" where "n" is an integer is required.' + utc
+        self.message[3212] = 'Error: invalid Dest Element "{}" specified for "{}". A frament must reference Dest Element with a Dest Ws designation.' + utc
+        self.message[3214] = 'Error: missing Dest Element specified for "{}". A fragment must reference a destination data element for assembly.' + utc
+        self.message[3217] = 'Error: invalid destination format "{}" specified for "{}".\nValid values: "{}".' + utc
+        self.message[3215] = 'Error: invalid destination format specified for "{}". A fragment cannot be an identifier.' + utc
+        self.message[3220] = 'Error: invalid destination format "{}" specified for "{}". fragment="n" expected.\nValid values: "{}".' + utc
+        self.message[3226] = 'Error: invalid Dest Element "{}" specified for "{}". An identifier cannot be remapped to another Dest Element.' + utc
+        self.message[3229] = 'Error: the Data Element worksheet is incomplete. There are as yet no identifiers provided.'
+        self.message[3232] = 'Error: specify either a "Dest WS" or a "Dest Element" for "{}".' + utc
+        self.message[3235] = 'Error: the Data Element worksheet is incomplete. There are as yet no destination worksheets provided.'
+        self.message[3238] = 'Error: invalid Dest Element "{}" specified for "{}". A Dest Element must have a destination worksheet specified.' + utc
         # client information workbook
         self.message[4000] = 'Error: the Data Element worksheet, "{}", must designate the destination report indicators.  Configuration is incomplete.'
         # content work sheet
-        self.message[5000] = 'DED Error, data element "{}" specifies an invalid destination: "{}".' + utc
-        self.message[5006] = 'DED Error, cannot map "{}" to destination data element "{}" since the latter is a fragment.' + utc
-        self.message[5012] = 'Client Worksheet Error: none of the columns in "{}" match any identifier data elements.  Check your DED.' + utc
+        self.message[5000] = 'Warning: insufficient content to report for worksheet {}.'
+        self.message[5012] = 'Error: none of the columns in "{}" match any identifier data elements.  Check your DED.' + utc
 
     def msg(self, idx):
         """
-        Return message content. 
-        Format is: (Ennnn) Error text.
+        Return message content. Format is: 
+            (Ennnn) Error: error text
+            (Wnnnn) Warning: warning text
         """
-        return '(E{}) {}'.format(idx, self.message[idx])
+        return '({}{}) {}'.format(self.message[idx][0], idx, self.message[idx])

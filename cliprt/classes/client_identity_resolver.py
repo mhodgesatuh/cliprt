@@ -4,6 +4,7 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
+import re
 import operator
 
 class ClientIdentityResolver:
@@ -34,11 +35,11 @@ class ClientIdentityResolver:
         if identifier.type == 'phone':
             if not self.is_useful_phone_identifier(identifier.de_value):
                 # Ignore useless phone identifiers.
-                return
+                return False
         elif identifier.type == 'email':
             if not self.is_useful_email_identifier(identifier.de_value):
                 # Ignore useless email identifiers.
-                return
+                return False
 
         if identifier.key in self.identifier_reg.identifier_list:
             self.identifier_matched.append(identifier)
@@ -52,6 +53,8 @@ class ClientIdentityResolver:
             # existing saved identifier.
             self.identifier_reg.add_identifier(identifier)
             self.identifier_unmatched.append(identifier)
+
+        return True
 
     def client_idno_matcher(self, client_idno_sets):
         """
@@ -89,7 +92,7 @@ class ClientIdentityResolver:
             reverse=True
             )
 
-        # The best match client id is in the first key of the first 
+        # The best-match client id is in the first key of the first 
         # tuple.
         return sorted_idno_by_cnt[0][0]
 
@@ -108,7 +111,10 @@ class ClientIdentityResolver:
         """
         if 'noemail' in de_value:
             return False
-        return True
+
+        # Validate format of the email.
+        regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        return True if (re.fullmatch(regex, de_value)) else False
 
     def is_useful_phone_identifier(self, de_value):
         """
@@ -118,6 +124,8 @@ class ClientIdentityResolver:
         if '0000' in de_value:
             return False
         if '9999' in de_value:
+            return False
+        if len(de_value) < 7:
             return False
         return True
 

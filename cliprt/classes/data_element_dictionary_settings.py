@@ -22,6 +22,7 @@ class DataElementDictionarySettings:
     # Data element designations overloaded into data element formats.
     FRAGMENT_DESIGNATION = 'fragment'
     IDENTIFIER_DESIGNATION = 'identifier'
+    UNIT_TEST_TMP_DESIGNATION = 'unittesttd'
 
     # Data element formats.
     DATE_FORMAT = 'date'
@@ -34,7 +35,8 @@ class DataElementDictionarySettings:
         FRAGMENT_DESIGNATION, 
         DATE_FORMAT, 
         NAME_FORMAT, 
-        PHONE_FORMAT
+        PHONE_FORMAT,
+        UNIT_TEST_TMP_DESIGNATION,
     ]
 
     # Minimum number of required identifiers in the DED.
