@@ -25,7 +25,16 @@ class ClientInformationWorkbookTest:
         with pytest.raises(Exception) as excinfo:
             client_info_wb = ClientInformationWorkbook('bad_file_name')
         assert 'E1000' in excinfo.value.args[0]
-    
+
+    def create_client_reports_test(self):
+        """
+        Unit test
+        """
+        assert self.client_info.create_client_reports(save_wb=False)
+        assert len(self.client_info.client_reg.client_id_list) == 66
+        assert self.client_info.client_reg.next_client_idno == 1066
+        assert len(self.client_info.identifier_reg.identifier_list) == 246
+
     def create_content_ws_names_list_test(self):
         """
         Unit test
@@ -36,7 +45,7 @@ class ClientInformationWorkbookTest:
         self.client_info.create_content_ws_names_list()
         assert not 'dest_ws' in self.client_info.content_ws_names
 
-        test_ws_title = 'test ws'            
+        test_ws_title = 'test ws'
         test_ws = self.client_info.wb.create_sheet(title=test_ws_title)
         self.client_info.dest_ws_reg.dest_ws_names.append(test_ws_title)
         self.client_info.create_content_ws_names_list()

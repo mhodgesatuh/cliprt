@@ -17,7 +17,7 @@ from cliprt.classes.message_registry import MessageRegistry
 class ClientInformationWorkbook:
     """
     The client information workbook orchestrates the various activities
-    performed across the entire set of worksheets, including worksheet 
+    performed across the entire set of worksheets, including worksheet
     creation as needed.  It is the primary backend to the cliprt command
     line user interface.
     """
@@ -33,7 +33,7 @@ class ClientInformationWorkbook:
 
     def __init__(self, wb_filename):
         """
-        Ensure that the workbook exists.  Set everything up for 
+        Ensure that the workbook exists.  Set everything up for
         processing the workbook.
         """
         if not os.path.exists(wb_filename):
@@ -50,7 +50,7 @@ class ClientInformationWorkbook:
         self.wb = openpyxl.load_workbook(filename=wb_filename)
         self.wb_filename = wb_filename
 
-        # The workbook may or may not have a DED worksheet when it is 
+        # The workbook may or may not have a DED worksheet when it is
         # initially accessed.
         self.init_ded_processor()
 
@@ -66,7 +66,7 @@ class ClientInformationWorkbook:
         # Create or reset the destination worksheets in preparation for
         # the next round of reports.
         self.ded_processor.dest_ws_reg.prep_worksheets()
-        
+
         # Create the list of client data content worksheets.
         self.create_content_ws_names_list()
 
@@ -76,16 +76,18 @@ class ClientInformationWorkbook:
             ContentWorksheet(
                 self.wb,
                 ws_name,
-                self.ded_processor, 
+                self.ded_processor,
                 self.client_reg,
                 self.identifier_reg,
                 self.dest_ws_reg
             ).client_report(progress_reporting_is_disabled)
-        
+
         # Save the client report worksheets.
         if save_wb:
             self.wb.save(self.wb_filename)
-        
+
+        return True
+
     def create_content_ws_names_list(self):
         """
         Create the list of data content worksheet names.  This list
@@ -128,7 +130,7 @@ class ClientInformationWorkbook:
         if self.DED_WS_NAME in self.wb:
             # The DED worksheet already exists.
             return False
-        
+
         # Create the DED worksheet.
         self.ded_ws = self.wb.create_sheet(title=self.DED_WS_NAME, index=0)
         de_names = self.create_de_names_list()
@@ -162,14 +164,14 @@ class ClientInformationWorkbook:
 
     def has_a_ded_ws(self):
         """
-        Check to see if the client information workbook has a 
+        Check to see if the client information workbook has a
         DED worksheet.
         """
         return True if self.DED_WS_NAME in self.wb.sheetnames else False
-    
+
     def print_ded_report(self):
         """
-        Print the data element dictionary contents.  Useful for 
+        Print the data element dictionary contents.  Useful for
         reviewing.
         """
         self.ded_processor.print_report()
