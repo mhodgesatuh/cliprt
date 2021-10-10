@@ -8,7 +8,7 @@ class MessageRegistry:
     """
     The message registry contains all of the message content needed for
     error handling throughout the project.
-    
+
     Since Python programs should have short lines, 73 for comment lines
     and 78 for code, all warning and error messages are consolidated in
     this message registry.  This way we are breaking pythonic rules in
@@ -27,8 +27,8 @@ class MessageRegistry:
     def assign_message_content(self):
         """
         Assign message content.  Message begin with one of the following:
-            o 'Error: '
-            o 'Warning: '
+            o 'Error: ...'
+            o 'Warning: ...'
         """
         utc = '\nUnable to continue until you correct the worksheet. See example the worksheet in /resources.'
 
@@ -46,7 +46,7 @@ class MessageRegistry:
         self.message[1005] = \
             'Error: the DED is not available or not ready.'
 
-        # data element dictionary
+        # Data element dictionary
         self.message[3150] = \
             'Error: no data element name specified for worksheet "{}", cell "{}". Review the row and remove it if not needed.' + utc
         self.message[3170] = \
@@ -78,11 +78,11 @@ class MessageRegistry:
         self.message[3238] = \
             'Error: invalid Dest Element "{}" specified for "{}". A Dest Element must have a destination worksheet specified.' + utc
 
-        # client information workbook
+        # Client information workbook
         self.message[4000] = \
             'Error: the Data Element worksheet, "{}", must designate the destination report indicators.  Configuration is incomplete.'
 
-        # content work sheet
+        # Content work sheet
         self.message[5000] = \
             'Warning: insufficient content to report for worksheet {}.'
         self.message[5012] = \
@@ -90,8 +90,14 @@ class MessageRegistry:
 
     def msg(self, msg_no):
         """
-        Return message content. Format is: 
-            (Ennnn) Error: error text
-            (Wnnnn) Warning: warning text
+        Return message test with its tag.
         """
-        return '({}{}) {}'.format(self.message[msg_no][0], msg_no, self.message[msg_no])
+        return '{} {}'.format(self.msg_tag(msg_no), self.message[msg_no])
+
+    def msg_tag(self, msg_no):
+        """
+        Create the message tag. Format is:
+            (Ennnn) for error messages
+            (Wnnnn) for warning messages
+        """
+        return '({}{})'.format(self.message[msg_no][0], msg_no)

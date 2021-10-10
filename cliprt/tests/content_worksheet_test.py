@@ -86,7 +86,6 @@ class ContentWorksheetTest:
         assert not 'not in ded' in test_content.de_names
         self._create_test_content(action='remove')
 
-
     def client_report_test(self):
         """
         Unit test
@@ -123,6 +122,14 @@ class ContentWorksheetTest:
         assert test_content.content_cols == {6: 'gender'}
         self._create_test_content(action='remove')
 
+    def process_row_de_fragments_test(self):
+        """
+        Unit test
+        """
+        test_content = self._create_test_content();
+        assert not test_content.process_row_de_fragments(2)
+        self._create_test_content(action='remove')
+
     def process_row_de_identifiers_test(self):
         """
         Unit test
@@ -157,15 +164,6 @@ class ContentWorksheetTest:
         assert len(identity_resolver.identifier_matched) == 1
         for identity in identity_resolver.identifier_matched:
             assert identity.key == 'client id::100000'
-        self._create_test_content(action='remove')
-
-    def process_row_de_fragments_test(self):
-        """
-        Unit test
-        """
-        test_content = self._create_test_content();
-        retval = test_content.process_row_de_fragments(2)
-        assert not retval
         self._create_test_content(action='remove')
 
     def process_ws_rows_test(self):

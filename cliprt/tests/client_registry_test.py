@@ -11,17 +11,10 @@ class ClientRegistryTest:
     """
     Client identitly registry unit test harness.
     """
-    # Dependencies
     dest_ws_reg = DestinationWorksheetsRegistry()
 
     # Test data
     client_reg = ClientRegistry(dest_ws_reg)
-
-    def init_test(self):
-        """
-        Unit test
-        """
-        assert self.client_reg.get_next_client_idno() == 1000
 
     def create_identity_test(self):
         """
@@ -30,7 +23,7 @@ class ClientRegistryTest:
         client_identity = self.client_reg.create_identity()
         client_id = client_identity.client_idno
         assert self.client_reg.client_id_list[client_id] == client_identity
-        
+
     def get_identity_by_idno_test(self):
         """
         Unit test
@@ -39,3 +32,9 @@ class ClientRegistryTest:
         client_id = client_identity.client_idno
         assert self.client_reg.get_identity_by_idno(client_id) == client_identity
         assert self.client_reg.get_identity_by_idno(9999) == None
+
+    def init_test(self):
+        """
+        Unit test
+        """
+        assert self.client_reg.get_next_client_idno() == 1000

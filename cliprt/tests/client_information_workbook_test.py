@@ -18,14 +18,6 @@ class ClientInformationWorkbookTest:
     wb_file = 'cliprt/tests/test_workbook.xlsx'
     client_info = ClientInformationWorkbook(wb_file)
 
-    def init_bad_file_test(self):
-        """
-        Unit test
-        """
-        with pytest.raises(Exception) as excinfo:
-            client_info_wb = ClientInformationWorkbook('bad_file_name')
-        assert 'E1000' in excinfo.value.args[0]
-
     def create_client_reports_test(self):
         """
         Unit test
@@ -39,8 +31,6 @@ class ClientInformationWorkbookTest:
         """
         Unit test
         """
-        # Ignore any existing destination worksheets.
-        # TODO: must be able to create them in order for better code coverage.
         self.client_info.dest_ws_reg.dest_ws_names.append('dest_ws')
         self.client_info.create_content_ws_names_list()
         assert not 'dest_ws' in self.client_info.content_ws_names
@@ -66,6 +56,14 @@ class ClientInformationWorkbookTest:
         """
         assert self.client_info.ded_processor.hydrate_ded()
         assert self.client_info.ded_is_verified()
+
+    def init_bad_file_test(self):
+        """
+        Unit test
+        """
+        with pytest.raises(Exception) as excinfo:
+            client_info_wb = ClientInformationWorkbook('bad_file_name')
+        assert 'E1000' in excinfo.value.args[0]
 
     def print_ded_report_test(self):
         """

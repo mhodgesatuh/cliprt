@@ -8,17 +8,8 @@ from cliprt.classes.data_element_fragments_assembler import DataElementFragments
 
 class DataElementFragmentsAssemblerTest:
     """
-    Data Element Fragments Assembler test harness.    
+    Data Element Fragments Assembler test harness.
     """
-    def init_test(self):
-        """
-        Unit test
-        """
-        frag_assembler = FragAssembler('test de')
-        assert frag_assembler.assembled_de_name == 'test de'
-        assert frag_assembler.fragments_col_indicies == {}
-        assert frag_assembler.fragments_values == {}
-
     def add_fragment_col_index_test(self):
         """
         Unit test
@@ -43,6 +34,15 @@ class DataElementFragmentsAssemblerTest:
         frag_assembler.add_fragment_value(1, 'frag part 1')
         frag_assembler.add_fragment_value(2, 'and part 2')
         assert frag_assembler.assembled_value() == 'frag part 1 and part 2'
+
+    def init_test(self):
+        """
+        Unit test
+        """
+        frag_assembler = FragAssembler('test de')
+        assert frag_assembler.assembled_de_name == 'test de'
+        assert frag_assembler.fragments_col_indicies == {}
+        assert frag_assembler.fragments_values == {}
 
     def str_test(self):
         """

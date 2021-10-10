@@ -10,7 +10,7 @@ from cliprt.classes.identifier import Identifier
 
 class ClientIdentityResolverTest:
     """
-    Client Identity Resolver test harness.    
+    Client Identity Resolver test harness.
     """
     wb_file = 'cliprt/tests/test_workbook.xlsx'
     client_info = ClientInformationWorkbook(wb_file)
@@ -28,24 +28,12 @@ class ClientIdentityResolverTest:
         if len(self.client_info.identifier_reg.identifier_list) > 0:
             self.client_info.identifier_reg.identifier_list = {}
 
-    def init_test(self):
-        """
-        Unit test
-        """
-        id_resolver = ClientIdentityResolver(
-            self.client_info.client_reg, 
-            self.client_info.identifier_reg
-        )
-        assert id_resolver.matched_identifier_types == []
-        assert id_resolver.identifier_matched == []
-        assert id_resolver.identifier_unmatched == []
-
     def create_identity_test(self):
         """
         Unit test
         """
         id_resolver = ClientIdentityResolver(
-            self.client_info.client_reg, 
+            self.client_info.client_reg,
             self.client_info.identifier_reg
         )
         client_identity = id_resolver.create_identity()
@@ -55,13 +43,25 @@ class ClientIdentityResolverTest:
         assert self.client_info.client_reg.next_client_idno == 1001
         self._reset__registries()
 
+    def init_test(self):
+        """
+        Unit test
+        """
+        id_resolver = ClientIdentityResolver(
+            self.client_info.client_reg,
+            self.client_info.identifier_reg
+        )
+        assert id_resolver.matched_identifier_types == []
+        assert id_resolver.identifier_matched == []
+        assert id_resolver.identifier_unmatched == []
+
     def match_existing_identity_test(self):
         """
         Unit test
         """
         test_ded = self.client_info.ded_processor.ded
         id_resolver = ClientIdentityResolver(
-            self.client_info.client_reg, 
+            self.client_info.client_reg,
             self.client_info.identifier_reg
         )
 
@@ -86,11 +86,10 @@ class ClientIdentityResolverTest:
             identifier = Identifier(id_data[0], id_data[1], test_ded)
             assert id_resolver.save_identifier(identifier)
 
-        # Good identifiers are stored in the identifier registry.
+        # Useful identifiers are stored in the identifier registry.
         assert len(self.client_info.identifier_reg.identifier_list) == 3
         assert len(id_resolver.identifier_matched) == 3
         assert id_resolver.matched_identifier_types == ['phone', 'client id', 'email']
-
         self._reset__registries()
 
     def resolve_client_identity_test(self):
@@ -100,7 +99,7 @@ class ClientIdentityResolverTest:
         test_ded = self.client_info.ded_processor.ded
 
         id_resolver = ClientIdentityResolver(
-            self.client_info.client_reg, 
+            self.client_info.client_reg,
             self.client_info.identifier_reg
         )
         assert id_resolver.resolve_client_identity(3) == None
@@ -128,7 +127,7 @@ class ClientIdentityResolverTest:
         ]
         for identifiers in identifiers_lists:
             id_resolver = ClientIdentityResolver(
-                self.client_info.client_reg, 
+                self.client_info.client_reg,
                 self.client_info.identifier_reg
             )
             for id_data in identifiers:
@@ -148,7 +147,7 @@ class ClientIdentityResolverTest:
         """
         test_ded = self.client_info.ded_processor.ded
         id_resolver = ClientIdentityResolver(
-            self.client_info.client_reg, 
+            self.client_info.client_reg,
             self.client_info.identifier_reg
         )
 

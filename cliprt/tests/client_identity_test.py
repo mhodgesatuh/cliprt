@@ -11,21 +11,12 @@ class ClientIdentityTest:
     """
     Client identity test harness.
     """
-    # Dependencies
     wb_file = 'cliprt/tests/test_workbook.xlsx'
     client_info = ClientInformationWorkbook(wb_file)
-
-    # Test prep.client_info.
     client_info.ded_processor.hydrate_ded()
 
     # Test data
     client_id = ClientIdentity('9999', client_info.dest_ws_reg)
-
-    def init_test(self):
-        """
-        Unit test
-        """
-        assert self.client_id.client_idno == "9999"
 
     def add_dest_ws_info_test(self):
         """
@@ -36,3 +27,9 @@ class ClientIdentityTest:
         )
         assert self.client_id.dest_ws == {'ims': 3, 'fb': 3}
         assert self.client_id.get_row_idx('ims') == 3
+
+    def init_test(self):
+        """
+        Unit test
+        """
+        assert self.client_id.client_idno == "9999"

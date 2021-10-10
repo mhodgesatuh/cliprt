@@ -14,7 +14,6 @@ class DataElementDictionaryProcessorTest:
     """
     Data element dictionary processor test harness.
     """
-    # Dependencies
     error = MessageRegistry()
     settings = DataElementDictionarySettings()
 
@@ -56,7 +55,7 @@ class DataElementDictionaryProcessorTest:
 
     def _remove_identifiers_temporarily(self, ws, action="remove"):
         """
-        Temporarily replace all identifiers from the worksheet in order 
+        Temporarily replace all identifiers from the worksheet in order
         to test for a DED that has no defined identifiers.
         """
         if action == 'restore':
@@ -92,16 +91,6 @@ class DataElementDictionaryProcessorTest:
         ws.cell(row=test_row, column=self.dest_de_idx, value=values[2])
         ws.cell(row=test_row, column=self.format_idx, value=values[3])
 
-    def init_test(self):
-        """
-        Unit test
-        """
-        # DED worksheet has been created.
-        assert self.client_info.has_a_ded_ws()
-
-        # DED worksheet has not been created.
-        assert not self.noded_client_info.has_a_ded_ws()
-
     def bad_ded_config_test(self):
         """
         Unit test
@@ -109,18 +98,20 @@ class DataElementDictionaryProcessorTest:
         test_ded = self.client_info.ded_processor
         test_cases = [
             ['E3150', [None, 'fb', None, None]],
-            ['E3170', ['bad dest list', None, 'name,client', None]], 
+            ['E3170', ['bad dest list', None, 'name,client', None]],
             ['E3204', ['not two dests', 'fb', 'name', 'name']],
             ['E3207', ['bad dest de', None, 'dest_de', None]],
-            ['E3210', ['bad frag', None, 'name', 'fragment=a']],   
-            ['E3212', ['bad frag', None, 'client', 'fragment=1']],   
+            ['E3210', ['bad frag', None, 'name', 'fragment=a']],
+            ['E3212', ['bad frag', None, 'client', 'fragment=1']],
             ['E3214', ['bad frag', None, None, 'name,fragment=1']],
-            ['E3215', ['bad frag', None, 'name', 'identifier,fragment=1']],   
+            ['E3215', ['bad frag', None, 'name', 'identifier,fragment=1']],
             ['E3217', ['bad de format', 'fb', None, 'bad_format']],
-            ['E3226', ['bad dest de id', None, 'name', 'identifier']],   
+            ['E3226', ['bad dest de id', None, 'name', 'identifier']],
             ['E3232', ['no dest', None, None, None]],
             ['E3238', ['bad dest de', None, 'last name', None]],
         ]
+        # Test each test case, one at a time to ensure that it throws
+        # the required error.
         for thrown_error_code, test_values in test_cases:
             self._dehydrate_ded(test_ded)
             self._test_data_row(test_ded.ws, test_values)
@@ -183,6 +174,27 @@ class DataElementDictionaryProcessorTest:
         test_ded.hydrate_ded()
         assert test_ded.ded_is_hydrated()
 
+    def init_test(self):
+        """
+        Unit test
+        """
+        # DED worksheet has been created.
+        assert self.client_info.has_a_ded_ws()
+
+        # DED worksheet has not been created.
+        assert not self.noded_client_info.has_a_ded_ws()
+
+    def parse_dest_de_format_str_test(self):
+        """
+        Unit test
+        """
+        test_ded = self.client_info.ded_processor
+
+        # Bad fragment index test.
+        with pytest.raises(Exception) as excinfo:
+            test_ded.parse_dest_de_format_str('bad frag_idx', 'name,fragment=')
+        assert 'E3210' in excinfo.value.args[0]
+
     def print_report_test(self):
         """
         Unit test
@@ -192,21 +204,6 @@ class DataElementDictionaryProcessorTest:
             self.client_info.ded_processor.print_report()
         captured()
         assert len(captured.stdout) > 100
-
-    def util_str_normalize_test(self):
-        """
-        Unit test
-        """
-        test_ded = self.client_info.ded_processor
-        assert 'abc def' == test_ded.util_str_normalize('Abc_deF')
-    
-    def util_make_list_test(self):
-        """
-        Unit test
-        """
-        str = 'welcome,to ,cliprt'
-        str_list = self.client_info.ded_processor.util_make_list(str)
-        assert len(str_list) == 3
 
     def process_dest_de_format_test(self):
         """
@@ -224,16 +221,17 @@ class DataElementDictionaryProcessorTest:
             test_ded.process_dest_de_format('bad_de', 'fragment')
         assert 'E3220' in excinfo.value.args[0]
 
-    def parse_dest_de_format_str_test(self):
+    def util_make_list_test(self):
+        """
+        Unit test
+        """
+        str = 'welcome,to ,cliprt'
+        str_list = self.client_info.ded_processor.util_make_list(str)
+        assert len(str_list) == 3
+
+    def util_str_normalize_test(self):
         """
         Unit test
         """
         test_ded = self.client_info.ded_processor
-
-        # Bad fragment index test.
-        with pytest.raises(Exception) as excinfo:
-            test_ded.parse_dest_de_format_str('bad frag_idx', 'name,fragment=')
-        assert 'E3210' in excinfo.value.args[0]
-
-        # Fragments required a destination data element for assembly.
-        # todo
+        assert 'abc def' == test_ded.util_str_normalize('Abc_deF')
