@@ -192,15 +192,11 @@ class DataElementDictionaryProcessor:
         complete.
         """
         identifier_cnt = 0
-        dest_ws_found = False
 
         for de_name, de in self.ded.items():
-
+    
             if de.is_identifier:
                 identifier_cnt += 1
-
-            if not dest_ws_found and de.has_dest_ws():
-                dest_ws_found = True
 
             if not de.dest_de_name == None and ',' in de.dest_de_name:
                 raise Exception(self.cliprt.msg(3170).format(de_name, de.dest_de_name))
@@ -216,9 +212,6 @@ class DataElementDictionaryProcessor:
     
             if de.is_fragment and de.dest_de_name == None:
                 raise Exception(self.cliprt.msg(3214).format(de_name))
-
-            if not de.dest_de_format == None and not de.dest_de_format in self.settings.VALID_DE_FORMATS:
-                raise Exception(self.cliprt.msg(3217).format(de.dest_de_format, de_name, self.settings.VALID_DE_FORMATS))
 
             if de.is_identifier and de.is_fragment:
                 raise Exception(self.cliprt.msg(3215).format(de_name))
@@ -236,9 +229,6 @@ class DataElementDictionaryProcessor:
 
         if identifier_cnt == 0:
             raise Exception(self.cliprt.msg(3229))
-
-        if not dest_ws_found:
-            raise Exception(self.cliprt.msg(3235))
             
         return True
 

@@ -573,13 +573,13 @@ for ws_name in data_content_ws_names:
                 continue
             de_name = ws_column_etl[col_idx]['identifier']
             de_value = ims_util.make_searchable(de_value)
-            ims_util.assess_identifier(identity, identifier_matching, de_name, de_value, identifier_types)
+            ims_util.save_identifier(identity, identifier_matching, de_name, de_value, identifier_types)
 
         # Check for and process any assembled identifiers.
         if 'identifier' in assembled_de_values:
             for de_name, de_details in assembled_de_values['identifier'].items():
                 de_value = ims_util.make_searchable(de_details['value'])
-                ims_util.assess_identifier(identity, identifier_matching, de_name, de_value, identifier_types)
+                ims_util.save_identifier(identity, identifier_matching, de_name, de_value, identifier_types)
 
         # Determine if there is a significant number of matches against an existing identity.
         if len(identifier_types) < IDENTITY_MATCH_THRESHOLD:

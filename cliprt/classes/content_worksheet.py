@@ -28,12 +28,12 @@ class ContentWorksheet:
     PROGRESS_INCREMENT = 50
 
     def __init__(
-        self, 
-        wb, 
-        ws_name, 
-        ded_processor, 
-        client_registry, 
-        identifier_registry, 
+        self,
+        wb,
+        ws_name,
+        ded_processor,
+        client_registry,
+        identifier_registry,
         dest_ws_registry
     ):
         """
@@ -58,15 +58,15 @@ class ContentWorksheet:
 
     def build_etl_map(self):
         """
-        Build the destination data element ETL mappings.  These ETL 
-        mappings will provde exact instructions for mapping each 
+        Build the destination data element ETL mappings.  These ETL
+        mappings will provde exact instructions for mapping each
         content data element to each of the destination worksheets.
         """
-        # Read the top row and build the ETL mappings to the destination 
-        # worksheets.  Also flag the identity and fragment columns for 
+        # Read the top row and build the ETL mappings to the destination
+        # worksheets.  Also flag the identity and fragment columns for
         # special processing.
         ws_top_row = list(self.ws.iter_rows(
-            min_row=self.ws.min_row, 
+            min_row=self.ws.min_row,
             max_row=self.ws.min_row
             )
         )[0]
@@ -83,7 +83,7 @@ class ContentWorksheet:
 
             # Determine what the destination data element will be.
             if self.ded[ws_de_name].is_remapped:
-                # This is a remapping: a->b rather than a->a.  
+                # This is a remapping: a->b rather than a->a.
                 # Note that fragments are always remapped: a+b->c.
                 dest_de_name = self.ded[ws_de_name].dest_de_name
                 dest_de = self.ded[dest_de_name]
@@ -96,17 +96,17 @@ class ContentWorksheet:
             if not dest_de_name in self.de_names:
                 self.de_names.append(dest_de_name)
             if self.ded[ws_de_name].is_fragment:
-                # Add the content data element to the list of data 
+                # Add the content data element to the list of data
                 # element fragment assemblers.
                 if not dest_de_name in self.frag_assembler_list:
-                    # Create a fragments assembler if needed. 
+                    # Create a fragments assembler if needed.
                     self.frag_assembler_list[dest_de_name] = FragAssembler(dest_de_name)
                 if not dest_de_name in self.identifier_col_names:
                     self.identifier_col_names[dest_de_name] = self.ASSEMBLED_IDENTIFIER
                 # Add the new data element fragment to the assembler.
                 self.frag_assembler_list[dest_de_name].add_fragment_col_index(ws_de_name, ws_cell.column)
             elif self.ded[dest_de_name].is_identifier:
-                # Ensure that individual fragments are not processed as 
+                # Ensure that individual fragments are not processed as
                 # identifiers.
                 self.identifier_col_names[ws_de_name] = ws_cell.column
             else:
@@ -162,11 +162,11 @@ class ContentWorksheet:
             return False
 
         for dest_de_name, fragments_assembler in self.frag_assembler_list.items():
-            # Get each data element fragment name, look up its worksheet 
-            # column index and get the fragment's value from the 
+            # Get each data element fragment name, look up its worksheet
+            # column index and get the fragment's value from the
             # worksheet row and save it to the assembler.
             for fragment_name, col_idx in fragments_assembler.fragments_col_indicies.items():
-                # Get the data vslue from the appropriate worksheet 
+                # Get the data vslue from the appropriate worksheet
                 # column.  Replace null strings with empty strings as
                 # needed.
                 frag_value = self.ws.cell(row_idx, col_idx).value \
@@ -194,21 +194,18 @@ class ContentWorksheet:
                 de_value = self.frag_assembler_list[de_name].assembled_value()
             else:
                 de_value = self.ws.cell(row_idx, col_idx).value
-            if de_value in ['', None]:
-                # Ignore empty identifiers.
-                continue
             identifier = Identifier(de_name, de_value, self.ded)
-            client_id_resolver.assess_identifier(identifier)
+            client_id_resolver.save_identifier(identifier)
 
         # Resolve the client's identity.  None returned if there are no
         # useful identifiers provided for establishing an identity.
         identity = client_id_resolver.resolve_client_identity(self.IDENTITY_MATCH_THRESHOLD)
         return identity
 
-    def process_ws_rows(self, progress_reporting_is_disabled):
+    def process_ws_rows(self, progress_reporting_is_disabled = False):
         """
-        Copy the content worksheet information to the destination 
-        worksheet. Note that this worksheet would have been skipped 
+        Copy the content worksheet information to the destination
+        worksheet. Note that this worksheet would have been skipped
         if it has no content.
         """
 
@@ -216,12 +213,12 @@ class ContentWorksheet:
         row_idx = self.ws.min_row
 
         # Scale the progress bar update threshold.
-        if self.ws.max_row >self.PROGRESS_INCREMENT:
+        if self.ws.max_row > self.PROGRESS_INCREMENT:
             # Large content worksheets.
             progress_threshold = int(self.ws.max_row/self.PROGRESS_INCREMENT)
         else:
             # Small content worksheets.
-            progress_threshold = 2
+            progress_threshold = 1
 
         # Process each row of the content worksheet.
         while row_idx < self.ws.max_row:
@@ -238,23 +235,16 @@ class ContentWorksheet:
             # Process the identifiers in order to determine if this is
             # a new or a previously identified client.
             client_id_resolver = ClientIdentityResolver(
-                self.client_reg, 
+                self.client_reg,
                 self.identifier_reg
             )
             identity = self.process_row_de_identifiers(
-                client_id_resolver, 
+                client_id_resolver,
                 row_idx
             )
-            if identity == None:
-                # Skip rows that lack any identifier information.
-                continue
 
+            # Copy the matched identifiers values to the destination worksheet.
             for dest_ws_ind, dest_row_idx in identity.dest_ws.items():
-                # Copy the matched identifiers values to the destination worksheet.
-
-                # debug
-                if dest_ws_ind == 'fb' and dest_row_idx == 12:
-                    x = 0  # set breakpoint
 
                 for identifier in client_id_resolver.identifier_matched:
                     # Update the destination report worksheet.
@@ -267,68 +257,60 @@ class ContentWorksheet:
                     dest_de_value = identifier.de_value
                     dest_de_format = self.ded[dest_de_name].dest_de_format
                     self.dest_ws_reg.update_dest_ws_cell(
-                        dest_ws_ind, 
-                        dest_row_idx, 
-                        dest_col_idx, 
-                        dest_de_value, 
+                        dest_ws_ind,
+                        dest_row_idx,
+                        dest_col_idx,
+                        dest_de_value,
                         dest_de_format
                     )
 
                 # Copy the content columns to the destination worksheet.
                 for col_idx, dest_de_name in self.content_cols.items():
                     dest_de_value = self.ws.cell(row_idx, col_idx).value
-                    
+
                     if dest_de_value == None:
                         # Skip empty cells.
                         continue
                     if not self.ded[dest_de_name].is_mapped_to_dest_ws(dest_ws_ind):
-                        # Not all content gets copied to all 
-                        # destination worksheets.
-                        continue  
+                        # Not all content gets copied to all destination
+                        # worksheets.
+                        continue
 
                     # Update the destination report worksheet.
                     dest_col_idx = self.ded[dest_de_name].get_col_by_dest_ws_ind(dest_ws_ind)
-                    if dest_col_idx == False:
-                        # There is no destination worksheet specified
-                        # for this data eleement.
-                        continue
                     dest_de_format = self.ded[dest_de_name].dest_de_format
                     self.dest_ws_reg.update_dest_ws_cell(
-                        dest_ws_ind, 
-                        dest_row_idx, 
-                        dest_col_idx, 
-                        dest_de_value, 
+                        dest_ws_ind,
+                        dest_row_idx,
+                        dest_col_idx,
+                        dest_de_value,
                         dest_de_format
                         )
 
-                # Copy assembled content fragments to the destination 
+                # Copy assembled content fragments to the destination
                 # worksheet.
                 for dest_de_name, frag_info in self.frag_assembler_list.items():
 
                     # Update the destination report worksheet.
                     dest_row_idx = identity.get_row_idx(dest_ws_ind)
                     dest_col_idx = self.ded[dest_de_name].get_col_by_dest_ws_ind(dest_ws_ind)
-                    if dest_col_idx == False:
-                        # There is no destination worksheet specified
-                        # for this data eleement.
-                        continue
                     dest_de_value = frag_info.assembled_value()
                     dest_de_format = self.ded[dest_de_name].dest_de_format
                     self.dest_ws_reg.update_dest_ws_cell(
-                        dest_ws_ind, 
-                        dest_row_idx, 
-                        dest_col_idx, 
-                        dest_de_value, 
+                        dest_ws_ind,
+                        dest_row_idx,
+                        dest_col_idx,
+                        dest_de_value,
                         dest_de_format
                         )
         if not progress_reporting_is_disabled:
-            # Force a new line to complete the progress report 
-            # indicator.
-            print()       
+            # Output a new line to finish up the progress report.
+            print()
+        return True
 
     def util_str_normalize(self, str_value):
         """
-        Lowercase strings logic with a None protection to ensure string
+        Lowercase strings and provide a None protection to ensure string
         comparisons work as expected. Also replace underscores with spaces.
         """
         return None if str_value == None else str_value.replace('_',' ').lower()

@@ -6,7 +6,7 @@ Copyright   2020 Michael Hodges
 """
 class IdentifierRegistry:
     """
-    Client identities are composed of a unique combination of multiple 
+    Client identities are composed of a unique combination of multiple
     client identifiers. A specific identifier may be shared by one or
     client identities, for example, a married couple sharing a single 
     email address.
@@ -20,8 +20,15 @@ class IdentifierRegistry:
 
     def add_identifier(self, identifier):
         """
-        Add a new client identifier to the client identity registry and
-        update the identifiers registry with the new client id info.
+        Add a new client identifier to the client identifier registry 
+        and update the identifiers registry with the new client id info.
         """
         if not identifier.key in self.identifier_list.items():
             self.identifier_list[identifier.key] = identifier
+
+    def save_identifier_client_idno(self, identifier_key, client_idno):
+        """
+        Add client idno to the identifier's set of id numbers.
+        """
+        identifier = self.identifier_list[identifier_key]
+        identifier.save_client_idno(client_idno)

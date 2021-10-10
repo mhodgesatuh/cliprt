@@ -138,6 +138,13 @@ class DataElementDictionaryProcessorTest:
         assert 'E3200' in excinfo.value.args[0]
         self.client_info.ded_processor.ws.cell(1, 1, value=saved_val)
 
+        # Test for a missing required column heading.
+        self._dehydrate_ded(test_ded)
+        saved_val = self.client_info.ded_processor.ws.cell(1, 1).value
+        self.client_info.ded_processor.ws.cell(1, 1, value='tmp_val')
+        assert not self.client_info.ded_processor.read_col_headings(evaluate_only=True)
+        self.client_info.ded_processor.ws.cell(1, 1, value=saved_val)
+
         # Test for an sufficient number of indicaters.
         self._dehydrate_ded(test_ded)
         self._remove_identifiers_temporarily(test_ded.ws)

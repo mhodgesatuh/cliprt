@@ -9,7 +9,7 @@ from dateutil.parser import *
 from datetime import *
 import operator
 
-def assess_identifier(identity, identifier_matching, de_name, de_value, identifier_types):
+def save_identifier(identity, identifier_matching, de_name, de_value, identifier_types):
     """
     Search for the identifier value to see if we have a potential identity match.
     Add the identifier to the identifier-matching list.

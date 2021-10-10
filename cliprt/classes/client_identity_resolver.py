@@ -23,38 +23,18 @@ class ClientIdentityResolver:
         self.identifier_reg = identifier_registry
 
         # Class attributes.
-        self.matched_identifier_types = []
         self.identifier_matched = []
+        self.identifier_matched_keys_list = []
         self.identifier_unmatched = []
+        self.matched_identifier_types = []
 
-    def assess_identifier(self, identifier):
+    def create_identity(self):
         """
-        Search for the identifier value to see if we have a potential 
-        identity match. Add the identifier to the identifier registry.
+        If the identifiers don't match an existing identity, per the
+        registry search, this is a new identity to be add to the 
+        registry.
         """
-        if identifier.type == 'phone':
-            if not self.is_useful_phone_identifier(identifier.de_value):
-                # Ignore useless phone identifiers.
-                return False
-        elif identifier.type == 'email':
-            if not self.is_useful_email_identifier(identifier.de_value):
-                # Ignore useless email identifiers.
-                return False
-
-        if identifier.key in self.identifier_reg.identifier_list:
-            self.identifier_matched.append(identifier)
-            if not identifier.type in self.matched_identifier_types:
-                # Track the number of unique identifier types found. 
-                # It takes a minimal number to indicate an identity
-                # match.
-                self.matched_identifier_types.append(identifier.type)
-        else:
-            # Save the identifier value since it doesn't match any 
-            # existing saved identifier.
-            self.identifier_reg.add_identifier(identifier)
-            self.identifier_unmatched.append(identifier)
-
-        return True
+        return self.client_reg.create_identity()
 
     def client_idno_matcher(self, client_idno_sets):
         """
@@ -96,14 +76,6 @@ class ClientIdentityResolver:
         # tuple.
         return sorted_idno_by_cnt[0][0]
 
-    def create_identity(self):
-        """
-        If the identifiers don't match an existing identity, per the
-        registry search, this is a new identity to be add to the 
-        registry.
-        """
-        return self.client_reg.create_identity()
-
     def is_useful_email_identifier(self, de_value):
         """
         Detect and reject bogus data in order to help reduce invalid
@@ -112,7 +84,7 @@ class ClientIdentityResolver:
         if 'noemail' in de_value:
             return False
 
-        # Validate format of the email.
+        # Validate the format of the email.
         regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
         return True if (re.fullmatch(regex, de_value)) else False
 
@@ -142,7 +114,7 @@ class ClientIdentityResolver:
 
     def resolve_client_identity(self, threshold):
         """
-        Determine the client id based on the number of matched 
+        Determine the client identity based on the number of matched 
         identifiers.  If this is a new client id, create the new
         identifier.
         """
@@ -164,8 +136,45 @@ class ClientIdentityResolver:
         # to reflect the new client id with which they are now 
         # associated.
         for identifier in self.identifier_matched:
-            identifier.save_client_idno(identity.client_idno)
+            self.identifier_reg.save_identifier_client_idno(
+                identifier.key, 
+                identity.client_idno
+            )
         for identifier in self.identifier_unmatched:
-            identifier.save_client_idno(identity.client_idno)
+            self.identifier_reg.save_identifier_client_idno(
+                identifier.key, 
+                identity.client_idno
+            )
 
         return identity
+
+    def save_identifier(self, identifier):
+        """
+        Search for the identifier value to see if we have a potential 
+        identity match. Add the identifier to the identifier registry.
+        """
+        if identifier.type == 'phone':
+            if not self.is_useful_phone_identifier(identifier.de_value):
+                # Ignore useless phone identifiers.
+                return False
+        elif identifier.type == 'email':
+            if not self.is_useful_email_identifier(identifier.de_value):
+                # Ignore useless email identifiers.
+                return False
+
+        if identifier.key in self.identifier_reg.identifier_list:
+            if not identifier.key in self.identifier_matched_keys_list:
+                self.identifier_matched_keys_list.append(identifier.key)
+                self.identifier_matched.append(identifier)
+            if not identifier.type in self.matched_identifier_types:
+                # Track the number of unique identifier types found. 
+                # It takes a minimal number to indicate an identity
+                # match.
+                self.matched_identifier_types.append(identifier.type)
+        else:
+            # Save the identifier value since it doesn't match any 
+            # existing saved identifier.
+            self.identifier_reg.add_identifier(identifier)
+            self.identifier_unmatched.append(identifier)
+
+        return True

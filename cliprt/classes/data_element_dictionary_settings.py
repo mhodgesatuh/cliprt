@@ -10,6 +10,10 @@ class DataElementDictionarySettings:
     """
     DED settings.  Used in the DED processor as well as the destination
     workbooks.
+    todo: separate this into CliprtSettings and CliprtData.  First iteration
+        of CliprtSettings will have constants.  Second version maybe an 
+        external config file, though with a scripting language that might
+        not be worth the trouble.
     """
 
     # Required DED column headings.

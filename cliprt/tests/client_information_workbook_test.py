@@ -25,12 +25,12 @@ class ClientInformationWorkbookTest:
         with pytest.raises(Exception) as excinfo:
             client_info_wb = ClientInformationWorkbook('bad_file_name')
         assert 'E1000' in excinfo.value.args[0]
-
+    
     def create_content_ws_names_list_test(self):
         """
         Unit test
         """
-        # Ignore an existing destination worksheets.
+        # Ignore any existing destination worksheets.
         # TODO: must be able to create them in order for better code coverage.
         self.client_info.dest_ws_reg.dest_ws_names.append('dest_ws')
         self.client_info.create_content_ws_names_list()
