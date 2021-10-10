@@ -102,7 +102,9 @@ class DataElementTest:
         """
         Unit test
         """
-        assert self.data_element.__str__() == \
+        data_element = DataElement('test_de', self.client_info.ded_processor.ded)
+        data_element.add_dest_ws_ind('fb', 1)
+        assert data_element.__str__() == \
             "is_content, {'fb': {'col_idx': 1}}"
         assert self.remapped_data_element.__str__() == \
             "{'dest_de_name': 'dest_de'}, is_content, {'dest_de_format': 'phone'}, " + \

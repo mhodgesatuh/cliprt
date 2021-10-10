@@ -182,7 +182,8 @@ class DataElementDictionaryProcessorTest:
         assert self.client_info.has_a_ded_ws()
 
         # DED worksheet has not been created.
-        assert not self.noded_client_info.has_a_ded_ws()
+        noded_client_info = ClientInformationWorkbook(self.noded_wb_file)
+        assert not noded_client_info.has_a_ded_ws()
 
     def parse_dest_de_format_str_test(self):
         """
