@@ -6,9 +6,9 @@ Copyright   2021 Michael Hodges
 """
 import pytest
 from IPython.utils.capture import capture_output
+from cliprt.classes.client_identity_resolver import ClientIdentityResolver
 from cliprt.classes.client_information_workbook import ClientInformationWorkbook
 from cliprt.classes.content_worksheet import ContentWorksheet
-from cliprt.classes.client_identity_resolver import ClientIdentityResolver
 
 class ContentWorksheetTest:
     """
@@ -17,6 +17,10 @@ class ContentWorksheetTest:
     wb_file = 'cliprt/tests/test_workbook.xlsx'
     client_info = ClientInformationWorkbook(wb_file)
     client_info.ded_processor.hydrate_ded()
+
+    """
+    Helper functions for the unit tests start with an '_'.
+    """
 
     def _create_test_content(self, action='create'):
         """
@@ -190,18 +194,3 @@ class ContentWorksheetTest:
             {'ims': 'comm_report_for_ims', 'fb': 'comm_report_for_fb'}
         assert self.client_info.dest_ws_reg.dest_ws_names == \
             ['comm_report_for_ims', 'comm_report_for_fb']
-
-    def util_str_normalize_test(self):
-        """
-        Unit test
-        """
-        content_ws_name = self.client_info.wb.sheetnames[1]
-        content_ws = ContentWorksheet(
-            self.client_info.ded_processor.wb,
-            content_ws_name,
-            self.client_info.ded_processor,
-            self.client_info.client_reg,
-            self.client_info.identifier_reg,
-            self.client_info.dest_ws_reg
-        )
-        assert content_ws.util_str_normalize('ABC_efg') == 'abc efg'

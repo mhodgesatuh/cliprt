@@ -4,9 +4,9 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2021 Michael Hodges
 """
-from cliprt.classes.destination_worksheets_registry import DestinationWorksheetsRegistry
-from cliprt.classes.destination_worksheet import DestinationWorksheet
 from cliprt.classes.client_information_workbook import ClientInformationWorkbook
+from cliprt.classes.destination_worksheet import DestinationWorksheet
+from cliprt.classes.destination_worksheets_registry import DestinationWorksheetsRegistry
 
 class DestinationWorksheetsRegistryTest:
     """

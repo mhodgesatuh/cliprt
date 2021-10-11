@@ -4,9 +4,9 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2021 Michael Hodges
 """
-from cliprt.classes.destination_worksheet import DestinationWorksheet
 from cliprt.classes.client_information_workbook import ClientInformationWorkbook
-from cliprt.classes.data_element_dictionary_settings import DataElementDictionarySettings
+from cliprt.classes.cliprt_settings import CliprtSettings
+from cliprt.classes.destination_worksheet import DestinationWorksheet
 
 class DestinationWorksheetTest:
     """
@@ -17,7 +17,7 @@ class DestinationWorksheetTest:
     client_info = ClientInformationWorkbook(wb_file)
     dest_ws = DestinationWorksheet(client_info.wb, 'fb')
     client_info.dest_ws_reg.add_ws(client_info.wb, 'fb')
-    settings = DataElementDictionarySettings()
+    settings = CliprtSettings()
 
     def init_test(self):
         """

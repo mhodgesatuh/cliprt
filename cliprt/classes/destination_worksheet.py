@@ -4,7 +4,7 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
-from cliprt.classes.data_element_dictionary_settings import DataElementDictionarySettings
+from cliprt.classes.cliprt_settings import CliprtSettings
 
 class DestinationWorksheet:
     """
@@ -21,7 +21,7 @@ class DestinationWorksheet:
         request.
         """
         # Class attributes.
-        self.ded_settings = DataElementDictionarySettings()
+        self.ded_settings = CliprtSettings()
         self.dest_de_list = {}
         self.dest_ind = ws_ind
         self.first_row_idx = 1
@@ -99,10 +99,10 @@ class DestinationWorksheet:
             # Update the cell value.
             self.ws.cell(row_idx, col_idx, value='{}, {}'.format(cell_value, formatted_data))
         return True
-        
+
     def update_column_headings(self):
         """
-        Update the columns heads based on the information provided by 
+        Update the columns heads based on the information provided by
         the DED.
         """
         for col_name, col_idx in self.dest_de_list.items():

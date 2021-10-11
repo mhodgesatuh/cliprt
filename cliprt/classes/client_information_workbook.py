@@ -7,11 +7,11 @@ Copyright   2020 Michael Hodges
 import openpyxl
 import os.path
 
-from cliprt.classes.identifier_registry import IdentifierRegistry
 from cliprt.classes.client_registry import ClientRegistry
 from cliprt.classes.content_worksheet import ContentWorksheet
 from cliprt.classes.data_element_dictionary_processor import DataElementDictionaryProcessor
 from cliprt.classes.destination_worksheets_registry import DestinationWorksheetsRegistry
+from cliprt.classes.identifier_registry import IdentifierRegistry
 from cliprt.classes.message_registry import MessageRegistry
 
 class ClientInformationWorkbook:

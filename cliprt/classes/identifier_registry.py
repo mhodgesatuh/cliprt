@@ -8,9 +8,9 @@ class IdentifierRegistry:
     """
     Client identities are composed of a unique combination of multiple
     client identifiers. A specific identifier may be shared by one or
-    client identities, for example, a married couple sharing a single 
+    client identities. For example, a married couple sharing a single
     email address.
-    """    
+    """
     def __init__(self):
         """
         Create a new client identity registry.
@@ -20,7 +20,7 @@ class IdentifierRegistry:
 
     def add_identifier(self, identifier):
         """
-        Add a new client identifier to the client identifier registry 
+        Add a new client identifier to the client identifier registry
         and update the identifiers registry with the new client id info.
         """
         if not identifier.key in self.identifier_list.items():

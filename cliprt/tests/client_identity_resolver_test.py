@@ -16,6 +16,10 @@ class ClientIdentityResolverTest:
     client_info = ClientInformationWorkbook(wb_file)
     client_info.ded_processor.hydrate_ded()
 
+    """
+    Helper functions for the unit tests start with an '_'.
+    """
+
     def _reset__registries(self):
         """
         Reset the client registry and the identifier registry after a

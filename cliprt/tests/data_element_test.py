@@ -4,8 +4,8 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2021 Michael Hodges
 """
-from cliprt.classes.data_element import DataElement
 from cliprt.classes.client_information_workbook import ClientInformationWorkbook
+from cliprt.classes.data_element import DataElement
 
 class DataElementTest:
     """

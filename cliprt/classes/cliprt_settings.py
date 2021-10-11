@@ -6,16 +6,28 @@ Copyright   2021 Michael Hodges
 """
 from dateutil.parser import parse
 
-class DataElementDictionarySettings:
+class CliprtSettings:
     """
-    DED settings.  Used in the DED processor as well as the destination
-    workbooks.
-    todo: separate this into CliprtSettings and CliprtData.  First iteration
-        of CliprtSettings will have constants.  Second version maybe an 
-        external config file, though with a scripting language that might
-        not be worth the trouble.
+    Constants, settings, and data processing functions.
+    - DED settings to standardize the data element dictionary.
+    - Reporting parameters to control the output to the destination
+        worksheets.
     """
 
+    """
+    Client content reporting settings
+    """
+
+    # Threshold for determining that we have an identity match.
+    IDENTITY_MATCH_THRESHOLD = 2
+
+    # Minimal number of data elements in a client content worksheet
+    # required for creating a destination (reporting) worksheet.
+    MIN_REQUIRED_CONTENT_WS_COLUMNS = 3
+
+    """
+    DED Settings
+    """
     # Required DED column headings.
     COL_HEADINGS = ['Data Element', 'Dest WS', 'Dest Element', 'DE Format']
     DE_COL_IDX = 0
@@ -35,16 +47,13 @@ class DataElementDictionarySettings:
 
     # Valid data element formats.
     VALID_DE_FORMATS = [
-        IDENTIFIER_DESIGNATION, 
-        FRAGMENT_DESIGNATION, 
-        DATE_FORMAT, 
-        NAME_FORMAT, 
+        IDENTIFIER_DESIGNATION,
+        FRAGMENT_DESIGNATION,
+        DATE_FORMAT,
+        NAME_FORMAT,
         PHONE_FORMAT,
         UNIT_TEST_TMP_DESIGNATION,
     ]
-
-    # Minimum number of required identifiers in the DED.
-    IDENTIFIERS_MIN = 2
 
     def format_date(self, date_value):
         """
@@ -89,24 +98,31 @@ class DataElementDictionarySettings:
         # Format known phone number data lengths.
         if len(pho_no) == 7:
             return pho_mask.format(
-                country_code, 
-                area_code, 
-                pho_no[0:3], 
+                country_code,
+                area_code,
+                pho_no[0:3],
                 pho_no[3:7]
                 )
         elif len(pho_no) == 10:
             return pho_mask.format(
-                country_code, 
-                pho_no[0:3], 
-                pho_no[3:6], 
+                country_code,
+                pho_no[0:3],
+                pho_no[3:6],
                 pho_no[6:10]
                 )
         elif len(pho_no) == 11:
             return pho_mask.format(
-                pho_no[0:1], 
-                pho_no[1:4], 
-                pho_no[4:7], 
+                pho_no[0:1],
+                pho_no[1:4],
+                pho_no[4:7],
                 pho_no[7:11]
                 )
         else:
             return data_value
+
+    def str_normalize(self, str_value):
+        """
+        Lowercase strings and provide a None protection to ensure string
+        comparisons work as expected. Also replace underscores with spaces.
+        """
+        return None if str_value == None else str_value.replace('_',' ').lower()

@@ -7,7 +7,7 @@ Copyright   2021 Michael Hodges
 import pytest
 from IPython.utils.capture import capture_output
 from cliprt.classes.client_information_workbook import ClientInformationWorkbook
-from cliprt.classes.data_element_dictionary_settings import DataElementDictionarySettings
+from cliprt.classes.cliprt_settings import CliprtSettings
 from cliprt.classes.message_registry import MessageRegistry
 
 class DataElementDictionaryProcessorTest:
@@ -15,7 +15,7 @@ class DataElementDictionaryProcessorTest:
     Data element dictionary processor test harness.
     """
     error = MessageRegistry()
-    settings = DataElementDictionarySettings()
+    settings = CliprtSettings()
 
     # Client workbook with a configured.
     wb_file = 'cliprt/tests/test_workbook.xlsx'
@@ -161,7 +161,7 @@ class DataElementDictionaryProcessorTest:
         # Create a new DED processor since the workbook has been updaed.
         test_ded = self.noded_client_info.ded_processor
         col_headings = test_ded.read_col_headings()
-        assert len(col_headings) == len(test_ded.COL_HEADINGS)
+        assert len(col_headings) == len(self.settings.COL_HEADINGS)
 
     def hydrate_ded_test(self):
         """
@@ -229,10 +229,3 @@ class DataElementDictionaryProcessorTest:
         str = 'welcome,to ,cliprt'
         str_list = self.client_info.ded_processor.util_make_list(str)
         assert len(str_list) == 3
-
-    def util_str_normalize_test(self):
-        """
-        Unit test
-        """
-        test_ded = self.client_info.ded_processor
-        assert 'abc def' == test_ded.util_str_normalize('Abc_deF')

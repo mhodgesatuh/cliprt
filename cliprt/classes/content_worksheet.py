@@ -4,9 +4,10 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
-from cliprt.classes.identifier import Identifier
 from cliprt.classes.client_identity_resolver import ClientIdentityResolver
+from cliprt.classes.cliprt_settings import CliprtSettings
 from cliprt.classes.data_element_fragments_assembler import DataElementFragmentsAssembler as FragAssembler
+from cliprt.classes.identifier import Identifier
 from cliprt.classes.message_registry import MessageRegistry
 
 class ContentWorksheet:
@@ -14,12 +15,6 @@ class ContentWorksheet:
     Content worksheets contain client data.  Client data from multiple
     worksheets will be merged into the destination report worksheets.
     """
-    # Threshold for determining that we have an identity match.
-    IDENTITY_MATCH_THRESHOLD = 2
-
-    # Minimal number of data elements required for reporting
-    MIN_REQUIRED_COLUMNS = 3
-
     # Flag the identifer column index as 'assembled' since there is no
     # single column associated with the identifier.
     ASSEMBLED_IDENTIFIER = '<n/a>'
@@ -44,6 +39,7 @@ class ContentWorksheet:
         self.client_reg = client_registry
         self.identifier_reg = identifier_registry
         self.dest_ws_reg = dest_ws_registry
+        self.settings = CliprtSettings()
 
         # Class attributes.
         self.content_cols = {}
@@ -76,7 +72,7 @@ class ContentWorksheet:
                 # Skip empty columns.
                 continue
 
-            ws_de_name = self.util_str_normalize(ws_cell.value)
+            ws_de_name = self.settings.str_normalize(ws_cell.value)
             if not ws_de_name in self.ded:
                 # Skip this data element if it is not in the DED.
                 continue
@@ -121,7 +117,7 @@ class ContentWorksheet:
         if not progress_reporting_is_disabled:
             self.print_progress_report()
 
-        if len(self.content_cols) + len(self.identifier_col_names) < self.MIN_REQUIRED_COLUMNS:
+        if len(self.content_cols) + len(self.identifier_col_names) < self.settings.MIN_REQUIRED_CONTENT_WS_COLUMNS:
             # Skip worksheets with insufficient data to report.
             if not progress_reporting_is_disabled:
                 print(self.cliprt.msg(5000).format(self.ws_name))
@@ -199,7 +195,7 @@ class ContentWorksheet:
 
         # Resolve the client's identity.  None returned if there are no
         # useful identifiers provided for establishing an identity.
-        identity = client_id_resolver.resolve_client_identity(self.IDENTITY_MATCH_THRESHOLD)
+        identity = client_id_resolver.resolve_client_identity(self.settings.IDENTITY_MATCH_THRESHOLD)
         return identity
 
     def process_ws_rows(self, progress_reporting_is_disabled = False):
@@ -306,11 +302,5 @@ class ContentWorksheet:
         if not progress_reporting_is_disabled:
             # Output a new line to finish up the progress report.
             print()
-        return True
 
-    def util_str_normalize(self, str_value):
-        """
-        Lowercase strings and provide a None protection to ensure string
-        comparisons work as expected. Also replace underscores with spaces.
-        """
-        return None if str_value == None else str_value.replace('_',' ').lower()
+        return True
