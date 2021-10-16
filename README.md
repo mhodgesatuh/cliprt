@@ -6,7 +6,9 @@ You will need run shell commands for the following statements.
 
 # Getting Version 0.2.x of this utility to run
 
-TBD
+% python3 cliprt_cli.py
+
+You can find a sample workbook in /resources
 
 # Requirements
 
