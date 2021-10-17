@@ -78,11 +78,11 @@ class DataElementDictionaryProcessorTest:
                 continue
             cell.value = cell.value.replace(old_str, new_str)
 
-    def _test_data_row(self, ws, values=[None, None], test_row=4):
+    def _test_data_row(self, ws, values=[None, None, None], test_row=4):
         """
         Insert or remove test data as needed for custom testing.
         """
-        if values[0] == None and values[1] == None:
+        if values[0] == None and values[1] == None and values[2] == None:
             ws.delete_rows(test_row, 1)
             return
 
@@ -101,15 +101,15 @@ class DataElementDictionaryProcessorTest:
         # Test case: de, de type, dest ws, dest de, dest format
         test_cases = [
             ['E3150', [None, None, 'fb', None, None]],
-            ['E3170', ['bad dest list', None, None, 'client', 'name']],
+            ['E3170', ['bad dest list', None, None, 'client,id', 'name']],
             ['E3204', ['bad two dests', None, 'fb', 'name', 'name']],
             ['E3207', ['bad dest de', None, None, 'bad_de_name', None]],
-            ['E3210', ['bad frag', 'fragment=bad', None, None, 'name']],
+            ['E3210', ['bad frag', 'fragment=bad', None, None, None]],
             ['E3212', ['bad frag', 'fragment=1', None, 'client', None]],
             ['E3214', ['bad frag', 'fragment=1', None, None, 'name']],
-            ['E3215', ['bad frag', 'fragment=1,identifier', None, None, 'name']],
+            ['E3215', ['bad frag', 'fragment=1,identifier', None, 'name', None]],
             ['E3217', ['bad de format', 'fb', None, None, 'bad_format']],
-            ['E3226', ['bad dest de id', 'identifier', None, None, 'name']],
+            ['E3226', ['bad dest de id', 'identifier', None, 'name', 'name']],
             ['E3232', ['bad no dest ws', None, None, None, None]],
             ['E3238', ['bad dest de', None, None, 'last name', None]],
         ]
@@ -188,16 +188,6 @@ class DataElementDictionaryProcessorTest:
         noded_client_info = ClientInformationWorkbook(self.noded_wb_file)
         assert not noded_client_info.has_a_ded_ws()
 
-    def parse_dest_de_format_str_test(self):
-        """
-        Unit test
-        """
-        test_ded = self.client_info.ded_processor
-
-        # Bad fragment index test.
-        with pytest.raises(Exception) as excinfo:
-            test_ded.parse_dest_de_format_str('bad frag_idx', 'name,fragment=')
-        assert 'E3210' in excinfo.value.args[0]
 
     def print_report_test(self):
         """
@@ -219,11 +209,6 @@ class DataElementDictionaryProcessorTest:
         with pytest.raises(Exception) as excinfo:
             test_ded.process_dest_de_format('bad_de', 'bad_format')
         assert 'E3217' in excinfo.value.args[0]
-
-        # Bad fragment test.
-        with pytest.raises(Exception) as excinfo:
-            test_ded.process_dest_de_format('bad_de', 'fragment')
-        assert 'E3220' in excinfo.value.args[0]
 
     def util_make_list_test(self):
         """

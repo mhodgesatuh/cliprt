@@ -125,7 +125,7 @@ _Bad example, don't do this.  It makes no sense; it's either one or the other._
 - destination logic for merging multiple source columns to a single destination column
 - logic for processing identifiers and detecting identity matches and merging client data
 
-## Version 0.2.0 - object oriented version - currently under development
+## Version 0.2.0 - object oriented version
 
 - Implement a report package that is proceduraly utilized by the main module.
 - Accept the workbook name as a command line parameter instead of hard coding it.
@@ -133,9 +133,10 @@ _Bad example, don't do this.  It makes no sense; it's either one or the other._
 - Provide robust DED input validation.
 - Provide robust unit testing.
 
-## Version 0.3.0 - future
+## Version 0.3.0 - currently under development
 
 - add a logging feature
+- separate content_de_type from dest_de_format so that is it no longer overloaded.
 
 ## Version 1.0.0 - future
 

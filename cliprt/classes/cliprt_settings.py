@@ -35,7 +35,7 @@ class CliprtSettings:
         'Content DE Name',
         'Content DE Type',
         'Dest WS',
-        'Dest DE Name'
+        'Dest DE Name',
         'Dest DE Format',
     ]
     DE_NAME_COL_IDX = 0
@@ -47,7 +47,7 @@ class CliprtSettings:
     # Valid data element types.
     FRAGMENT_DE_TYPE = 'fragment'
     IDENTIFIER_DE_TYPE = 'identifier'
-    UNIT_TEST_DE_TYPE = 'unittest_det'
+    UNIT_TEST_DE_TYPE = 'unittestdet'
 
     # Valid data element formats.
     DATE_FORMAT = 'date'
