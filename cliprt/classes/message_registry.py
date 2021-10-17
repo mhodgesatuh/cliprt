@@ -36,7 +36,7 @@ class MessageRegistry:
         self.message[1000] = \
             'Error: required workbook {} not found.'
         self.message[1001] = \
-            'Warning: Data Element worksheet not found...please wait while it is being created.'
+            'Warning: Dest WS designation not found...please wait while it is being created.'
         self.message[1002] = \
             'Error: first create and configure the DED worksheet'
         self.message[1003] = \
@@ -48,41 +48,39 @@ class MessageRegistry:
 
         # Data element dictionary
         self.message[3150] = \
-            'Error: no data element name specified for worksheet "{}", cell "{}". Review the row and remove it if not needed.' + utc
+            'Error: no Content DE Name specified for worksheet "{}", cell "{}". Review the row and remove it if not needed.' + utc
         self.message[3170] = \
-            'Error: invalid Dest Element" for "{}". Dest Element must not be a list: "{}"; only one allowed.' + utc
+            'Error: invalid Dest DE Name" for "{}". Dest DE Name must not be a list: "{}"; only one allowed.' + utc
         self.message[3200] = \
             'Error: required column heading "{}" not found in worksheet "{}".' + utc
         self.message[3204] = \
-            'Error: specify either a "Dest WS" or a "Dest Element" for "{}", but not both.' + utc
+            'Error: specify either a "Dest WS" or a "Dest DE Name" for "{}", but not both.' + utc
         self.message[3207] = \
-            'Error: see column "Dest Element" for invalid entry "{}". It must reference a entry in the colum "Data Element".' + utc
+            'Error: see column "Dest DE Name" for invalid entry "{}". It must reference a entry in the colum "Data Element".' + utc
         self.message[3210] = \
-            'Error: Destination format error for "{}" in worksheet "{}". Fragment="n" where "n" is an integer is required.' + utc
+            'Error: invalid input for "{}". Value seen is "{}", {}="n" where "n" is an integer is expected.' + utc
         self.message[3212] = \
-            'Error: invalid Dest Element "{}" specified for "{}". A frament must reference Dest Element with a Dest Ws designation.' + utc
+            'Error: invalid Dest DE Name "{}" specified for "{}". A frament must reference Dest DE Name with a Dest Ws designation.' + utc
         self.message[3214] = \
-            'Error: missing Dest Element specified for "{}". A fragment must reference a destination data element for assembly.' + utc
-        self.message[3217] = \
-            'Error: invalid data element destination format "{}" specified for "{}".\nValid values: "{}".' + utc
-        self.message[3218] = \
-            'Error: invalid data element type "{}" specified for "{}".\nValid values: "{}".' + utc
+            'Error: missing Dest DE Name specified for "{}". A fragment must reference a destination data element for assembly.' + utc
         self.message[3215] = \
-            'Error: invalid destination format specified for "{}". A fragment cannot be an identifier.' + utc
-        self.message[3220] = \
-            'Error: invalid destination format "{}" specified for "{}". fragment="n" expected.\nValid values: "{}".' + utc
+            'Error: invalid Content DE Type for "{}". Content DE Type must not be a list: "{}"; only one allowed.' + utc
+        self.message[3217] = \
+            'Error: invalid Dest DE Format "{}" specified for "{}".\nValid values: "{}".' + utc
+        self.message[3218] = \
+            'Error: invalid Content DE Type "{}" specified for "{}".\nValid values: "{}".' + utc
         self.message[3226] = \
-            'Error: invalid Dest Element "{}" specified for "{}". An identifier cannot be remapped to another Dest Element.' + utc
+            'Error: invalid Dest DE Name "{}" specified for "{}". An identifier cannot be remapped to another Dest DE Name.' + utc
         self.message[3229] = \
-            'Error: the Data Element worksheet is incomplete. There are as yet no identifiers provided.'
+            'Error: the Dest WS designation is incomplete. There are as yet no identifiers provided.'
         self.message[3232] = \
-            'Error: specify either a "Dest WS" or a "Dest Element" for "{}".' + utc
+            'Error: specify either a "Dest WS" or a "Dest DE Name" for "{}".' + utc
         self.message[3238] = \
-            'Error: invalid Dest Element "{}" specified for "{}". A Dest Element must have a destination worksheet specified.' + utc
+            'Error: invalid Dest DE Name "{}" specified for "{}". A Dest DE Name must have a destination worksheet specified.' + utc
 
         # Client information workbook
         self.message[4000] = \
-            'Error: the Data Element worksheet, "{}", must designate the destination report indicators.  Configuration is incomplete.'
+            'Error: the Dest WS designation, "{}", must designate the destination report indicators.  Configuration is incomplete.'
 
         # Content work sheet
         self.message[5000] = \
