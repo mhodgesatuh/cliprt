@@ -64,7 +64,9 @@ class MessageRegistry:
         self.message[3214] = \
             'Error: missing Dest Element specified for "{}". A fragment must reference a destination data element for assembly.' + utc
         self.message[3217] = \
-            'Error: invalid destination format "{}" specified for "{}".\nValid values: "{}".' + utc
+            'Error: invalid data element destination format "{}" specified for "{}".\nValid values: "{}".' + utc
+        self.message[3218] = \
+            'Error: invalid data element type "{}" specified for "{}".\nValid values: "{}".' + utc
         self.message[3215] = \
             'Error: invalid destination format specified for "{}". A fragment cannot be an identifier.' + utc
         self.message[3220] = \

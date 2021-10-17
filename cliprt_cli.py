@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
             CLIPRT, sounds like liberty.  Pronounced clipperty.
@@ -92,21 +91,21 @@ while cliprting:
     """
     The Data Element Dictionary is available.
     """
-    # Verify the DED configuration.  Exceptions will be thrown if any 
+    # Verify the DED configuration.  Exceptions will be thrown if any
     # errors are encountered.
     client_info_wb.ded_processor.hydrate_ded()
     client_info_wb.ded_processor.hydration_validation()
     """
-    The Data Element Dictionary is verified. 
+    The Data Element Dictionary is verified.
     Ready to create the client report (destination) worksheets.
     """
     # Print the DED for review?
     prompt_a = 'Skip the client reporting?  Only print the DED reporting configuration?'
     prompt_b = 'Print the DED configuration?'
-    if user_requests(prompt_a, prompt_b):  
+    if user_requests(prompt_a, prompt_b):
         client_info_wb.print_ded_report()
         continue
-    
+
     # Create the client report worksheets.
     prompt_a = 'Run the client report without providing any progress reporting?'
     prompt_b = 'Disable progress reporting?'

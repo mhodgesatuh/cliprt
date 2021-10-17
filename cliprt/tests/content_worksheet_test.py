@@ -81,6 +81,7 @@ class ContentWorksheetTest:
         assert len(content_ws.dest_ws_reg.dest_ws_names) == 2
 
         test_content = self._create_test_content();
+        # First row: headings; 2nd+ rows: data.
         test_data = [
             ['not in ded', 'client id', 'phone', 'first name', 'last name'],
             ['rubbish', '100', '999-123-1234', 'jane', 'doe']
@@ -95,6 +96,7 @@ class ContentWorksheetTest:
         Unit test
         """
         test_content = self._create_test_content();
+        # First row: headings; 2nd+ rows: data.
         test_data = [
             ['id', 'client id', 'phone', 'first name', 'last name'],
             ['100000', '101', '999-123-1201', 'jane1', 'doe'],
@@ -116,6 +118,7 @@ class ContentWorksheetTest:
         self._create_test_content(action='remove')
 
         test_content = self._create_test_content();
+        # First row: headings; 2nd+ rows: data.
         test_data = [
             ['id', 'client id', 'phone', 'first name', 'last name', 'gender'],
             ['100000', '101', '999-123-1201', 'jane1', 'doe', 'f'],
@@ -139,6 +142,7 @@ class ContentWorksheetTest:
         Unit test
         """
         test_content = self._create_test_content();
+        # First row: headings; 2nd+ rows: data.
         test_data = [
             ['id', 'client id', 'phone', 'first name', 'last name'],
             ['100000', '101', '999-123-1201', 'jane1', 'doe'],
@@ -154,6 +158,7 @@ class ContentWorksheetTest:
         self._create_test_content(action='remove')
 
         test_content = self._create_test_content();
+        # First row: headings; 2nd+ rows: data.
         test_data = [
             ['id', 'client id', 'phone', 'first name', 'last name'],
             ['100000', '', None, 'jane1', 'doe'],

@@ -6,14 +6,14 @@ Copyright   2020 Michael Hodges
 """
 class DataElement:
     """
-    Each column of each client worksheet is considered to be a data 
-    element.  A single data element may be repeated across one or more 
+    Each column of each client worksheet is considered to be a data
+    element.  A single data element may be repeated across one or more
     client worksheets.
     """
     def __init__(self, name, ded_processor):
         """
         Prepare a new data element.
-        """        
+        """
         # Dependency injections.
         self.ded_processor = ded_processor
 
@@ -37,7 +37,7 @@ class DataElement:
         str_val = {}
         if self.is_remapped:
             str_val[i] = self.util_format_dict_output(
-                'dest_de_name', 
+                'dest_de_name',
                 self.dest_de_name
                 )
             i+=1
@@ -49,19 +49,19 @@ class DataElement:
             i+=1
         if self.is_fragment:
             str_val[i] = self.util_format_dict_output(
-                'fragment_idx', 
+                'fragment_idx',
                 self.fragment_idx
             )
             i+=1
         if not self.dest_de_format == None:
             str_val[i] = self.util_format_dict_output(
-                'dest_de_format', 
+                'dest_de_format',
                 self.dest_de_format
             )
             i+=1
         for dest_ws_ind, dest_info in self.dest_ws_info.items():
             str_val[i] = self.util_format_dict_output(
-                dest_ws_ind, 
+                dest_ws_ind,
                 dest_info
             )
             i+=1
@@ -90,14 +90,14 @@ class DataElement:
         reporting purposes.
         """
         if not dest_ws_ind in self.dest_ws_info:
-            # There is no destination worksheet specified for this data 
+            # There is no destination worksheet specified for this data
             # eleement.
             return False
         return self.dest_ws_info[dest_ws_ind]['col_idx']
 
     def get_identifier_type(self):
         """
-        Select data elements are tagged as identifiers.  Remapped 
+        Select data elements are tagged as identifiers.  Remapped
         identifiers are typed by their destination data elements.
         The number of unique types of identifiers is info used for
         determining identity matches.
@@ -106,7 +106,7 @@ class DataElement:
 
     def is_mapped_to_dest_ws(self, dest_ws_ind):
         """
-        Each data element to be included in the report is mapped to one 
+        Each data element to be included in the report is mapped to one
         or more destination reports.
         """
         return True if dest_ws_ind in self.dest_ws_info else False
@@ -119,8 +119,8 @@ class DataElement:
 
     def set_dest_de_name(self, de_name):
         """
-        This data element will be remapped to the designated data 
-        element on the destination report worksheets.  Set the 
+        This data element will be remapped to the designated data
+        element on the destination report worksheets.  Set the
         destination data element name.
         """
         self.dest_de_name = de_name
