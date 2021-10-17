@@ -1,23 +1,66 @@
-# Installation
-
-You will need run shell commands for the following statements.
-1. pip install openpyxl (once it is published)
-1. pip install python-dateutil
-
-# CLIPRT Command Line
-
-% python3 cliprt_cli.py
-
-You can find a sample workbook in /resources
-
+# Table of Contents
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [CLIPRT Command Line](#cliprt-command-line)
+- [Definitions and Abbreviations](#definitions-and-abbreviations)
+- [Overview](#overview)
+- [Preparation Work](#preparation-work)
+- [Worksheets](#worksheets)
+  - [Main Worksheets](#main-worksheets)
+  - [Supplemental worksheet(s)](#supplemental-worksheets)
+- [The Data Element Dictionary (DED)](#the-data-element-dictionary-ded)
+  - [Required DED Column Headings](#required-ded-column-headings)
+  - [Content Data Element Types](#content-data-element-types)
+  - [Example DED](#example-ded)
+- [Development Notes](#development-notes)
+  - [Version: 0.1.0 - prototype](#version-010---prototype)
+  - [Version 0.2.0 - object oriented version](#version-020---object-oriented-version)
+  - [Version 0.3.0 - currently under development](#version-030---currently-under-development)
+  - [Version 1.0.0 - future](#version-100---future)
+  - [Future considerations](#future-considerations)
+- [References](#references)
 # Requirements
-
+- python 3
 - A single workbook with multiple worksheets, such that there is:
   - A single worksheet that provides the data element dictionary.
   - Multiple content worksheets that contain the client information.
+# Installation
+You will need run shell commands for the following statements.
+1. pip install openpyxl
+1. pip install python-dateutil
+# CLIPRT Command Line
+% python3 cliprt_cli.py
 
-# Context
-
+You can find a sample workbook in /resources
+# Definitions and Abbreviations
+- Client
+  - Client informtion is collected from multiple sources, such as social media accounts and cloud services.
+  - Each source provides a client worksheet that can be combined into a single workbook for analysis and reporting.
+- CLIPRT
+- DE (Data Element)
+  - Data elements are listed in the data element dictionary.
+  - Data elements are derived from the column headings of each the client content worksheets.
+- DED (Data Element Dictionary)
+  - All of the data elements are stored in the DED.
+  - The DED is a worksheet, one row per data element.
+  - The DED is used to define for each data element the client reporting requirements.
+  - The DED's initial population can be performed automatically, or hand-built from scratch.
+- Identifier
+  - Client data includes data elements that can be used to identify a person.
+  - Examples include name, phone number, email address.
+  - By default client data across multiple sources can be matched of 3 or more identifiers match.
+- Identity
+  - Each client has a unique identity based on a set of identifiers.
+  - Identity matching is the process of determining if a single client's information is available across multiple sources/worksheets.
+  - At least 3 identifiers must be designted in the DED for identity matching to be utilized.
+- Workbook
+  - All of the related worksheets will be collected in a single Excel-compatible workbook.
+- Worksheet
+  - For CLIPRT reporting, multiple worksheets are required and include the following:
+    - DED - CLIPRT can create this for you.  It will be the first worksheet in the workbook.
+    - Two or more client worksheets, one per source.
+    - One or more report worksheets, as specificed in the DED by you.  CLIPRT will create these.
+# Overview
 The DED worksheet, content worksheets, and the generated report worksheets will all be in a single Excel workbook.
 
 This report utility will read the DED worksheet, use the instructions provided therein to process the content (source) worksheets, and produce one or more report (destination) worksheets as required.
@@ -25,58 +68,61 @@ This report utility will read the DED worksheet, use the instructions provided t
 Each row of each content worksheet represents information for a single client.  This utility will attempt to recognize when different rows from different content worksheets represent the same client, in which case it will merge the client content into a single row on each of the report worksheets.  Likewise, it can also detect when two different rows from the same content worksheet represent the same client.
 
 Note that report worksheets are also referred to as **destination** worksheets.
-
 # Preparation Work
-
 The usefulness of your reports depends entirely on now well you perform this preparation work:
 
-1. Create the DED worksheet **"Data Elements"** at the front of the workbook.
-1. Read through the content worksheets to create a unique list of column headings in the **"Data Element"** column of the the DED worksheet.
-1. Identify which data elements are identifiers in the **"Dest Format"** column of the DED worksheet.
+1. Create the DED worksheet **"DED"** at the front of the workbook.
+1. Read through the content worksheets to create a unique list of column headings in the **"Content DE Name"** column of the the DED worksheet. CLIPRT can generate the DED automatically.
+1. Identify which data elements are identifiers in the **"Dest DE Format"** column of the DED worksheet.
+1. Select at least 3 data elements and set the **"Content DE Type"** column to "identifier".
 1. Define one or more report destinations in the **"Dest WS"** column of the DED worksheet.
 
 Note: the report destination worksheets will be created at the end of the workbook.
-
 # Worksheets
-
+All of the following worksheets must exist in a single workbook.
 ## Main Worksheets
-
-Worksheets come in 3 main flavors:
-1. DED - The data element dictionary (DED) worksheet used for providing reporting instructions.
-1. Client content (source) - data content worksheets extracted from various sources to be used for providing the client data.
-1. Report Output (destination) - report worksheets, based on the provide client content.
-
-Understanding the main worksheets:
-- The first two (DED and client content) provide instructions and data for reporting.
-- The last flavor is the report worksheets.
-  - Your reports are created by adding new worksheets to the end of your client reporting workbook.
+The primary worksheets come in 3 main flavors:
+- DED
+  - The data element dictionary (DED) worksheet used for providing reporting instructions.
+  - CLIPRT can create this worksheet for you to get you started.
+  - Update the worksheet to create your reporting requirements.
+  - This worksheet is always first and always named "DED".
+- Client content (source)
+  - The data content worksheets are extracted from various sources to be used for providing the client data.
+- Report Output (destination)
+  - The report worksheets, are based on the provided client content.
 
 And there are additional, supplemental worksheets.
-
-## Supplemental worksheet(s)
-
-1. Identity Matching Log - Log all identity matching activities (not yet implemented).
-
+## Supplemental Worksheet(s)
+1. Identity Near Match Report - List identities that share one or more identifiers.
 # The Data Element Dictionary (DED)
-
-## The Required DED Column Headings
-
-- **"Data Element"**
+## Required DED Column Headings
+- **"Content DE Name"** - Data element name
   - The cell value is the name of the data element.
-  - It is single valued.
+  - It is **required** and it is single valued.
   - Example data
-    - "First Namee"
+    - "First Name"
+- **"Content DE Type"** - Data element type
+  - The cell value designates the data element type.
+  - It is **optional** and it is single valued.
+  - Valid types
+    - "identifier"
+    - "fragment=n" where 'n' is an positive integer
+  - Example data
+    - "fragment=1"
 - **"Dest WS"** - Destination Worksheet indicator
-  - The cell value is the indicator (see below) of which report worksheet(s) the data content will be reported in.
-  - It is multi valued.  Comma-separate multiple indicators.
-  - Example data
-    - "fb,ims,lm" for Facebook, Infinity Movement Studio, Linda Melodia
-- **"Dest Element"** - Destination Element
-  - The cell value can be used to redirect a data element to a different element for example: map "cell pbone" content data to "phone" destination data.
+  - The cell value designates ouput to one more more destination reports.
+  - It is **required if** "Dest DE Name" is not designated.
+  - It is multi valued. Comma-separate multiple designations.
+  - Example data for two report destinations
+    - "social,newsletter"
+- **"Dest DE Name"** - Destination data element name.
+  - The cell value can be used to redirect a data element to a different data element in the report.
+  - Is is **required if** "Dest WS" is not designated.
   - It is single valued.
   - Example data
-    - "phone"
-- **"Dest Format"** - Destination Data Element Format
+    - "phone" to collect cell phone and home phone information in a single column on the report.
+- **"Dest DE Format"** - Destination Data Element Format
   - The cell value can indicate a standard formatting schema for the data element on the destination worksheet.
   - It is multi valued.  Comma-separate multiple indicators.
   - Valid data element formats
@@ -86,37 +132,29 @@ And there are additional, supplemental worksheets.
        - Data to be formatted as close to "first middle last" as possible.
     1. **"phone"** format
        - Data to be formatted as close to "n-nnn-nnn-nnnn" as possible.
-    1. **"identifier"** tag
-    1. **"fragment=n"** tag where n is an integer
+### Content Data Element Types
+The **"identifier"** designation indicates the data elements that will be used for identity matching. Since a single person will likely show up on multiple content worksheets, it is important to select the data that will be used to perform identity matching. Be sure to select at least three data elements.
 
-### About the Destination Data Element Format Options
-
-The first 3 are used to standardize the way the data will look on the destination worksheet.  **_Only one may be used at a time._**
-
-The **"identifier"** format is important for selecting the data that will be used for identity matching.  Since a single person will likely show up on multiple content worksheets, it is important to select the data that will be used to perform identity matching. Be sure to select at least two data elements; three would be optimal.
-
-The **"fragment"** format is used for combining two source columns into a single destination column.  Typically it is used to map separate source first and last name columns to accept single destination "name" column.
-- "fragment=1" is typically used for the first name format.
-- "fragment=2" is typically used for the last name format.
-
-### Example Data Element Formats
-
-Example First Name:
-- "name,fragment=1"
-
-Example Last Name:
-- "name,fragment=2"
-
-Example Phone:
-- 'identifier,phone'
-
-_Bad example, don't do this.  It makes no sense; it's either one or the other._
-- "name,phone"
-
+The **"fragment=n"** designation is used for combining two source data elments into a single destination data element. Typically, it is used to map separate first and last name data elements to a single destination "name" data element.
+- "fragment=1" is typically used to designate the first name fragment.
+- "fragment=2" is typically used to designate last name fragment.
+- Note: a "Dest DE Name" is required to define where the fragments will be mapped.
+## Example DED
+Worksheet columns A-E:
+|Content DE Name|Content DE Type|Dest WS|Dest DE Name|Dest DE Format|
+|-|-|-|-|-|
+|id|identifier|newsletter| | |
+|client|identifier|newsletter| |name|
+|first name|fragment=1| |client| |
+|last name|fragment=2| |client| |
+|birthday|identifier| | | |
+|home phone| | |phone| |
+|cell phone| | |phone| |
+|phone|identifier|newsletter| |phone|
+|wk email| |newsletter| | |
+|email|identifier|newsletter| |email|
 # Development Notes
-
-## Version: 0.1.0 - prototype, first release
-
+## Version: 0.1.0 - prototype
 - strictly procedural coding
 - dynamic workbook destinations
 - multiple destinations per data element
@@ -124,30 +162,23 @@ _Bad example, don't do this.  It makes no sense; it's either one or the other._
 - advanced format logic for: identifiers, fragments
 - destination logic for merging multiple source columns to a single destination column
 - logic for processing identifiers and detecting identity matches and merging client data
-
 ## Version 0.2.0 - object oriented version
-
-- Implement a report package that is proceduraly utilized by the main module.
-- Accept the workbook name as a command line parameter instead of hard coding it.
-- If no DED is present generate one by reading the column heads from the content worksheets.
-- Provide robust DED input validation.
-- Provide robust unit testing.
-
+- a command line interface for CLIPRT
+- classes
+- automated DED creation
+- robust DED input validation
+- robust unit testing and maximise code coverage
 ## Version 0.3.0 - currently under development
-
-- add a logging feature
-- separate content_de_type from dest_de_format so that is it no longer overloaded.
-
+- logging feature
+- separated content_de_type from dest_de_format so that is it no longer overloaded
 ## Version 1.0.0 - future
-
-- Publish
-
-## Version 2.0.0 - future
-
-- Integrate with a WordPress plugin.
-
+- publish
+## Future considerations
+- GUI tools for running CLIPRT
+- GUI tools for configuring the DED
+- RESTful API for offering CLIPRT as a service
 # References
-
+Since this is my first python program, the following are a subset of the links that helped me to get started.
 - https://foss.heptapod.net/openpyxl/openpyxl/-/tree/branch/3.0/openpyx
 - https://www.w3schools.com/python/python_dictionaries.asp
 - https://docs.python.org/3/reference/index.html
