@@ -4,7 +4,7 @@ You will need run shell commands for the following statements.
 1. pip install openpyxl (once it is published)
 1. pip install python-dateutil
 
-# Getting Version 0.2.x of this utility to run
+# CLIPRT Command Line
 
 % python3 cliprt_cli.py
 
