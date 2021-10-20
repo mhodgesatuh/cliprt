@@ -56,8 +56,8 @@ class ClientIdentityResolverTest:
             self.client_info.identifier_reg
         )
         assert id_resolver.matched_identifier_types == []
-        assert id_resolver.identifier_matched == []
-        assert id_resolver.identifier_unmatched == []
+        assert id_resolver.identifiers_matched == []
+        assert id_resolver.identifiers_unmatched == []
 
     def match_existing_identity_test(self):
         """
@@ -92,7 +92,7 @@ class ClientIdentityResolverTest:
 
         # Useful identifiers are stored in the identifier registry.
         assert len(self.client_info.identifier_reg.identifier_list) == 3
-        assert len(id_resolver.identifier_matched) == 3
+        assert len(id_resolver.identifiers_matched) == 3
         assert id_resolver.matched_identifier_types == ['phone', 'client id', 'email']
         self._reset__registries()
 
@@ -142,7 +142,9 @@ class ClientIdentityResolverTest:
         assert 1000 in self.client_info.client_reg.client_id_list
         assert 1001 in self.client_info.client_reg.client_id_list
         assert self.client_info.client_reg.next_client_idno == 1002
-        assert self.client_info.identifier_reg.identifier_list['client id::99912345'].client_ids == {1000, 1001}
+        identifier_list = self.client_info.identifier_reg.identifier_list
+        assert identifier_list['client id::99912345'].client_ids == {1000, 1001}
+        assert identifier_list['phone::9998888708'].client_ids == {1000}
         self._reset__registries()
 
     def save_identifier_test(self):
@@ -188,6 +190,6 @@ class ClientIdentityResolverTest:
             identifier = Identifier(id_data[0], id_data[1], test_ded)
             assert id_resolver.save_identifier(identifier)
         assert len(self.client_info.identifier_reg.identifier_list) == 3
-        assert len(id_resolver.identifier_matched) == 0
-        assert len(id_resolver.identifier_unmatched) == 3
+        assert len(id_resolver.identifiers_matched) == 0
+        assert len(id_resolver.identifiers_unmatched) == 3
         self._reset__registries()

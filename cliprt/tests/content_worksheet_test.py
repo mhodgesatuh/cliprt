@@ -170,8 +170,8 @@ class ContentWorksheetTest:
         )
         test_content.identifier_col_names['id'] = 1
         test_content.process_row_de_identifiers(identity_resolver, 2)
-        assert len(identity_resolver.identifier_matched) == 1
-        for identity in identity_resolver.identifier_matched:
+        assert len(identity_resolver.identifiers_matched) == 1
+        for identity in identity_resolver.identifiers_matched:
             assert identity.key == 'client id::100000'
         self._create_test_content(action='remove')
 
