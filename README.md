@@ -1,3 +1,6 @@
+**CLIPRT - Client Information Parsing and Reporting Tool**
+Pronunciation: "cliprt" sounds a bit like "liberty" (clipperty)
+
 # Table of Contents
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -6,18 +9,18 @@
 - [Overview](#overview)
 - [Preparation Work](#preparation-work)
 - [Worksheets](#worksheets)
-  - [Main Worksheets](#main-worksheets)
-  - [Supplemental worksheet(s)](#supplemental-worksheets)
-- [The Data Element Dictionary (DED)](#the-data-element-dictionary-ded)
-  - [Required DED Column Headings](#required-ded-column-headings)
-  - [Content Data Element Types](#content-data-element-types)
-  - [Example DED](#example-ded)
+  * [Main Worksheets](#main-worksheets)
+  * [Supplemental Worksheet(s)](#supplemental-worksheet-s-)
+- [The Data Element Dictionary (DED)](#the-data-element-dictionary--ded-)
+  * [Required DED Column Headings](#required-ded-column-headings)
+    + [Content Data Element Types](#content-data-element-types)
+  * [Example DED](#example-ded)
 - [Development Notes](#development-notes)
-  - [Version: 0.1.0 - prototype](#version-010---prototype)
-  - [Version 0.2.0 - object oriented version](#version-020---object-oriented-version)
-  - [Version 0.3.0 - currently under development](#version-030---currently-under-development)
-  - [Version 1.0.0 - future](#version-100---future)
-  - [Future considerations](#future-considerations)
+  * [Future considerations](#future-considerations)
+  * [Version 1.0.0 - future](#version-100---future)
+  * [Version 0.3.0 - currently under development](#version-030---currently-under-development)
+  * [Version 0.2.0 - object oriented version](#version-020---object-oriented-version)
+  * [Version 0.1.0 - prototype](#version-010---prototype)
 - [References](#references)
 # Requirements
 - python 3
@@ -36,7 +39,6 @@ You can find a sample workbook in /resources
 - Client
   - Client informtion is collected from multiple sources, such as social media accounts and cloud services.
   - Each source provides a client worksheet that can be combined into a single workbook for analysis and reporting.
-- CLIPRT
 - DE (Data Element)
   - Data elements are listed in the data element dictionary.
   - Data elements are derived from the column headings of each the client content worksheets.
@@ -55,7 +57,7 @@ You can find a sample workbook in /resources
   - At least 3 identifiers must be designted in the DED for identity matching to be utilized.
 - Workbook
   - All of the related worksheets will be collected in a single Excel-compatible workbook.
-- Worksheet
+- WS (Worksheet)
   - For CLIPRT reporting, multiple worksheets are required and include the following:
     - DED - CLIPRT can create this for you.  It will be the first worksheet in the workbook.
     - Two or more client worksheets, one per source.
@@ -154,7 +156,23 @@ Worksheet columns A-E:
 |wk email| |newsletter| | |
 |email|identifier|newsletter| |email|
 # Development Notes
-## Version: 0.1.0 - prototype
+Most recent listed first.
+## Future considerations
+- GUI tools for running CLIPRT
+- GUI tools for configuring the DED
+- RESTful API for offering CLIPRT as a service
+## Version 1.0.0 - future
+- publish
+## Version 0.3.0 - currently under development
+- logging feature
+- separated content_de_type from dest_de_format so that is it no longer overloaded
+## Version 0.2.0 - object oriented version
+- a command line interface for CLIPRT
+- classes
+- automated DED creation
+- robust DED input validation
+- robust unit testing and maximise code coverage
+## Version 0.1.0 - prototype
 - strictly procedural coding
 - dynamic workbook destinations
 - multiple destinations per data element
@@ -162,21 +180,6 @@ Worksheet columns A-E:
 - advanced format logic for: identifiers, fragments
 - destination logic for merging multiple source columns to a single destination column
 - logic for processing identifiers and detecting identity matches and merging client data
-## Version 0.2.0 - object oriented version
-- a command line interface for CLIPRT
-- classes
-- automated DED creation
-- robust DED input validation
-- robust unit testing and maximise code coverage
-## Version 0.3.0 - currently under development
-- logging feature
-- separated content_de_type from dest_de_format so that is it no longer overloaded
-## Version 1.0.0 - future
-- publish
-## Future considerations
-- GUI tools for running CLIPRT
-- GUI tools for configuring the DED
-- RESTful API for offering CLIPRT as a service
 # References
 Since this is my first python program, the following are a subset of the links that helped me to get started.
 - https://foss.heptapod.net/openpyxl/openpyxl/-/tree/branch/3.0/openpyx

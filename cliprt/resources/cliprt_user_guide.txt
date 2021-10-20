@@ -3,39 +3,41 @@ CLIPRT - Client Information Parsing and Reporting Tool.
 1. Create a Excel compatible workbook and add one or more content worksheets of
     client data that you would like to merge for your marketing efforts.
 
-2. Use CLIPRT to create a Data Element Dictionary (DED) for you.  The DEED is
+2. Use CLIPRT to create a Data Element Dictionary (DED) for you.  The DED is
     constructed by reading through the content worksheets and creating a new
     worksheet that provides a unique list of client data elements.  You will use
-    this list to configure your report(s).
+    this list to configure your report(s).  Note that CLIPRT can now generate
+    the DED for you.
 
 3. Use a spreadsheet app to edit the workbook and configure your reports.
-    - Element column:
+    - Content Data Element column:
         The data element name.  Don't edit this column.
 
-    - Dest WS column:
-        Enter one or more 2 to 3-character destination report indicators.
-        Example: "fb, ig" for FaceBook and Instagram marketing efforts.
+    - Content Data Type column:
+        Designate which data elements are identifiers and which are fragments.
 
-    - Dest Element column
-        If the content data is to map to a different element in the DED, name
-        the element.
+    - Dest WS column:
+        Enter one or more destination report indicators.
+
+    - Dest DE Name column
+        If the content data is to map to a different element on the destination
+        worksheet, name destination the element.
         Example: for the "cell phone" element map it to "phone" on the report.
 
-    - Dest Format column, this column has multiple purposes:
-        a. Specify how to format the data in the report using one of the
-            following: (date, name, phone) for more consistent report results.
-            Example: "name" - last, first names are reported as first last.
-            Example: "date" - dates are reported as mm/dd/yyyy
-
-        b. Specify "indentifier" for elements that help to uniquely identify a
+        a. Specify "indentifier" for elements that help to uniquely identify a
             client.  This is crucial for merging client records.  You should
             have at least 3 of these.
-            Example: "name,identifier" 
+            Example: "name,identifier"
             Hint: name, email address, and phone number are good identifiers.
-
-        c. Specify "fragment" for elements that need to be combined with 
+        b. Specify "fragment" for elements that need to be combined with
             others.  First example, first name and last name may need to be
-            combined on the report as fullname.  
+            combined on the report as fullname.
+
+    - Dest DE Format column
+        Specify how to format the data in the report using one of the
+        following: (date, name, phone) for more consistent report results.
+        Example: "name" - last, first names are reported as first last.
+        Example: "date" - dates are reported as mm/dd/yyyy
 
 4. Use CLIPRT to interpret your instructions and to create the marketing
     reports.
@@ -43,7 +45,7 @@ CLIPRT - Client Information Parsing and Reporting Tool.
 5. Use a spreadsheet app to review the report worksheet(s) to use as your
     marketing reports.
 
-The README.rst has more details and is recommended reading.
+README.md has more details and is recommended reading.
 
 
 Pronunciation: "cliprt" sounds like "liberty"
