@@ -44,10 +44,8 @@ def user_requests(prompt_a, prompt_b):
         print('Warning: your intention is not clear. Please answer "Yes" or "No".')
         print('{} {}'.format(prompt_b, prompt_hint))
 
-print('\n\n*******    ******      *      *           *           *         *')
 print('Welcome to CLIPRT, the Client Information Parsing and Reporting Tool.')
 print('FYI, the client data element dictionary is referenced as the "DED" from hereon.')
-print('***')
 cliprting = True
 prompt_hint = '(Help/Quit) <Quit>: '
 while cliprting:
