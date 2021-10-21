@@ -74,15 +74,15 @@ class DataElementDictionaryProcessorTest:
 
         de_column = list(ws_columns)[0]
         for cell in de_column:
-            if cell.value == None:
+            if cell.value is None:
                 continue
             cell.value = cell.value.replace(old_str, new_str)
 
-    def _test_data_row(self, ws, values=[None, None, None], test_row=4):
+    def _test_data_row(self, ws, values=None, test_row=4):
         """
         Insert or remove test data as needed for custom testing.
         """
-        if values[0] == None and values[1] == None and values[2] == None:
+        if values is None:
             ws.delete_rows(test_row, 1)
             return
 
@@ -214,6 +214,6 @@ class DataElementDictionaryProcessorTest:
         """
         Unit test
         """
-        str = 'welcome,to ,cliprt'
-        str_list = self.client_info.ded_processor.util_make_list(str)
-        assert len(str_list) == 3
+        test_str = 'welcome,to ,cliprt'
+        test_str_list = self.client_info.ded_processor.util_make_list(test_str)
+        assert len(test_str_list) == 3

@@ -14,9 +14,10 @@ class CliprtSettings:
         worksheets.
     """
 
-    """
-    Client content reporting settings
-    """
+    # ---------------------------------
+    # Client content reporting settings
+    # ---------------------------------
+
     # Threshold for determining that we have an identity match.
     IDENTITY_MATCH_THRESHOLD = 2
 
@@ -71,14 +72,16 @@ class CliprtSettings:
     """
     Data formatting functions.
     """
-    def format_date(self, date_value):
+    @staticmethod
+    def format_date(date_value):
         """
         Normalize the format of dates if possible.
         """
         date_obj = parse(date_value)
         return date_obj.strftime("%m/%d/%Y")
 
-    def format_name(self, data_value):
+    @staticmethod
+    def format_name(data_value):
         """
         Normalize the format of names if possible to First Last.
         """
@@ -103,7 +106,7 @@ class CliprtSettings:
         """
         Normalize the format of phone numbers if possible.
         """
-        if area_code == None:
+        if area_code is None:
             area_code = self.DEFAULT_AREA_CODE
 
         # Digits only.
@@ -120,27 +123,27 @@ class CliprtSettings:
                 pho_no[0:3],
                 pho_no[3:7]
             )
-        elif len(pho_no) == 10:
+        if len(pho_no) == 10:
             return pho_mask.format(
                 country_code,
                 pho_no[0:3],
                 pho_no[3:6],
                 pho_no[6:10]
             )
-        elif len(pho_no) == 11:
+        if len(pho_no) == 11:
             return pho_mask.format(
                 pho_no[0:1],
                 pho_no[1:4],
                 pho_no[4:7],
                 pho_no[7:11]
             )
-        else:
-            return data_value
+        return data_value
 
-    def str_normalize(self, str_value):
+    @staticmethod
+    def str_normalize(str_value):
         """
         Lowercase strings and provide a None protection to ensure string
         comparisons work as expected. Also replace underscores with
         spaces.
         """
-        return None if str_value == None else str_value.replace('_',' ').lower()
+        return None if str_value is None else str_value.replace('_',' ').lower()

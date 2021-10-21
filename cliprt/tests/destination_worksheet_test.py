@@ -28,7 +28,7 @@ class DestinationWorksheetTest:
         assert self.dest_ws.next_col_idx == 1
         assert self.dest_ws.next_row_idx == 2
         assert self.dest_ws.ws_name == self.dest_ws.DEST_WS_NAME_PREFIX + 'fb'
-        assert not self.dest_ws.ws == None
+        assert not self.dest_ws.ws is None
 
     def update_cell_test(self):
         """
