@@ -111,7 +111,6 @@ class DataElementTest:
             "{'fb': {'col_idx': 2}}"
         assert self.frag_data_element.__str__() == \
             "{'fragment_idx': 1}"
-        aa = self.identifier_data_element.__str__()
         assert self.identifier_data_element.__str__() == \
             "is_identifier"
 

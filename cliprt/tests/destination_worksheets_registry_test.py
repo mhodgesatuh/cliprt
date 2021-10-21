@@ -6,7 +6,6 @@ Copyright   2021 Michael Hodges
 """
 from cliprt.classes.client_information_workbook import ClientInformationWorkbook
 from cliprt.classes.destination_worksheet import DestinationWorksheet
-from cliprt.classes.destination_worksheets_registry import DestinationWorksheetsRegistry
 
 class DestinationWorksheetsRegistryTest:
     """

@@ -19,3 +19,4 @@ class CliprtUserGuideTest:
             CliprtUserGuide('./cliprt/resources')
         captured()
         assert len(captured.stdout) > 100
+        

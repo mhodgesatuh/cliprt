@@ -16,9 +16,7 @@ class ClientIdentityResolverTest:
     client_info = ClientInformationWorkbook(wb_file)
     client_info.ded_processor.hydrate_ded()
 
-    """
-    Helper functions for the unit tests start with an '_'.
-    """
+    # Helper functions for the unit tests start with an '_'.
 
     def _reset__registries(self):
         """
@@ -106,11 +104,10 @@ class ClientIdentityResolverTest:
             self.client_info.client_reg,
             self.client_info.identifier_reg
         )
-        assert id_resolver.resolve_client_identity(3) == None
+        assert id_resolver.resolve_client_identity(3) is None
 
-        """
-        Test identity-matching logic.
-        """
+        # Test identity-matching logic.
+
         identifiers_lists = [
             [
                 ['id', '99912345'],
