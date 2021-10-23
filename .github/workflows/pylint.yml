@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        ref: dev-0-3-0
+        ref: master
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
