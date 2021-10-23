@@ -14,6 +14,8 @@ if sys.version_info[0] < 3:
     err_str = 'Error: Python version 3 is required. Found version {}.'
     raise Exception(err_str.format(sys.version_info[0]))
 
+WELCOME_MSG =\
+    'Welcome to CLIPRT, the Client Information Parsing and Reporting Tool.'
 EXIT_MSG = 'Ended cliprt as requested.'
 
 # This is the CLIPRT command line interface (CLI).
@@ -40,8 +42,7 @@ def user_requests(prompt_a, prompt_b):
         print('Warning: your intention is not clear. Please answer "Yes" or "No".')
         print(f'{prompt_b} {prompt_hint}')
 
-print('Welcome to CLIPRT, the Client Information Parsing and Reporting Tool.')
-print('FYI, the client data element dictionary is referenced as the "DED" from hereon.')
+print(WELCOME_MSG)
 cliprting = True
 prompt_hint = '(Help/Quit) <Quit>: '
 while cliprting:
@@ -70,46 +71,52 @@ while cliprting:
             print(err_str)
             print('Path and name?')
 
-    # The workbook is now available.
+    # The workbook is now available. The DED is up next.
     if not client_info_wb.has_a_ded_ws():
-        """
-        Prompt to see if the DED worksheet should be generated.
-        """
-        prompt_a = 'The DED worksheet has not been created.  Create the DED worksheet?'
+
+        # Prompt to see if the DED worksheet should be generated.
+        prompt_a =\
+            'The DED worksheet has not been created. '\
+            'Create the DED worksheet?'
         prompt_b = 'Create the worksheet?'
         if user_requests(prompt_a, prompt_b):
             print('  ...creating worksheet...')
             client_info_wb.create_ded_worksheet()
             err_str =\
                 'The DED worksheet has been created. '\
-                'Open the workbook and configure the DED for your reporting requirements.'
+                'Open the workbook and configure the DED '\
+                'for your reporting requirements.'
             print(err_str)
             continue
         else:
             inputting = False
-    """
-    The Data Element Dictionary is available.
-    """
+
+    # The Data Element Dictionary is now available.
+
     # Verify the DED configuration.  Exceptions will be thrown if any
     # errors are encountered.
     client_info_wb.ded_processor.hydrate_ded()
     client_info_wb.ded_processor.hydration_validation()
-    """
-    The Data Element Dictionary is verified.
-    Ready to create the client report (destination) worksheets.
-    """
+
+    # The Data Element Dictionary is verified.
+    # Ready to create the client report (destination) worksheets.
+
     # Print the DED for review?
-    prompt_a = 'Skip the client reporting?  Only print the DED reporting configuration?'
+    prompt_a =\
+        'Skip the client reporting? '\
+        'Only print the DED reporting configuration?'
     prompt_b = 'Print the DED configuration?'
     if user_requests(prompt_a, prompt_b):
         client_info_wb.print_ded_report()
         continue
 
     # Create the client report worksheets.
-    prompt_a = 'Run the client report without providing any progress reporting?'
+    prompt_a =\
+        'Run the client report without providing any progress reporting?'
     prompt_b = 'Disable progress reporting?'
     disable = user_requests(prompt_a, prompt_b)
-    print('\nCLIPR has started working on your client worksheets...this may take some time.')
+    print('\nCLIPR has started working on your client worksheets...'\
+        'this may take some time.')
     print('  ...creating report worksheet(s)...')
     client_info_wb.create_client_reports(disable)
     sys.exit(0)
