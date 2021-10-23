@@ -10,8 +10,8 @@ import operator
 class ClientIdentityResolver:
     """
     Once a row of data is processed and the identifiers isolated, the
-    identifiers can then be compared to the identifier registry to 
-    determine of the data matches an existing client identity or 
+    identifiers can then be compared to the identifier registry to
+    determine of the data matches an existing client identity or
     belongs to a new client identity.
     """
     def __init__(self, client_registry, identifier_registry):
@@ -23,30 +23,30 @@ class ClientIdentityResolver:
         self.identifier_reg = identifier_registry
 
         # Class attributes.
-        self.identifier_matched = []
-        self.identifier_matched_keys_list = []
-        self.identifier_unmatched = []
+        self.identifiers_matched = []
+        self.identifiers_matched_key_list = []
+        self.identifiers_unmatched = []
         self.matched_identifier_types = []
 
     def create_identity(self):
         """
         If the identifiers don't match an existing identity, per the
-        registry search, this is a new identity to be add to the 
+        registry search, this is a new identity to be add to the
         registry.
         """
         return self.client_reg.create_identity()
 
     def client_idno_matcher(self, client_idno_sets):
         """
-        Apply set theory to the sets containing identity data matches 
-        in order to determine which existing client id is likely the 
+        Apply set theory to the sets containing identity data matches
+        in order to determine which existing client id is likely the
         best match.
         """
         # Create a list of all identity numbers.
         first_idno_set = list(client_idno_sets)[0]
         idno_list = first_idno_set.union(*client_idno_sets)
 
-        # Count the occurences of each identity number across all sets 
+        # Count the occurences of each identity number across all sets
         # of identity numbers.
         idno_match_cnt = {}
         for idno in idno_list:
@@ -54,25 +54,25 @@ class ClientIdentityResolver:
             # Initialize the count for each identity number.
             idno_match_cnt[idno] = 0
 
-            # Render it as a set in order to compare to the identity 
+            # Render it as a set in order to compare to the identity
             # number sets.
             idno_match_set = {idno}
 
-            # Count number of sets in which the identity number is 
+            # Count number of sets in which the identity number is
             # found.
             for idno_set in client_idno_sets:
                 if idno_match_set.issubset(idno_set):
                     idno_match_cnt[idno]+=1
 
-        # Sort such that the identity number with the most matches is 
+        # Sort such that the identity number with the most matches is
         # listed first.
         sorted_idno_by_cnt = sorted(
-            idno_match_cnt.items(), 
-            key=operator.itemgetter(1), 
+            idno_match_cnt.items(),
+            key=operator.itemgetter(1),
             reverse=True
             )
 
-        # The best-match client id is in the first key of the first 
+        # The best-match client id is in the first key of the first
         # tuple.
         return sorted_idno_by_cnt[0][0]
 
@@ -103,22 +103,23 @@ class ClientIdentityResolver:
 
     def match_existing_identity(self):
         """
-        Determine which of the client's set of identifiers matches an 
+        Determine which of the client's set of identifiers matches an
         existing identity.
         """
         client_id_sets = []
-        for identifier in self.identifier_matched:
+        for identifier in self.identifiers_matched:
             idno_set = self.identifier_reg.identifier_list[identifier.key].client_ids
             client_id_sets.append(idno_set)
         return self.client_idno_matcher(client_id_sets)
 
     def resolve_client_identity(self, threshold):
         """
-        Determine the client identity based on the number of matched 
+        Determine the client identity based on the number of matched
         identifiers.  If this is a new client id, create the new
         identifier.
         """
-        if len(self.identifier_matched) == 0 and len(self.identifier_unmatched) == 0:
+        if len(self.identifiers_matched) == 0 and \
+                len(self.identifiers_unmatched) == 0:
             # No useful identifiers provided.
             return None
 
@@ -127,22 +128,22 @@ class ClientIdentityResolver:
             identity = self.create_identity()
         else:
             # The identifiers match one or more existing identities.
-            # Determine which is the most likely match for the 
+            # Determine which is the most likely match for the
             # current row of client data.
             client_idno = self.match_existing_identity()
             identity = self.client_reg.get_identity_by_idno(client_idno)
 
         # Now that we have a client id, the identifiers can be updated
-        # to reflect the new client id with which they are now 
+        # to reflect the new client id with which they are now
         # associated.
-        for identifier in self.identifier_matched:
+        for identifier in self.identifiers_matched:
             self.identifier_reg.save_identifier_client_idno(
-                identifier.key, 
+                identifier.key,
                 identity.client_idno
             )
-        for identifier in self.identifier_unmatched:
+        for identifier in self.identifiers_unmatched:
             self.identifier_reg.save_identifier_client_idno(
-                identifier.key, 
+                identifier.key,
                 identity.client_idno
             )
 
@@ -150,7 +151,7 @@ class ClientIdentityResolver:
 
     def save_identifier(self, identifier):
         """
-        Search for the identifier value to see if we have a potential 
+        Search for the identifier value to see if we have a potential
         identity match. Add the identifier to the identifier registry.
         """
         if identifier.type == 'phone':
@@ -163,18 +164,18 @@ class ClientIdentityResolver:
                 return False
 
         if identifier.key in self.identifier_reg.identifier_list:
-            if not identifier.key in self.identifier_matched_keys_list:
-                self.identifier_matched_keys_list.append(identifier.key)
-                self.identifier_matched.append(identifier)
+            if not identifier.key in self.identifiers_matched_key_list:
+                self.identifiers_matched_key_list.append(identifier.key)
+                self.identifiers_matched.append(identifier)
             if not identifier.type in self.matched_identifier_types:
-                # Track the number of unique identifier types found. 
+                # Track the number of unique identifier types found.
                 # It takes a minimal number to indicate an identity
                 # match.
                 self.matched_identifier_types.append(identifier.type)
         else:
-            # Save the identifier value since it doesn't match any 
+            # Save the identifier value since it doesn't match any
             # existing saved identifier.
             self.identifier_reg.add_identifier(identifier)
-            self.identifier_unmatched.append(identifier)
+            self.identifiers_unmatched.append(identifier)
 
         return True

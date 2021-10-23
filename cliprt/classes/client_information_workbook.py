@@ -25,7 +25,7 @@ class ClientInformationWorkbook:
     cliprt = MessageRegistry()
 
     # Internal worksheets names.
-    DED_WS_NAME = 'Data Elements'
+    DED_WS_NAME = 'DED'
     INTERNAL_WS_NAMES = [DED_WS_NAME]
 
     # Reports worksheets name prefix.
