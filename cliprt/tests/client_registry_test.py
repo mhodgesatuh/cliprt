@@ -38,4 +38,4 @@ class ClientRegistryTest:
         Unit test
         """
         client_reg = ClientRegistry(self.dest_ws_reg)
-        assert client_reg.get_next_client_idno() is 1000
+        assert client_reg.get_next_client_idno() == 1000

@@ -36,7 +36,8 @@ class ClientIdentityResolver:
         """
         return self.client_reg.create_identity()
 
-    def client_idno_matcher(self, client_idno_sets):
+    @staticmethod
+    def client_idno_matcher(client_idno_sets):
         """
         Apply set theory to the sets containing identity data matches
         in order to determine which existing client id is likely the
@@ -76,7 +77,8 @@ class ClientIdentityResolver:
         # tuple.
         return sorted_idno_by_cnt[0][0]
 
-    def is_useful_email_identifier(self, de_value):
+    @staticmethod
+    def is_useful_email_identifier(de_value):
         """
         Detect and reject bogus data in order to help reduce invalid
         identity matches.
@@ -86,9 +88,10 @@ class ClientIdentityResolver:
 
         # Validate the format of the email.
         regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
-        return True if (re.fullmatch(regex, de_value)) else False
+        return False if re.fullmatch(regex, de_value) is None else True
 
-    def is_useful_phone_identifier(self, de_value):
+    @staticmethod
+    def is_useful_phone_identifier(de_value):
         """
         Detect and reject bogus data in order to help reduce invalid
         identity matches.

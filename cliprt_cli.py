@@ -90,6 +90,8 @@ def request_workbook():
                 'Check the file path, your spelling and try again.'
             print(err_str)
             print('Path and name?')
+    # Return the workbook for further processing.
+    return client_info_wb
 
 def user_requests(prompt_a, prompt_b):
     """
