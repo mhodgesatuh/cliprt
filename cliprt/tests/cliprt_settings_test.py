@@ -39,4 +39,4 @@ class CliprtSettingsTest:
         """
         Unit test
         """
-        assert 'abc def' == self.settings.str_normalize('Abc_deF')
+        assert self.settings.str_normalize('Abc_deF') == 'abc def'

@@ -18,9 +18,7 @@ class ContentWorksheetTest:
     client_info = ClientInformationWorkbook(wb_file)
     client_info.ded_processor.hydrate_ded()
 
-    """
-    Helper functions for the unit tests start with an '_'.
-    """
+    # Helper functions for the unit tests start with an '_'.
 
     def _create_test_content(self, action='create'):
         """
@@ -35,8 +33,8 @@ class ContentWorksheetTest:
             ws = self.client_info.wb[test_ws_title]
             self.client_info.wb.remove(ws)
 
-        if not action == 'create':
-            return
+        if action != 'create':
+            return False
 
         self.client_info.wb.create_sheet(test_ws_title)
         return ContentWorksheet(
@@ -48,7 +46,8 @@ class ContentWorksheetTest:
             self.client_info.dest_ws_reg
         )
 
-    def _update_test_content_ws(self, ws, test_data):
+    @staticmethod
+    def _update_test_content_ws(ws, test_data):
         """
         Update the test worksheet with test data for unit testing.
         """
@@ -80,21 +79,23 @@ class ContentWorksheetTest:
         assert len(content_ws.dest_ws_reg.dest_ws_list) == 2
         assert len(content_ws.dest_ws_reg.dest_ws_names) == 2
 
-        test_content = self._create_test_content();
+        test_content = self._create_test_content()
+        # First row: headings; 2nd+ rows: data.
         test_data = [
             ['not in ded', 'client id', 'phone', 'first name', 'last name'],
             ['rubbish', '100', '999-123-1234', 'jane', 'doe']
         ]
         self._update_test_content_ws(test_content.ws, test_data)
         test_content.build_etl_map()
-        assert not 'not in ded' in test_content.de_names
+        assert 'not in ded' not in test_content.de_names
         self._create_test_content(action='remove')
 
     def client_report_test(self):
         """
         Unit test
         """
-        test_content = self._create_test_content();
+        test_content = self._create_test_content()
+        # First row: headings; 2nd+ rows: data.
         test_data = [
             ['id', 'client id', 'phone', 'first name', 'last name'],
             ['100000', '101', '999-123-1201', 'jane1', 'doe'],
@@ -107,7 +108,7 @@ class ContentWorksheetTest:
         assert len(captured.stdout) > 100
         self._create_test_content(action='remove')
 
-        test_content = self._create_test_content();
+        test_content = self._create_test_content()
         with capture_output() as captured:
             retval = test_content.client_report()
         captured()
@@ -116,6 +117,7 @@ class ContentWorksheetTest:
         self._create_test_content(action='remove')
 
         test_content = self._create_test_content();
+        # First row: headings; 2nd+ rows: data.
         test_data = [
             ['id', 'client id', 'phone', 'first name', 'last name', 'gender'],
             ['100000', '101', '999-123-1201', 'jane1', 'doe', 'f'],
@@ -130,7 +132,7 @@ class ContentWorksheetTest:
         """
         Unit test
         """
-        test_content = self._create_test_content();
+        test_content = self._create_test_content()
         assert not test_content.process_row_de_fragments(2)
         self._create_test_content(action='remove')
 
@@ -138,7 +140,8 @@ class ContentWorksheetTest:
         """
         Unit test
         """
-        test_content = self._create_test_content();
+        test_content = self._create_test_content()
+        # First row: headings; 2nd+ rows: data.
         test_data = [
             ['id', 'client id', 'phone', 'first name', 'last name'],
             ['100000', '101', '999-123-1201', 'jane1', 'doe'],
@@ -153,7 +156,8 @@ class ContentWorksheetTest:
         assert '(E5012)' in excinfo.value.args[0]
         self._create_test_content(action='remove')
 
-        test_content = self._create_test_content();
+        test_content = self._create_test_content()
+        # First row: headings; 2nd+ rows: data.
         test_data = [
             ['id', 'client id', 'phone', 'first name', 'last name'],
             ['100000', '', None, 'jane1', 'doe'],
@@ -165,8 +169,8 @@ class ContentWorksheetTest:
         )
         test_content.identifier_col_names['id'] = 1
         test_content.process_row_de_identifiers(identity_resolver, 2)
-        assert len(identity_resolver.identifier_matched) == 1
-        for identity in identity_resolver.identifier_matched:
+        assert len(identity_resolver.identifiers_matched) == 1
+        for identity in identity_resolver.identifiers_matched:
             assert identity.key == 'client id::100000'
         self._create_test_content(action='remove')
 

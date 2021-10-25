@@ -31,7 +31,7 @@ class ClientRegistryTest:
         client_identity = self.client_reg.create_identity()
         client_id = client_identity.client_idno
         assert self.client_reg.get_identity_by_idno(client_id) == client_identity
-        assert self.client_reg.get_identity_by_idno(9999) == None
+        assert self.client_reg.get_identity_by_idno(9999) is None
 
     def init_test(self):
         """

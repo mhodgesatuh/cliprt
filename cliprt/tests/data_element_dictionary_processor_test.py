@@ -26,10 +26,11 @@ class DataElementDictionaryProcessorTest:
     noded_client_info = ClientInformationWorkbook(noded_wb_file)
 
     # DED heading column indicies + 1 yields cell columns.
-    de_idx = settings.DE_COL_IDX + 1
+    de_idx = settings.DE_NAME_COL_IDX + 1
+    de_type_idx = settings.DE_TYPE_COL_IDX + 1
     dest_ws_idx = settings.DEST_WS_COL_IDX + 1
-    dest_de_idx = settings.DEST_DE_COL_IDX + 1
-    format_idx = settings.DE_FORMAT_COL_IDX + 1
+    dest_de_idx = settings.DEST_DE_NAME_COL_IDX + 1
+    dest_format_idx = settings.DEST_DE_FORMAT_COL_IDX + 1
 
     # Helper functions for the unit tests start with an '_'.
 
@@ -57,13 +58,13 @@ class DataElementDictionaryProcessorTest:
         to test for a DED that has no defined identifiers.
         """
         if action == 'restore':
-            old_str = self.settings.UNIT_TEST_TMP_DESIGNATION
+            old_str = self.settings.UNIT_TEST_DE_TYPE
             new_str = 'identifier'
         else:
             old_str = 'identifier'
-            new_str = self.settings.UNIT_TEST_TMP_DESIGNATION
+            new_str = self.settings.UNIT_TEST_DE_TYPE
 
-        col_idx = self.settings.DE_FORMAT_COL_IDX + 1
+        col_idx = self.settings.DE_TYPE_COL_IDX + 1
         ws_columns = ws.iter_cols(
             min_col=col_idx,
             max_col=col_idx,
@@ -71,42 +72,44 @@ class DataElementDictionaryProcessorTest:
 
         de_column = list(ws_columns)[0]
         for cell in de_column:
-            if cell.value == None:
+            if cell.value is None:
                 continue
             cell.value = cell.value.replace(old_str, new_str)
 
-    def _test_data_row(self, ws, values=[None, None], test_row=4):
+    def _test_data_row(self, ws, values=None, test_row=4):
         """
         Insert or remove test data as needed for custom testing.
         """
-        if values[0] == None and values[1] == None:
+        if values is None:
             ws.delete_rows(test_row, 1)
             return
 
         ws.insert_rows(test_row, 1)
         ws.cell(row=test_row, column=self.de_idx, value=values[0])
-        ws.cell(row=test_row, column=self.dest_ws_idx, value=values[1])
-        ws.cell(row=test_row, column=self.dest_de_idx, value=values[2])
-        ws.cell(row=test_row, column=self.format_idx, value=values[3])
+        ws.cell(row=test_row, column=self.de_type_idx, value=values[1])
+        ws.cell(row=test_row, column=self.dest_ws_idx, value=values[2])
+        ws.cell(row=test_row, column=self.dest_de_idx, value=values[3])
+        ws.cell(row=test_row, column=self.dest_format_idx, value=values[4])
 
     def bad_ded_config_test(self):
         """
         Unit test
         """
         test_ded = self.client_info.ded_processor
+        # Test case: de, de type, dest ws, dest de, dest format
         test_cases = [
-            ['E3150', [None, 'fb', None, None]],
-            ['E3170', ['bad dest list', None, 'name,client', None]],
-            ['E3204', ['not two dests', 'fb', 'name', 'name']],
-            ['E3207', ['bad dest de', None, 'dest_de', None]],
-            ['E3210', ['bad frag', None, 'name', 'fragment=a']],
-            ['E3212', ['bad frag', None, 'client', 'fragment=1']],
-            ['E3214', ['bad frag', None, None, 'name,fragment=1']],
-            ['E3215', ['bad frag', None, 'name', 'identifier,fragment=1']],
-            ['E3217', ['bad de format', 'fb', None, 'bad_format']],
-            ['E3226', ['bad dest de id', None, 'name', 'identifier']],
-            ['E3232', ['no dest', None, None, None]],
-            ['E3238', ['bad dest de', None, 'last name', None]],
+            ['E3150', [None, None, 'fb', None, None]],
+            ['E3170', ['bad dest list', None, None, 'client,id', 'name']],
+            ['E3204', ['bad two dests', None, 'fb', 'name', 'name']],
+            ['E3207', ['bad dest de', None, None, 'bad_de_name', None]],
+            ['E3210', ['bad frag', 'fragment=bad', None, None, None]],
+            ['E3212', ['bad frag', 'fragment=1', None, 'client', None]],
+            ['E3214', ['bad frag', 'fragment=1', None, None, 'name']],
+            ['E3215', ['bad frag', 'fragment=1,identifier', None, 'name', None]],
+            ['E3217', ['bad de format', 'fb', None, None, 'bad_format']],
+            ['E3226', ['bad dest de id', 'identifier', None, 'name', 'name']],
+            ['E3232', ['bad no dest ws', None, None, None, None]],
+            ['E3238', ['bad dest de', None, None, 'last name', None]],
         ]
         # Test each test case, one at a time to ensure that it throws
         # the required error.
@@ -183,16 +186,6 @@ class DataElementDictionaryProcessorTest:
         noded_client_info = ClientInformationWorkbook(self.noded_wb_file)
         assert not noded_client_info.has_a_ded_ws()
 
-    def parse_dest_de_format_str_test(self):
-        """
-        Unit test
-        """
-        test_ded = self.client_info.ded_processor
-
-        # Bad fragment index test.
-        with pytest.raises(Exception) as excinfo:
-            test_ded.parse_dest_de_format_str('bad frag_idx', 'name,fragment=')
-        assert 'E3210' in excinfo.value.args[0]
 
     def print_report_test(self):
         """
@@ -215,15 +208,10 @@ class DataElementDictionaryProcessorTest:
             test_ded.process_dest_de_format('bad_de', 'bad_format')
         assert 'E3217' in excinfo.value.args[0]
 
-        # Bad fragment test.
-        with pytest.raises(Exception) as excinfo:
-            test_ded.process_dest_de_format('bad_de', 'fragment')
-        assert 'E3220' in excinfo.value.args[0]
-
     def util_make_list_test(self):
         """
         Unit test
         """
-        str = 'welcome,to ,cliprt'
-        str_list = self.client_info.ded_processor.util_make_list(str)
-        assert len(str_list) == 3
+        test_str = 'welcome,to ,cliprt'
+        test_str_list = self.client_info.ded_processor.util_make_list(test_str)
+        assert len(test_str_list) == 3

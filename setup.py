@@ -16,7 +16,7 @@ https://github.com/mhodgesatuh/cliprty
 from setuptools import setup, find_packages
 
 setup(name='cliprt',
-    version='0.2.0',
+    version='0.3.0',
     description='Client Information Reporting',
     url='http://github.com/mhodgesatuh/cliprt',
     author='Michael Hodges',

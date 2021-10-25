@@ -72,15 +72,15 @@ class DataElementDictionaryProcessor:
 
         # Determine column indicies for the required DED columns.
         # Ensure that all the required DED columns are provided.
-        # > col_headings[col_name] = col_idx
         col_headings = self.read_col_headings()
 
         self.hydrate_ded_by_de(col_headings)
         self.hydrate_ded_by_dest_de(col_headings)
-        self.hydrate_ded_by_de_format(col_headings)
+        self.hydrate_ded_by_dest_de_format(col_headings)
+        self.hydrate_ded_by_de_type(col_headings)
         self.hydration_validation()
 
-        # Success: the user configured DED was processed.
+        # Success: the user-configured DED was processed.
         self.ded_hydrated = True
         return True
 
@@ -92,7 +92,7 @@ class DataElementDictionaryProcessor:
             multivalued (comma delimited).
         """
         # Get the DED worksheet column of data element names.
-        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DE_COL_IDX]]
+        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DE_NAME_COL_IDX]]
         ws_columns = self.ws.iter_cols(
             min_col=col_idx,
             max_col=col_idx,
@@ -161,9 +161,9 @@ class DataElementDictionaryProcessor:
             # Update the DED.
             self.ded[de_name].set_dest_de_name(dest_de_name)
 
-    def hydrate_ded_by_de_format(self, col_headings):
+    def hydrate_ded_by_dest_de_format(self, col_headings):
         """
-        DE Format - is overloaded with the following:
+        DE Format:
             1. date, name, phone: any of which will be used to help
                 with the output format of the raw content data.  These
                 are mutually exclusive.
@@ -200,7 +200,7 @@ class DataElementDictionaryProcessor:
         DE Type - includes the following, which are mutually exclusive:
             1. "identifier" to indicate that the content data will
                 also be used for identity matching.
-            3. "fragemnt=n" to indicate that content data needs to be
+            2. "fragemnt=n" to indicate that content data needs to be
                 combined into a single report destination value, e.g.:
                 map first name and last name to a full name value at
                 the report destination.
@@ -278,39 +278,6 @@ class DataElementDictionaryProcessor:
 
         return True
 
-    def parse_dest_de_format_str(self, de_name, dest_de_format_str):
-        """
-        Preprocess the raw destination format list and parse "fragment"
-        entries to get the fragment index.
-        """
-        dest_de_format_list = []
-
-        for dest_de_format in self.util_make_list(dest_de_format_str):
-
-            # Determine if the destination format needs to be parsed.
-            if '=' in dest_de_format:
-
-                # Parse the destination format from the assigned index.
-                dest_de_format_part = dest_de_format.split('=',1)
-
-                # Parsed, this is the clean destination format.
-                dest_de_format = dest_de_format_part[0]
-
-                # Currently the assigned index is only relevant for
-                # a "fragment", the rest are ignored.
-                if dest_de_format == self.settings.FRAGMENT_DESIGNATION:
-                    if not dest_de_format_part[1].isdigit():
-                        # Fatal error
-                        raise Exception(self.cliprt.msg(3210).format(de_name, self.ws.title))
-
-                    # Save the fragment index for later.
-                    self.de_fragments_list[de_name] = int(dest_de_format_part[1])
-
-            # Add the clean destination format to the list.
-            dest_de_format_list.append(dest_de_format)
-
-        return dest_de_format_list
-
     def preconfig_ded_worksheet(self, de_names):
         """
         Preconfigure a fresh DED worksheet.
@@ -362,29 +329,53 @@ class DataElementDictionaryProcessor:
 
     def process_dest_de_format(self, de_name, dest_de_format):
         """
-        The destination format is overloaded with data formatting
-        information as well as identifier and fragment attribute
-        designations. Parse the destination format data and update
-        the data element instance accordingly if designations are
-        found.
+        Process the destination data element format destination and
+        update the data element instance accordingly.
         """
-        # Validate the destination format designater.
+        # Validate the destination data element format designater.
         if not dest_de_format in self.settings.VALID_DE_FORMATS:
             # Fatal error, invalid destination format
-            raise Exception(self.cliprt.msg(3217).format(dest_de_format, de_name, self.settings.VALID_DE_FORMATS))
+            raise Exception(self.cliprt.msg(3217).format(
+                dest_de_format,
+                de_name,
+                self.settings.VALID_DE_FORMATS)
+            )
 
-        # Check for the overload identifier and fragment designaters.
-        if dest_de_format == self.settings.IDENTIFIER_DESIGNATION: # todo: is this right?
+        # Save the destintion format to the DED.
+        self.ded[de_name].set_dest_de_format(dest_de_format)
+        return True
+
+    def process_de_type(self, de_name, de_type):
+        """
+        Process the destination data element type destination and update
+        the data instance accordingly if designations are found.
+        """
+        if ',' in de_type:
+            raise Exception(self.cliprt.msg(3215).format(de_type, de_name))
+
+        # Check for identifier type.
+        if de_type == self.settings.IDENTIFIER_DE_TYPE:
             self.ded[de_name].set_to_identifier()
-        elif dest_de_format == self.settings.FRAGMENT_DESIGNATION:
-            if de_name in self.de_fragments_list:
-                self.ded[de_name].set_to_fragment(self.de_fragments_list[de_name])
-            else:
-                # Fatal error, invalid destination format
-                raise Exception(self.cliprt.msg(3220).format(dest_de_format, de_name, self.settings.VALID_DE_FORMATS))
-        else:
-            # Save the destintion format designater to the DED.
-            self.ded[de_name].set_dest_de_format(dest_de_format)
+            return True
+
+        # Check for fragment type.
+        if self.settings.FRAGMENT_DE_TYPE in de_type:
+            frag_idx = self.get_tuple_index(
+                de_name,
+                self.settings.FRAGMENT_DE_TYPE,
+                de_type
+            )
+            self.de_fragments_list[de_name] = frag_idx
+            self.ded[de_name].set_to_fragment(self.de_fragments_list[de_name])
+            return True
+
+        if not de_type in self.settings.VALID_DE_TYPES:
+            raise Exception(self.cliprt.msg(3218).format(
+                de_type,
+                de_name,
+                self.settings.VALID_DE_TYPES)
+            )
+        return True
 
     def read_col_headings(self, evaluate_only = False):
         """
@@ -404,7 +395,10 @@ class DataElementDictionaryProcessor:
                     # No fatal error to be thrown.
                     return False
                 # Fatal error
-                raise Exception(self.cliprt.msg(3200).format(ded_col_heading, self.ws.title))
+                raise Exception(self.cliprt.msg(3200).format(
+                    ded_col_heading,
+                    self.ws.title)
+                )
         return col_headings
 
     def util_make_list(self, str_value):

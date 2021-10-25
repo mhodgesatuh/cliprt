@@ -242,7 +242,7 @@ class ContentWorksheet:
             # Copy the matched identifiers values to the destination worksheet.
             for dest_ws_ind, dest_row_idx in identity.dest_ws.items():
 
-                for identifier in client_id_resolver.identifier_matched:
+                for identifier in client_id_resolver.identifiers_matched:
                     # Update the destination report worksheet.
                     dest_de_name = identifier.de_name
                     dest_col_idx = self.ded[dest_de_name].get_col_by_dest_ws_ind(dest_ws_ind)

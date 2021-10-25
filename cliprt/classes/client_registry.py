@@ -9,7 +9,7 @@ from cliprt.classes.client_identity import ClientIdentity
 class ClientRegistry:
     """
     The client identifier registry keeps track of all client id's and
-    provide the next available client id number when a new client 
+    provide the next available client id number when a new client
     identifier is added to the registry.
     """
     def __init__(self, dest_ws_registry, starting_client_idno=1000):
@@ -27,9 +27,9 @@ class ClientRegistry:
     def create_identity(self):
         """
         There should be one unique identity for each client.  A client
-        id is a unique number that is associated with each client. 
+        id is a unique number that is associated with each client.
         Creation of an identity automatically adds it to the list in
-        the registry.   
+        the registry.
         """
         client_idno = self.get_next_client_idno()
         identity = ClientIdentity(client_idno, self.dest_ws_reg)
@@ -43,16 +43,11 @@ class ClientRegistry:
         if client_idno in self.client_id_list:
             return self.client_id_list[client_idno]
         return None
-        '''
-        return self.client_id_list[client_idno] \
-            if client_idno in self.client_id_list \
-            else None
-        '''
 
     def get_next_client_idno(self):
         """
         The client identity registry keeps track of the next available
-        client id number.  Once served, the regisrty is updated for the 
+        client id number.  Once served, the regisrty is updated for the
         next request for a client id number.
         """
         client_idno = self.next_client_idno
