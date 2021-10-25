@@ -32,6 +32,34 @@ class DataElementDictionaryProcessor:
         """
         return self.ded_hydrated
 
+    def get_tuple_index(self, de_name, de_type, de_type_str):
+        """
+        Parse "type=n" entries to get the type index.
+        """
+        for tuple_info in self.util_make_list(de_type_str):
+
+            if not '=' in tuple_info:
+                # throw an error
+                raise Exception(self.cliprt.msg(3210).format(
+                    de_name,
+                    de_type_str,
+                    de_type
+                ))
+
+            tuple_parts = tuple_info.split('=',1)
+            if not tuple_parts[0] == de_type:
+                # throw an error
+            if not tuple_parts[1].isdigit():
+                # Fatal error
+                raise Exception(self.cliprt.msg(3210).format(
+                    de_name,
+                    de_type_str,
+                    de_type
+                ))
+
+            # Return the index value.
+            return tuple_parts[1]
+
     def hydrate_ded(self):
         """
         Process the data Element worksheet and the report configuration
@@ -74,8 +102,10 @@ class DataElementDictionaryProcessor:
         # From each row get the data element name and associated
         # destination worksheet indicator and save to the DED.
         for de_cell in de_column:
-            if de_cell.value == None:
-                raise Exception(self.cliprt.msg(3150).format(self.ws.title, de_cell.coordinate))
+            if de_cell.value is None:
+                raise Exception(
+                    self.cliprt.msg(3150).format(self.ws.title, de_cell.coordinate)
+                )
 
             # Ensure values used for comparisons are shifted to
             # lowercase to reduce sensitivity to typos in the DED.
@@ -86,9 +116,11 @@ class DataElementDictionaryProcessor:
 
             # If destination worksheet indicators are specified, save
             # them to the DED.
-            col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DEST_WS_COL_IDX]]
+            col_idx = col_headings[
+                self.settings.COL_HEADINGS[self.settings.DEST_WS_COL_IDX]
+            ]
             dest_ws_cell = self.ws.cell(row=de_cell.row, column=col_idx)
-            if dest_ws_cell.value == None:
+            if dest_ws_cell.value is None:
                 continue
             for ws_dest_ind in self.util_make_list(dest_ws_cell.value):
                 # Update the DED.
@@ -101,7 +133,9 @@ class DataElementDictionaryProcessor:
         """
         # Get the DED worksheet column of destination data element
         # names.
-        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DEST_DE_COL_IDX]]
+        col_idx = col_headings[
+            self.settings.COL_HEADINGS[self.settings.DEST_DE_NAME_COL_IDX]
+        ]
         ws_columns = self.ws.iter_cols(
             min_col=col_idx,
             max_col=col_idx,
@@ -111,15 +145,17 @@ class DataElementDictionaryProcessor:
         # From each row get the destination data element name and save
         # to the DED.
         for dest_de_cell in de_column:
-            if dest_de_cell.value == None:
+            if dest_de_cell.value is None:
                 continue
 
             # Add the destination data element name and its information to the data
             # element dictionary.
             dest_de_name = self.settings.str_normalize(dest_de_cell.value)
 
-            de_col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DE_COL_IDX]]
-            de_cell = self.ws.cell(row=dest_de_cell.row, column=de_col_idx)
+            DE_NAME_COL_IDX = col_headings[
+                self.settings.COL_HEADINGS[self.settings.DE_NAME_COL_IDX]
+            ]
+            de_cell = self.ws.cell(row=dest_de_cell.row, column=DE_NAME_COL_IDX)
             de_name = self.settings.str_normalize(de_cell.value)
 
             # Update the DED.
@@ -129,16 +165,14 @@ class DataElementDictionaryProcessor:
         """
         DE Format - is overloaded with the following:
             1. date, name, phone: any of which will be used to help
-                with the output format of the raw content data.
-            2. "identifier" to indicate that the content data will
-                also be used for identity matching.
-            3. "fragemnt=n" to indicate that content data needs to be
-                combined into a single report destination value, e.g.:
-                map first name and last name to a full name value at
-                the report destination.
+                with the output format of the raw content data.  These
+                are mutually exclusive.
         """
-        # Get the DED worksheet column of data element formats.
-        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DE_FORMAT_COL_IDX]]
+        # Get the DED worksheet column of destination data element
+        # formats.
+        col_idx = col_headings[
+            self.settings.COL_HEADINGS[self.settings.DEST_DE_FORMAT_COL_IDX]
+        ]
         ws_columns = self.ws.iter_cols(
             min_col=col_idx,
             max_col=col_idx,
@@ -148,18 +182,54 @@ class DataElementDictionaryProcessor:
         # From each row get the destination data element name and save
         # to the DED.
         for de_format_cell in de_column:
-            if de_format_cell.value == None:
+            if de_format_cell.value is None:
                 continue
 
-            de_col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DE_COL_IDX]]
-            de_cell = self.ws.cell(row=de_format_cell.row, column=de_col_idx)
+            DE_NAME_COL_IDX = col_headings[
+                self.settings.COL_HEADINGS[self.settings.DE_NAME_COL_IDX]
+            ]
+            de_cell = self.ws.cell(row=de_format_cell.row, column=DE_NAME_COL_IDX)
             de_name = self.settings.str_normalize(de_cell.value)
 
-            dest_de_format_str = self.settings.str_normalize(de_format_cell.value)
-            if not dest_de_format_str == None:
-                dest_de_format_list = self.parse_dest_de_format_str(de_name, dest_de_format_str)
-                for dest_de_format in dest_de_format_list:
-                    self.process_dest_de_format(de_name, dest_de_format)
+            dest_de_format = self.settings.str_normalize(de_format_cell.value)
+            if not dest_de_format is None:
+                self.process_dest_de_format(de_name, dest_de_format)
+
+    def hydrate_ded_by_de_type(self, col_headings):
+        """
+        DE Type - includes the following, which are mutually exclusive:
+            1. "identifier" to indicate that the content data will
+                also be used for identity matching.
+            3. "fragemnt=n" to indicate that content data needs to be
+                combined into a single report destination value, e.g.:
+                map first name and last name to a full name value at
+                the report destination.
+        """
+        # Get the DED worksheet column of data element types.
+        col_idx = col_headings[
+            self.settings.COL_HEADINGS[self.settings.DE_TYPE_COL_IDX]
+        ]
+        ws_columns = self.ws.iter_cols(
+            min_col=col_idx,
+            max_col=col_idx,
+            min_row=self.ws.min_row+1)
+        de_column = list(ws_columns)[0]
+
+        # From each row get the destination data element name and save
+        # to the DED.
+        for de_format_cell in de_column:
+            if de_format_cell.value is None:
+                continue
+
+            DE_NAME_COL_IDX = col_headings[
+                self.settings.COL_HEADINGS[self.settings.DE_NAME_COL_IDX]
+            ]
+            de_cell = self.ws.cell(row=de_format_cell.row, column=DE_NAME_COL_IDX)
+            de_name = self.settings.str_normalize(de_cell.value)
+
+            dest_de_type = self.settings.str_normalize(de_format_cell.value)
+            if not dest_de_type is None:
+                self.process_de_type(de_name, dest_de_type)
 
     def hydration_validation(self):
         """
@@ -173,32 +243,34 @@ class DataElementDictionaryProcessor:
             if de.is_identifier:
                 identifier_cnt += 1
 
-            if not de.dest_de_name == None and ',' in de.dest_de_name:
+            if not de.dest_de_name is None and ',' in de.dest_de_name:
                 raise Exception(self.cliprt.msg(3170).format(de_name, de.dest_de_name))
 
-            if de.has_dest_ws() and not de.dest_de_name == None:
+            if de.has_dest_ws() and not de.dest_de_name is None:
                 raise Exception(self.cliprt.msg(3204).format(de_name))
 
-            if not de.dest_de_name == None and not de.dest_de_name in self.ded:
+            if not de.dest_de_name is None and not de.dest_de_name in self.ded:
                 raise Exception(self.cliprt.msg(3207).format(de.dest_de_name))
 
-            if de.is_fragment and not de.dest_de_name == None and self.ded[de.dest_de_name].is_remapped:
+            if de.is_fragment and\
+                not de.dest_de_name is None and\
+                self.ded[de.dest_de_name].is_remapped:
                 raise Exception(self.cliprt.msg(3212).format(de.dest_de_name, de_name))
 
-            if de.is_fragment and de.dest_de_name == None:
+            if de.is_fragment and de.dest_de_name is None:
                 raise Exception(self.cliprt.msg(3214).format(de_name))
 
-            if de.is_identifier and de.is_fragment:
-                raise Exception(self.cliprt.msg(3215).format(de_name))
+            if de.is_fragment and de.dest_de_name is None:
+                raise Exception(self.cliprt.msg(3216).format(de_name))
 
-            if de.is_identifier and not de.dest_de_name == None:
+            if de.is_identifier and not de.dest_de_name is None:
                 raise Exception(self.cliprt.msg(3226).format(de.dest_de_name, de_name))
 
-            if not de.has_dest_ws() and de.dest_de_name == None:
+            if not de.has_dest_ws() and de.dest_de_name is None:
                 raise Exception(self.cliprt.msg(3232).format(de_name))
 
             # Dest_de must reference a DE with a defined dest_ws
-            if not de.dest_de_name == None and not self.ded[de.dest_de_name].has_dest_ws():
+            if not de.dest_de_name is None and not self.ded[de.dest_de_name].has_dest_ws():
                 raise Exception(self.cliprt.msg(3238).format(de.dest_de_name, de_name))
 
         if identifier_cnt == 0:
@@ -318,7 +390,7 @@ class DataElementDictionaryProcessor:
         """
         Get the column headings and retain the column indices.
         """
-        if self.ws == None:
+        if self.ws is None:
             return False
 
         col_headings = {}
@@ -340,4 +412,4 @@ class DataElementDictionaryProcessor:
         Convert a comma-delimited string to a list.  These lists are
         usually provided by the user in the DED configuration.
         """
-        return None if str_value == None else str_value.replace(' ','').split(',')
+        return None if str_value is None else str_value.replace(' ','').split(',')

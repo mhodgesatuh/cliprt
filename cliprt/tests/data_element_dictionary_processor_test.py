@@ -31,9 +31,7 @@ class DataElementDictionaryProcessorTest:
     dest_de_idx = settings.DEST_DE_COL_IDX + 1
     format_idx = settings.DE_FORMAT_COL_IDX + 1
 
-    """
-    Helper functions for the unit tests start with an '_'.
-    """
+    # Helper functions for the unit tests start with an '_'.
 
     def _dehydrate_ded(self, ded_processor):
         """
