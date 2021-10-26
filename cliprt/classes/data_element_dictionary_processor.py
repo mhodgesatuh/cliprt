@@ -49,6 +49,11 @@ class DataElementDictionaryProcessor:
             tuple_parts = tuple_info.split('=',1)
             if not tuple_parts[0] == de_type:
                 # throw an error
+                raise Exception(self.cliprt.msg(3217).format(
+                    de_name,
+                    de_type_str,
+                    de_type
+                ))
             if not tuple_parts[1].isdigit():
                 # Fatal error
                 raise Exception(self.cliprt.msg(3210).format(
