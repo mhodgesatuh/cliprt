@@ -116,7 +116,7 @@ class ContentWorksheetTest:
         assert not retval
         self._create_test_content(action='remove')
 
-        test_content = self._create_test_content();
+        test_content = self._create_test_content()
         # First row: headings; 2nd+ rows: data.
         test_data = [
             ['id', 'client id', 'phone', 'first name', 'last name', 'gender'],

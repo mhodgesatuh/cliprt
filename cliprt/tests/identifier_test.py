@@ -36,7 +36,7 @@ class IdentifierTest:
         Unit test.
         """
         assert self.client_id.make_searchable(' aBcD ') == 'abcd'
-    
+
     def save_client_idno_test(self):
         """
         Unit test
