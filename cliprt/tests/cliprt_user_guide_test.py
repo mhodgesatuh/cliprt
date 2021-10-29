@@ -11,7 +11,8 @@ class CliprtUserGuideTest:
     """
     User guide test harness.
     """
-    def init_test(self):
+    @staticmethod
+    def init_test():
         """
         Unit test
         """
@@ -19,4 +20,3 @@ class CliprtUserGuideTest:
             CliprtUserGuide('./cliprt/resources')
         captured()
         assert len(captured.stdout) > 100
-        

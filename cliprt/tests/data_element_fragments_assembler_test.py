@@ -10,7 +10,8 @@ class DataElementFragmentsAssemblerTest:
     """
     Data Element Fragments Assembler test harness.
     """
-    def add_fragment_col_index_test(self):
+    @staticmethod
+    def add_fragment_col_index_test():
         """
         Unit test
         """
@@ -18,7 +19,8 @@ class DataElementFragmentsAssemblerTest:
         frag_assembler.add_fragment_col_index('test dest de', 1)
         assert frag_assembler.fragments_col_indicies == {'test dest de': 1}
 
-    def add_fragment_value_test(self):
+    @staticmethod
+    def add_fragment_value_test():
         """
         Unit test
         """
@@ -26,7 +28,8 @@ class DataElementFragmentsAssemblerTest:
         frag_assembler.add_fragment_value(1, 'frag part 1')
         assert frag_assembler.fragments_values == {1: 'frag part 1'}
 
-    def assembled_value_test(self):
+    @staticmethod
+    def assembled_value_test():
         """
         Unit test
         """
@@ -35,7 +38,8 @@ class DataElementFragmentsAssemblerTest:
         frag_assembler.add_fragment_value(2, 'and part 2')
         assert frag_assembler.assembled_value() == 'frag part 1 and part 2'
 
-    def init_test(self):
+    @staticmethod
+    def init_test():
         """
         Unit test
         """
@@ -44,7 +48,8 @@ class DataElementFragmentsAssemblerTest:
         assert frag_assembler.fragments_col_indicies == {}
         assert frag_assembler.fragments_values == {}
 
-    def str_test(self):
+    @staticmethod
+    def str_test():
         """
         Unit test
         """

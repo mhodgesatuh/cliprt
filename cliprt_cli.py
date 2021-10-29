@@ -18,7 +18,7 @@ WELCOME_MSG =\
     'Welcome to CLIPRT, the Client Information Parsing and Reporting Tool.'
 EXIT_MSG = 'Ended cliprt as requested.'
 
-def request_create_client_reports(client_info_wb):
+def request_create_client_reports(wb):
     """
     Create the client report worksheets.
     """
@@ -29,10 +29,10 @@ def request_create_client_reports(client_info_wb):
     print('\nCLIPR has started working on your client worksheets...'\
         'this may take some time.')
     print('  ...creating report worksheet(s)...')
-    client_info_wb.create_client_reports(verbosity)
+    wb.create_client_reports(verbosity)
     sys.exit(0)
 
-def request_create_ded(client_info_wb):
+def request_create_ded(wb):
     """
     Prompt to see if the DED worksheet should be generated.
     """
@@ -41,7 +41,7 @@ def request_create_ded(client_info_wb):
     prompt_b = 'Create the worksheet?'
     if user_requests(prompt_a, prompt_b):
         print('  ...creating DED worksheet, pkease wait...')
-        client_info_wb.create_ded_worksheet()
+        wb.create_ded_worksheet()
         msg =\
             'The DED worksheet has been created. '\
             'Open the workbook and configure the DED '\
@@ -49,14 +49,14 @@ def request_create_ded(client_info_wb):
         print(msg)
         sys.exit(0)
 
-def request_print_ded(client_info_wb):
+def request_print_ded(wb):
     """
     Print the DED for review?
     """
     prompt_a = 'Skip the client reporting? Only print the DED configuration?'
     prompt_b = 'Print the DED configuration?'
     if user_requests(prompt_a, prompt_b):
-        client_info_wb.print_ded_report()
+        wb.print_ded_report()
     return True
 
 def request_workbook():
@@ -80,7 +80,7 @@ def request_workbook():
             # If work book ws provided successfully, we can continue
             # with processing the workbook.
             print('  ...opening workbook...', end='')
-            client_info_wb = ClientInformationWorkbook(workbook_file)
+            wb = ClientInformationWorkbook(workbook_file)
             print('opened!')
             # Ready to move on and process the workbook.
             inputting = False
@@ -91,7 +91,7 @@ def request_workbook():
             print(err_str)
             print('Path and name?')
     # Return the workbook for further processing.
-    return client_info_wb
+    return wb
 
 def user_requests(prompt_a, prompt_b):
     """

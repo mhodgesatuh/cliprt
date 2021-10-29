@@ -33,13 +33,13 @@ class ClientInformationWorkbookTest:
         """
         self.client_info.dest_ws_reg.dest_ws_names.append('dest_ws')
         self.client_info.create_content_ws_names_list()
-        assert not 'dest_ws' in self.client_info.content_ws_names
+        assert 'dest_ws' not in self.client_info.content_ws_names
 
         test_ws_title = 'test ws'
         test_ws = self.client_info.wb.create_sheet(title=test_ws_title)
         self.client_info.dest_ws_reg.dest_ws_names.append(test_ws_title)
         self.client_info.create_content_ws_names_list()
-        assert not test_ws_title in self.client_info.content_ws_names
+        assert test_ws_title not in self.client_info.content_ws_names
         self.client_info.wb.remove(test_ws)
 
     def create_ded_worksheet_test(self):
@@ -48,7 +48,7 @@ class ClientInformationWorkbookTest:
         """
         test_ws_title = self.client_info.DED_WS_NAME
         self.client_info.ded_ws = self.client_info.wb.create_sheet(title=test_ws_title, index=0)
-        assert self.client_info.create_ded_worksheet(False) == False
+        assert self.client_info.create_ded_worksheet(False) is False
 
     def ded_is_verified_test(self):
         """
@@ -57,12 +57,13 @@ class ClientInformationWorkbookTest:
         assert self.client_info.ded_processor.hydrate_ded()
         assert self.client_info.ded_is_verified()
 
-    def init_bad_file_test(self):
+    @staticmethod
+    def init_bad_file_test():
         """
         Unit test
         """
         with pytest.raises(Exception) as excinfo:
-            client_info_wb = ClientInformationWorkbook('bad_file_name')
+            ClientInformationWorkbook('bad_file_name')
         assert 'E1000' in excinfo.value.args[0]
 
     def print_ded_report_test(self):
