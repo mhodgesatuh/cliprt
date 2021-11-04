@@ -115,7 +115,7 @@ class ClientInformationWorkbook:
         for ws_name in self.content_ws_names:
             ws = self.wb[ws_name]
             for cell in ws[ws.min_row]:
-                if cell.value == None:
+                if cell.value is None:
                     continue
                 de_name = cell.value.lower().strip().title()
                 if len(de_name) >= 2 and not de_name in de_names:

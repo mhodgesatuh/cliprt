@@ -71,7 +71,7 @@ class ClientIdentityResolver:
             idno_match_cnt.items(),
             key=operator.itemgetter(1),
             reverse=True
-            )
+        )
 
         # The best-match client id is in the first key of the first
         # tuple.

@@ -4,6 +4,7 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
+# pylint: disable=invalid-name
 import os
 import sys
 

@@ -4,13 +4,12 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
-from datetime import *
 from cliprt.classes.cliprt_settings import CliprtSettings
 from cliprt.classes.data_element import DataElement
 from cliprt.classes.message_registry import MessageRegistry
 
-class DataElementDictionaryProcessor:
-
+class DataElementDictionaryProcessor():
+    # pylint: disable=too-many-instance-attributes
     def __init__(self, wb, ws, dest_ws_registry):
         """
         Read the date element dictionary worksheet and hydrate the DED.
@@ -28,8 +27,6 @@ class DataElementDictionaryProcessor:
         self.ws = ws
 
     def ded_is_hydrated(self):
-        """
-        """
         return self.ded_hydrated
 
     def get_tuple_index(self, de_name, de_type, de_type_str):
@@ -310,7 +307,7 @@ class DataElementDictionaryProcessor:
         print('> ded[]')
         print("----------------------------------------")
         for de_name, de_instance in self.ded.items():
-            print('{} : {}'.format(de_name, de_instance))
+            print(f'{de_name} : {de_instance}')
         print()
 
     def process_dest_ind(self, de_name, ws_dest_ind):
