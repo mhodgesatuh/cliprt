@@ -11,3 +11,4 @@ a.pytest_cache/
 coverage.xml
 cliprt/tests/~$test_workbook.xlsx
 cliprt/tests/~$test_noded_workbook.xlsx
+*.pyc
