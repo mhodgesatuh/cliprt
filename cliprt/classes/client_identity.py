@@ -15,7 +15,7 @@ class ClientIdentity:
         """
         Create a new identity.  The identity registry is an injected
         service that will provide the next available id.  An identity
-        may have one or more identifiers that in combination are 
+        may have one or more identifiers that in combination are
         uniquely associated with this particular identity.
         """
         # Class attributes.

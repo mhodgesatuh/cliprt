@@ -7,9 +7,9 @@ Copyright   2020 Michael Hodges
 class DataElementFragmentsAssembler:
     """
     Collect the data element fragments for a data element.  Once all of
-    the fragments are provided the assembled value of the data element 
+    the fragments are provided the assembled value of the data element
     is available.  For example, the "name" data element might need to be
-    assembled from the "first name" and "last name" data elements.  The 
+    assembled from the "first name" and "last name" data elements.  The
     order of the fragments is needed for a correct assembly.
     """
 
@@ -29,8 +29,8 @@ class DataElementFragmentsAssembler:
         ret_val = ''
         delim = ', '
         for frag_idx, frag_de in self.fragments_col_indicies.items():
-            ret_val+="{}{{'{}': '{}'}}".format(delim, frag_idx, frag_de)
-        return "'{}': {{{}}}".format(self.assembled_de_name, ret_val[len(delim):])
+            ret_val += f"{delim}{{'{frag_idx}': '{frag_de}'}}"
+        return f"'{self.assembled_de_name}': {{{ret_val[len(delim):]}}}"
 
     def add_fragment_col_index(self, fragment_de_name, ws_col):
         """
@@ -51,6 +51,6 @@ class DataElementFragmentsAssembler:
         Assemble the value of the data element.
         """
         ret_value = ''
-        for i in sorted (self.fragments_values): 
-            ret_value+=' {}'.format(self.fragments_values[i])
+        for i in sorted(self.fragments_values):
+            ret_value += f' {self.fragments_values[i]}'
         return ret_value.strip()

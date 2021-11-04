@@ -4,6 +4,8 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
+# pylint: disable=too-many-arguments
+
 from cliprt.classes.destination_worksheet import DestinationWorksheet
 
 class DestinationWorksheetsRegistry:
@@ -59,7 +61,7 @@ class DestinationWorksheetsRegistry:
         for ws_ind, dest_ws in self.dest_ws_by_ind_list.items():
             dest_ws.update_column_headings()
 
-    def update_dest_ws_cell(self, dest_ws_ind, row_idx, col_idx, cell_data, data_format = None):
+    def update_dest_ws_cell(self, dest_ws_ind, row_idx, col_idx, cell_data, data_format=None):
         """
         Update the specified cell in the specified destination worksheet.
         """

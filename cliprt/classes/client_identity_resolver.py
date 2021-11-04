@@ -63,7 +63,7 @@ class ClientIdentityResolver:
             # found.
             for idno_set in client_idno_sets:
                 if idno_match_set.issubset(idno_set):
-                    idno_match_cnt[idno]+=1
+                    idno_match_cnt[idno] += 1
 
         # Sort such that the identity number with the most matches is
         # listed first.
@@ -88,7 +88,7 @@ class ClientIdentityResolver:
 
         # Validate the format of the email.
         regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
-        return False if re.fullmatch(regex, de_value) is None else True
+        return re.fullmatch(regex, de_value)
 
     @staticmethod
     def is_useful_phone_identifier(de_value):

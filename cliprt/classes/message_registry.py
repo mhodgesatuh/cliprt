@@ -77,7 +77,8 @@ class MessageRegistry:
             'Error: invalid Dest DE Name "{}" specified for "{}". '\
             'An identifier cannot be remapped to another Dest DE Name.' + utc
         self.message[3229] =\
-            'Error: the Dest WS designation is incomplete. There are as yet no identifiers provided.'
+            'Error: the Dest WS designation is incomplete. '\
+            'There are as yet no identifiers provided.'
         self.message[3232] =\
             'Error: specify either a "Dest WS" or a "Dest DE Name" for "{}".' + utc
         self.message[3238] =\
@@ -86,7 +87,8 @@ class MessageRegistry:
 
         # Client information workbook
         self.message[4000] =\
-            'Error: the Dest WS designation, "{}", must designate the destination report indicators. '\
+            'Error: the Dest WS designation, "{}", '\
+            'must designate the destination report indicators. '\
             'Configuration is incomplete.'
 
         # Content work sheet

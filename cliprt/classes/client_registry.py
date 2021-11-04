@@ -51,5 +51,5 @@ class ClientRegistry:
         next request for a client id number.
         """
         client_idno = self.next_client_idno
-        self.next_client_idno+=1
+        self.next_client_idno += 1
         return client_idno

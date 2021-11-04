@@ -10,6 +10,8 @@ class DataElement:
     element.  A single data element may be repeated across one or more
     client worksheets.
     """
+    # pylint: disable=too-many-instance-attributes
+
     def __init__(self, name, ded_processor):
         """
         Prepare a new data element.
@@ -40,38 +42,38 @@ class DataElement:
                 'dest_de_name',
                 self.dest_de_name
                 )
-            i+=1
+            i += 1
         if self.is_content:
             str_val[i] = 'is_content'
-            i+=1
+            i += 1
         if self.is_identifier:
             str_val[i] = 'is_identifier'
-            i+=1
+            i += 1
         if self.is_fragment:
             str_val[i] = self.util_format_dict_output(
                 'fragment_idx',
                 self.fragment_idx
             )
-            i+=1
-        if not self.dest_de_format == None:
+            i += 1
+        if self.dest_de_format is not None:
             str_val[i] = self.util_format_dict_output(
                 'dest_de_format',
                 self.dest_de_format
             )
-            i+=1
+            i += 1
         for dest_ws_ind, dest_info in self.dest_ws_info.items():
             str_val[i] = self.util_format_dict_output(
                 dest_ws_ind,
                 dest_info
             )
-            i+=1
+            i += 1
         ret_val = ''
         i = 0
         delim = ', '
         while i < len(str_val):
             # Insert a delimitor between each attribute.
-            ret_val+='{}{}'.format(delim, str_val[i])
-            i+=1
+            ret_val += f'{delim}{str_val[i]}'
+            i += 1
         # Remove leading delimitor.
         return ret_val[len(delim):]
 
@@ -109,13 +111,13 @@ class DataElement:
         Each data element to be included in the report is mapped to one
         or more destination reports.
         """
-        return True if dest_ws_ind in self.dest_ws_info else False
+        return dest_ws_ind in self.dest_ws_info
 
     def has_dest_ws(self):
         """
         Determine if the data element has at least one destination worksheet.
         """
-        return True if len(self.dest_ws_info) > 0 else False
+        return len(self.dest_ws_info) > 0
 
     def set_dest_de_name(self, de_name):
         """
@@ -151,7 +153,8 @@ class DataElement:
         self.is_identifier = True
         self.is_content = False
 
-    def util_format_dict_output(self, key, val):
+    @staticmethod
+    def util_format_dict_output(key, val):
         """
         Format output as "{'key': val}"
         """

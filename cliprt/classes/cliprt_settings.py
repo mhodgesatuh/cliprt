@@ -25,6 +25,9 @@ class CliprtSettings:
     # required for creating a destination (reporting) worksheet.
     MIN_REQUIRED_CONTENT_WS_COLUMNS = 3
 
+    # Default country code for the phone number format.
+    DEFAULT_COUNTRY_CODE = '1'
+
     # Default area code for the phone number format.
     DEFAULT_AREA_CODE = '808'
 
@@ -96,16 +99,19 @@ class CliprtSettings:
         ret_value = ''
         i = 1
         while i < len(name_pieces):
-            ret_value+=name_pieces[i]
-            i+=1
+            ret_value += name_pieces[i]
+            i += 1
         # Last name goes last.
         ret_value += ' ' + name_pieces[0]
         return ret_value.strip()
 
-    def format_phone(self, data_value, area_code = None, country_code = '1'):
+    def format_phone(self, data_value, area_code=None, country_code=None):
         """
         Normalize the format of phone numbers if possible.
         """
+        if country_code is None:
+            country_code = self.DEFAULT_COUNTRY_CODE
+
         if area_code is None:
             area_code = self.DEFAULT_AREA_CODE
 
@@ -146,4 +152,4 @@ class CliprtSettings:
         comparisons work as expected. Also replace underscores with
         spaces.
         """
-        return None if str_value is None else str_value.replace('_',' ').lower()
+        return None if str_value is None else str_value.replace('_', ' ').lower()

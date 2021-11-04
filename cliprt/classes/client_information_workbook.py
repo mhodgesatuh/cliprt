@@ -4,9 +4,10 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
+# pylint: disable=too-many-instance-attributes
+
 import openpyxl
 import os.path
-
 from cliprt.classes.client_registry import ClientRegistry
 from cliprt.classes.content_worksheet import ContentWorksheet
 from cliprt.classes.data_element_dictionary_processor import DataElementDictionaryProcessor
@@ -54,7 +55,7 @@ class ClientInformationWorkbook:
         # initially accessed.
         self.init_ded_processor()
 
-    def create_client_reports(self, progress_reporting_is_disabled = False, save_wb = True):
+    def create_client_reports(self, progress_reporting_is_disabled=False, save_wb=True):
         """
         Utilize and process the various worksheets in the workbook in
         order to create the destination report worksheets.
@@ -123,7 +124,7 @@ class ClientInformationWorkbook:
         de_names.sort()
         return de_names
 
-    def create_ded_worksheet(self, save_wb = True):
+    def create_ded_worksheet(self, save_wb=True):
         """
         Create a fresh DED worksheet for configuration.
         """
@@ -167,7 +168,7 @@ class ClientInformationWorkbook:
         Check to see if the client information workbook has a
         DED worksheet.
         """
-        return True if self.DED_WS_NAME in self.wb.sheetnames else False
+        return self.DED_WS_NAME in self.wb.sheetnames
 
     def print_ded_report(self):
         """

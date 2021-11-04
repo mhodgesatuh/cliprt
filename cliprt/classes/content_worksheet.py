@@ -4,9 +4,13 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
+#pylint: disable=too-many-instance-attributes
+#pylint: disable=too-many-arguments
+
 from cliprt.classes.client_identity_resolver import ClientIdentityResolver
 from cliprt.classes.cliprt_settings import CliprtSettings
-from cliprt.classes.data_element_fragments_assembler import DataElementFragmentsAssembler as FragAssembler
+from cliprt.classes.data_element_fragments_assembler import DataElementFragmentsAssembler\
+        as FragAssembler
 from cliprt.classes.identifier import Identifier
 from cliprt.classes.message_registry import MessageRegistry
 
@@ -23,14 +27,14 @@ class ContentWorksheet:
     PROGRESS_INCREMENT = 50
 
     def __init__(
-        self,
-        wb,
-        ws_name,
-        ded_processor,
-        client_registry,
-        identifier_registry,
-        dest_ws_registry
-    ):
+            self,
+            wb,
+            ws_name,
+            ded_processor,
+            client_registry,
+            identifier_registry,
+            dest_ws_registry
+        ):
         """
         Ready a content worksheet for processing.
         """
@@ -64,11 +68,10 @@ class ContentWorksheet:
         ws_top_row = list(self.ws.iter_rows(
             min_row=self.ws.min_row,
             max_row=self.ws.min_row
-            )
-        )[0]
+            ))[0]
         for ws_cell in ws_top_row:
 
-            if ws_cell.value == None:
+            if ws_cell.value is None:
                 # Skip empty columns.
                 continue
 
@@ -100,7 +103,10 @@ class ContentWorksheet:
                 if not dest_de_name in self.identifier_col_names:
                     self.identifier_col_names[dest_de_name] = self.ASSEMBLED_IDENTIFIER
                 # Add the new data element fragment to the assembler.
-                self.frag_assembler_list[dest_de_name].add_fragment_col_index(ws_de_name, ws_cell.column)
+                self.frag_assembler_list[dest_de_name].add_fragment_col_index(
+                    ws_de_name,
+                    ws_cell.column
+                    )
             elif self.ded[dest_de_name].is_identifier:
                 # Ensure that individual fragments are not processed as
                 # identifiers.
@@ -109,7 +115,7 @@ class ContentWorksheet:
                 # If none of the above, it's content.
                 self.content_cols[ws_cell.column] = ws_de_name
 
-    def client_report(self, progress_reporting_is_disabled = False):
+    def client_report(self, progress_reporting_is_disabled=False):
         """
         Create the destination report worksheets.
         """
@@ -117,7 +123,8 @@ class ContentWorksheet:
         if not progress_reporting_is_disabled:
             self.print_progress_report()
 
-        if len(self.content_cols) + len(self.identifier_col_names) < self.settings.MIN_REQUIRED_CONTENT_WS_COLUMNS:
+        if len(self.content_cols) + len(self.identifier_col_names) < \
+                self.settings.MIN_REQUIRED_CONTENT_WS_COLUMNS:
             # Skip worksheets with insufficient data to report.
             if not progress_reporting_is_disabled:
                 print(self.cliprt.msg(5000).format(self.ws_name))
@@ -128,25 +135,27 @@ class ContentWorksheet:
 
     def print_frag_assembler_list(self):
         """
+        List the fragments.
         """
         ret_val = ''
         delim = ', '
         for de_name, frag_de in self.frag_assembler_list.items():
-            ret_val+='{}{}'.format(delim, frag_de.__str__())
-        return '[{}]'.format(ret_val[len(delim):])
+            ret_val += f'{delim}{ frag_de.__str__()}'
+        return '[' + ret_val[len(delim):] + ']'
+
 
     def print_progress_report(self):
         """
         Display information about the worksheet.
         """
         print('--------')
-        print('Worksheet currently in progress: {}'.format(self.ws_name))
-        print('Rows of content to be processed: {}'.format(self.ws.max_row))
-        print("DE Names     > ws_de_names     : {}".format(self.de_names))
-        print("DE Fragments > fragment_cols   : {}".format(self.print_frag_assembler_list()))
-        print("Identifiers  > identifier_cols : {}".format(self.identifier_col_names))
-        print("Content      > content_cols    : {}".format(self.content_cols))
-        print('Processing in progress         : {}'.format('-'*self.PROGRESS_INCREMENT))
+        print(f'Worksheet currently in progress: {self.ws_name}')
+        print(f'Rows of content to be processed: {self.ws.max_row}')
+        print(f'DE Names     > ws_de_names     : {self.de_names}')
+        print(f'DE Fragments > fragment_cols   : {self.print_frag_assembler_list()}')
+        print(f'Identifiers  > identifier_cols : {self.identifier_col_names}')
+        print(f'Content      > content_cols    : {self.content_cols}')
+        print(f"Processing in progress         : {'-'*self.PROGRESS_INCREMENT}")
         print('                               : ', end='')
 
     def process_row_de_fragments(self, row_idx):
@@ -166,7 +175,7 @@ class ContentWorksheet:
                 # column.  Replace null strings with empty strings as
                 # needed.
                 frag_value = self.ws.cell(row_idx, col_idx).value \
-                    if not self.ws.cell(row_idx, col_idx).value == None \
+                    if not self.ws.cell(row_idx, col_idx).value is None \
                     else ''
                 # The DED has the fragment index.
                 frag_idx = self.ded[fragment_name].fragment_idx
@@ -195,10 +204,12 @@ class ContentWorksheet:
 
         # Resolve the client's identity.  None returned if there are no
         # useful identifiers provided for establishing an identity.
-        identity = client_id_resolver.resolve_client_identity(self.settings.IDENTITY_MATCH_THRESHOLD)
+        identity = client_id_resolver.resolve_client_identity(
+            self.settings.IDENTITY_MATCH_THRESHOLD
+            )
         return identity
 
-    def process_ws_rows(self, progress_reporting_is_disabled = False):
+    def process_ws_rows(self, progress_reporting_is_disabled=False):
         """
         Copy the content worksheet information to the destination
         worksheet. Note that this worksheet would have been skipped
@@ -218,7 +229,7 @@ class ContentWorksheet:
 
         # Process each row of the content worksheet.
         while row_idx < self.ws.max_row:
-            row_idx+=1
+            row_idx += 1
 
             if not progress_reporting_is_disabled and row_idx % progress_threshold == 0:
                 # Update the progress report indicator.
@@ -246,7 +257,7 @@ class ContentWorksheet:
                     # Update the destination report worksheet.
                     dest_de_name = identifier.de_name
                     dest_col_idx = self.ded[dest_de_name].get_col_by_dest_ws_ind(dest_ws_ind)
-                    if dest_col_idx == False:
+                    if dest_col_idx is False:
                         # There is no destination worksheet specified
                         # for this data eleement.
                         continue
@@ -258,13 +269,13 @@ class ContentWorksheet:
                         dest_col_idx,
                         dest_de_value,
                         dest_de_format
-                    )
+                        )
 
                 # Copy the content columns to the destination worksheet.
                 for col_idx, dest_de_name in self.content_cols.items():
                     dest_de_value = self.ws.cell(row_idx, col_idx).value
 
-                    if dest_de_value == None:
+                    if dest_de_value is None:
                         # Skip empty cells.
                         continue
                     if not self.ded[dest_de_name].is_mapped_to_dest_ws(dest_ws_ind):

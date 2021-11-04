@@ -152,7 +152,7 @@ class DataElementDictionaryProcessorTest:
         """
         Unit test
         """
-        self.noded_client_info.create_ded_worksheet(save_wb = False)
+        self.noded_client_info.create_ded_worksheet(save_wb=False)
 
         # Assert that the new DED worksheet is the very first one.
         assert self.noded_client_info.wb.sheetnames[0] == \

@@ -4,12 +4,17 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
+# pylint: disable=too-many-instance-attributes
+
 from cliprt.classes.cliprt_settings import CliprtSettings
 from cliprt.classes.data_element import DataElement
 from cliprt.classes.message_registry import MessageRegistry
 
-class DataElementDictionaryProcessor():
-    # pylint: disable=too-many-instance-attributes
+class DataElementDictionaryProcessor:
+    """
+    Process the data element worksheet and create the data element
+    dictionary.
+    """
     def __init__(self, wb, ws, dest_ws_registry):
         """
         Read the date element dictionary worksheet and hydrate the DED.
@@ -27,6 +32,9 @@ class DataElementDictionaryProcessor():
         self.ws = ws
 
     def ded_is_hydrated(self):
+        """
+        Indicsate whether or not the DED is hydrated.
+        """
         return self.ded_hydrated
 
     def get_tuple_index(self, de_name, de_type, de_type_str):
@@ -43,7 +51,7 @@ class DataElementDictionaryProcessor():
                     de_type
                 ))
 
-            tuple_parts = tuple_info.split('=',1)
+            tuple_parts = tuple_info.split('=', 1)
             if not tuple_parts[0] == de_type:
                 # throw an error
                 raise Exception(self.cliprt.msg(3217).format(
@@ -288,12 +296,12 @@ class DataElementDictionaryProcessor():
         col_idx = 1
         for col_heading in self.settings.COL_HEADINGS:
             self.ws.cell(1, col_idx, value=col_heading)
-            col_idx+=1
+            col_idx += 1
         # Add the list of data element names to the first column.
         row_idx = 2
         for de_name in de_names:
             self.ws.cell(row_idx, 1, value=de_name)
-            row_idx+=1
+            row_idx += 1
 
     def print_report(self):
         """
@@ -340,8 +348,7 @@ class DataElementDictionaryProcessor():
             raise Exception(self.cliprt.msg(3217).format(
                 dest_de_format,
                 de_name,
-                self.settings.VALID_DE_FORMATS)
-            )
+                self.settings.VALID_DE_FORMATS))
 
         # Save the destintion format to the DED.
         self.ded[de_name].set_dest_de_format(dest_de_format)
@@ -365,8 +372,7 @@ class DataElementDictionaryProcessor():
             frag_idx = self.get_tuple_index(
                 de_name,
                 self.settings.FRAGMENT_DE_TYPE,
-                de_type
-            )
+                de_type)
             self.de_fragments_list[de_name] = frag_idx
             self.ded[de_name].set_to_fragment(self.de_fragments_list[de_name])
             return True
@@ -375,11 +381,10 @@ class DataElementDictionaryProcessor():
             raise Exception(self.cliprt.msg(3218).format(
                 de_type,
                 de_name,
-                self.settings.VALID_DE_TYPES)
-            )
+                self.settings.VALID_DE_TYPES))
         return True
 
-    def read_col_headings(self, evaluate_only = False):
+    def read_col_headings(self, evaluate_only=False):
         """
         Get the column headings and retain the column indices.
         """
@@ -399,13 +404,13 @@ class DataElementDictionaryProcessor():
                 # Fatal error
                 raise Exception(self.cliprt.msg(3200).format(
                     ded_col_heading,
-                    self.ws.title)
-                )
+                    self.ws.title))
         return col_headings
 
-    def util_make_list(self, str_value):
+    @staticmethod
+    def util_make_list(str_value):
         """
         Convert a comma-delimited string to a list.  These lists are
         usually provided by the user in the DED configuration.
         """
-        return None if str_value is None else str_value.replace(' ','').split(',')
+        return None if str_value is None else str_value.replace(' ', '').split(',')

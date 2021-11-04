@@ -12,6 +12,8 @@ class DestinationWorksheet:
     not exist, and reset it if it does so that it is reay for the next
     reporting request.
     """
+    # pylint: disable=too-many-instance-attributes
+
     DEST_WS_NAME_PREFIX = 'comm_report_for_'
 
     def __init__(self, wb, ws_ind):
@@ -50,7 +52,7 @@ class DestinationWorksheet:
         report.
         """
         next_col_idx = self.next_col_idx
-        self.next_col_idx+=1
+        self.next_col_idx += 1
         return next_col_idx
 
     def get_next_row_idx(self):
@@ -59,7 +61,7 @@ class DestinationWorksheet:
         report.
         """
         next_row_idx = self.next_row_idx
-        self.next_row_idx+=1
+        self.next_row_idx += 1
         return next_row_idx
 
     def reset(self):
@@ -69,12 +71,12 @@ class DestinationWorksheet:
         row_cnt = self.ws.max_row - self.ws.min_row + 1
         self.ws.delete_rows(self.ws.min_row, amount=row_cnt)
 
-    def update_cell(self, row_idx, col_idx, cell_data, data_format = None):
+    def update_cell(self, row_idx, col_idx, cell_data, data_format=None):
         """
         Determine if the destination cell already has a value in it add the new value to the
         using a comma delimitor.
         """
-        if cell_data == None:
+        if cell_data is None:
             # If there's no new data there's nothing to do.
             return True
 
@@ -89,7 +91,7 @@ class DestinationWorksheet:
             formatted_data = str(cell_data)
 
         cell_value = self.ws.cell(row_idx, col_idx).value
-        if cell_value == None:
+        if cell_value is None:
             # Simply write the new cell data to an empty destination cell.
             self.ws.cell(row_idx, col_idx, value=formatted_data)
         elif formatted_data.lower() in cell_value.lower():

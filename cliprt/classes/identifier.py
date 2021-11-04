@@ -23,12 +23,12 @@ class Identifier:
         self.de_name = self.make_searchable(de_name)
         self.de_value = self.make_searchable(de_value)
         self.type = ded[self.de_name].get_identifier_type()
-        
+
         # Sanitize.
         if self.type == 'phone':
             self.santize_phone_value()
 
-        # After sanitization.    
+        # After sanitization.
         self.key = self.get_identifier_key()
 
     def __repr__(self):
@@ -40,12 +40,13 @@ class Identifier:
     def get_identifier_key(self):
         """
         The identifier key is a comibination of data identifier type and
-        the identifier value to ensure that there is no accidental 
+        the identifier value to ensure that there is no accidental
         identifier value match across disparate data elements.
         """
-        return '{}::{}'.format(self.type, self.de_value)
+        return f'{self.type}::{self.de_value}'
 
-    def make_searchable(self, str_value):
+    @staticmethod
+    def make_searchable(str_value):
         """
         Ensure that values are lowercase strings and easily searchable.
         """
