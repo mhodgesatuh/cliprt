@@ -1,11 +1,10 @@
 #!/usr/bin/env python
+#pylint: disable=too-few-public-methods
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
-# pylint: disable=too-few-public-methods
-
 class CliprtUserGuide:
     """
     User guide available from the command line.

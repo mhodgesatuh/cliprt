@@ -1,11 +1,10 @@
 #!/usr/bin/env python
+#pylint: disable=too-many-arguments
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
-# pylint: disable=too-many-arguments
-
 from cliprt.classes.destination_worksheet import DestinationWorksheet
 
 class DestinationWorksheetsRegistry:

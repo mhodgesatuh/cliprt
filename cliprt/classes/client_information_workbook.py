@@ -1,11 +1,10 @@
 #!/usr/bin/env python
+#pylint: disable=too-many-instance-attributes
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
-# pylint: disable=too-many-instance-attributes
-
 import openpyxl
 import os.path
 from cliprt.classes.client_registry import ClientRegistry

@@ -12,7 +12,7 @@ class DestinationWorksheet:
     not exist, and reset it if it does so that it is reay for the next
     reporting request.
     """
-    # pylint: disable=too-many-instance-attributes
+    #pylint: disable=too-many-instance-attributes
 
     DEST_WS_NAME_PREFIX = 'comm_report_for_'
 

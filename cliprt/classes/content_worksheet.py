@@ -1,12 +1,11 @@
 #!/usr/bin/env python
+#pylint: disable=too-many-instance-attributes
+#pylint: disable=too-many-arguments
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
-#pylint: disable=too-many-instance-attributes
-#pylint: disable=too-many-arguments
-
 from cliprt.classes.client_identity_resolver import ClientIdentityResolver
 from cliprt.classes.cliprt_settings import CliprtSettings
 from cliprt.classes.data_element_fragments_assembler import DataElementFragmentsAssembler\

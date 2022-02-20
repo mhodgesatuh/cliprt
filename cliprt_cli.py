@@ -4,8 +4,8 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
-# pylint: disable=invalid-name
-# pylint: disable=too-few-public-methods
+#pylint: disable=invalid-name
+#pylint: disable=too-few-public-methods
 
 import os
 import sys

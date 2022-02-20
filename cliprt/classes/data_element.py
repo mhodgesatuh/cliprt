@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#pylint: disable=too-many-instance-attributes
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
@@ -10,8 +11,6 @@ class DataElement:
     element.  A single data element may be repeated across one or more
     client worksheets.
     """
-    # pylint: disable=too-many-instance-attributes
-
     def __init__(self, name, ded_processor):
         """
         Prepare a new data element.
