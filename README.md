@@ -22,6 +22,12 @@ Pronunciation: "cliprt" sounds a bit like "liberty" (clipperty)
   * [Version 0.2.0 - object oriented version](#version-020---object-oriented-version)
   * [Version 0.1.0 - prototype](#version-010---prototype)
 - [References](#references)
+# Overview
+For a small business that use multiple social media and 3rd-party applications to collect customer data,
+prove a tool for defining how to merge the data to create reports, unique (deduplicated) customer lists,
+etc to be used for marketing, communications and other purposes. Use a singe Excel-compatible workbook
+with multipe spreadsheets to collect the customer data into one place, define the reporting requirements,
+and to generate the requested reports.
 # Requirements
 - python 3
 - A single workbook with multiple worksheets, such that there is:
@@ -30,7 +36,7 @@ Pronunciation: "cliprt" sounds a bit like "liberty" (clipperty)
 # Installation
 Download this project to your computer.
 
-**Notes on setting up for a Mac Book Pro**
+**Notes on setting up on MacOS**
 
 Set up an anaconda3 Python development environment:
 - Edit the .zshrc with the following (change PATH as needed):
