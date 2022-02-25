@@ -36,18 +36,21 @@ class ClientInformationWorkbookTest:
         assert 'dest_ws' not in self.client_info.content_ws_names
 
         test_ws_title = 'test ws'
-        test_ws = self.client_info.wb.create_sheet(title=test_ws_title)
+        test_ws = self.client_info.cliprt_wb.create_sheet(title=test_ws_title)
         self.client_info.dest_ws_reg.dest_ws_names.append(test_ws_title)
         self.client_info.create_content_ws_names_list()
         assert test_ws_title not in self.client_info.content_ws_names
-        self.client_info.wb.remove(test_ws)
+        self.client_info.cliprt_wb.remove(test_ws)
 
     def create_ded_worksheet_test(self):
         """
         Unit test
         """
         test_ws_title = self.client_info.DED_WS_NAME
-        self.client_info.ded_ws = self.client_info.wb.create_sheet(title=test_ws_title, index=0)
+        self.client_info.ded_ws = self.client_info.cliprt_wb.create_sheet(
+            title=test_ws_title,
+            index=0
+        )
         assert self.client_info.create_ded_worksheet(False) is False
 
     def ded_is_verified_test(self):

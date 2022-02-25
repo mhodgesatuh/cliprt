@@ -102,7 +102,7 @@ class MessageRegistry:
         """
         Return message test with its tag.
         """
-        return '{} {}'.format(self.msg_tag(msg_no), self.message[msg_no])
+        return f'{self.msg_tag(msg_no)} {self.message[msg_no]}'
 
     def msg_tag(self, msg_no):
         """
@@ -110,4 +110,4 @@ class MessageRegistry:
             (Ennnn) for error messages
             (Wnnnn) for warning messages
         """
-        return '({}{})'.format(self.message[msg_no][0], msg_no)
+        return f'({self.message[msg_no][0]}{msg_no})'

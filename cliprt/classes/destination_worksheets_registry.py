@@ -29,7 +29,7 @@ class DestinationWorksheetsRegistry:
         """
         self.dest_ws_by_ind_list[ws_ind].add_de_name(de_name, col_idx)
 
-    def add_ws(self, wb, ws_ind):
+    def add_ws(self, cliprt_wb, ws_ind):
         """
         As each destination worksheet is discovered add it to the
         destination worksheet repository.
@@ -37,7 +37,7 @@ class DestinationWorksheetsRegistry:
         if ws_ind in self.dest_ws_by_ind_list:
             return
 
-        self.dest_ws_by_ind_list[ws_ind] = DestinationWorksheet(wb, ws_ind)
+        self.dest_ws_by_ind_list[ws_ind] = DestinationWorksheet(cliprt_wb, ws_ind)
         self.dest_ws_list[ws_ind] = self.dest_ws_by_ind_list[ws_ind].ws_name
 
         # Update the list of destination worksheet names.
@@ -60,7 +60,11 @@ class DestinationWorksheetsRegistry:
         for ws_ind, dest_ws in self.dest_ws_by_ind_list.items():
             dest_ws.update_column_headings()
 
-    def update_dest_ws_cell(self, dest_ws_ind, row_idx, col_idx, cell_data, data_format=None):
+    def update_dest_ws_cell(self,
+                            dest_ws_ind,
+                            row_idx, col_idx,
+                            cell_data,
+                            data_format=None):
         """
         Update the specified cell in the specified destination worksheet.
         """

@@ -27,8 +27,8 @@ class ContentWorksheet:
 
     def __init__(
             self,
-            wb,
-            ws_name,
+            cliprt_wb,
+            cliprt_ws_name,
             ded_processor,
             client_registry,
             identifier_registry,
@@ -51,9 +51,9 @@ class ContentWorksheet:
         self.cliprt = MessageRegistry()
         self.frag_assembler_list = {}
         self.identifier_col_names = {}
-        self.wb = wb
-        self.ws = wb[ws_name]
-        self.ws_name = ws_name
+        self.cliprt_wb = cliprt_wb
+        self.cliprt_ws = cliprt_wb[cliprt_ws_name]
+        self.cliprt_ws_name = cliprt_ws_name
 
     def build_etl_map(self):
         """
@@ -64,9 +64,9 @@ class ContentWorksheet:
         # Read the top row and build the ETL mappings to the destination
         # worksheets.  Also flag the identity and fragment columns for
         # special processing.
-        ws_top_row = list(self.ws.iter_rows(
-            min_row=self.ws.min_row,
-            max_row=self.ws.min_row
+        ws_top_row = list(self.cliprt_ws.iter_rows(
+            min_row=self.cliprt_ws.min_row,
+            max_row=self.cliprt_ws.min_row
             ))[0]
         for ws_cell in ws_top_row:
 
@@ -84,11 +84,11 @@ class ContentWorksheet:
                 # This is a remapping: a->b rather than a->a.
                 # Note that fragments are always remapped: a+b->c.
                 dest_de_name = self.ded[ws_de_name].dest_de_name
-                dest_de = self.ded[dest_de_name]
+                # dest_de = self.ded[dest_de_name]
             else:
                 # This is a simple mapping: a->a.
                 dest_de_name = ws_de_name
-                dest_de = self.ded[ws_de_name]
+                # dest_de = self.ded[ws_de_name]
 
             # ETL mapping.
             if not dest_de_name in self.de_names:
@@ -123,10 +123,10 @@ class ContentWorksheet:
             self.print_progress_report()
 
         if len(self.content_cols) + len(self.identifier_col_names) < \
-                self.settings.MIN_REQUIRED_CONTENT_WS_COLUMNS:
+                self.settings.min_required_content_ws_columns:
             # Skip worksheets with insufficient data to report.
             if not progress_reporting_is_disabled:
-                print(self.cliprt.msg(5000).format(self.ws_name))
+                print(self.cliprt.msg(5000).format(self.cliprt_ws_name))
             return False
 
         self.process_ws_rows(progress_reporting_is_disabled)
@@ -148,8 +148,8 @@ class ContentWorksheet:
         Display information about the worksheet.
         """
         print('--------')
-        print(f'Worksheet currently in progress: {self.ws_name}')
-        print(f'Rows of content to be processed: {self.ws.max_row}')
+        print(f'Worksheet currently in progress: {self.cliprt_ws_name}')
+        print(f'Rows of content to be processed: {self.cliprt_ws.max_row}')
         print(f'DE Names     > ws_de_names     : {self.de_names}')
         print(f'DE Fragments > fragment_cols   : {self.print_frag_assembler_list()}')
         print(f'Identifiers  > identifier_cols : {self.identifier_col_names}')
@@ -173,8 +173,8 @@ class ContentWorksheet:
                 # Get the data vslue from the appropriate worksheet
                 # column.  Replace null strings with empty strings as
                 # needed.
-                frag_value = self.ws.cell(row_idx, col_idx).value \
-                    if not self.ws.cell(row_idx, col_idx).value is None \
+                frag_value = self.cliprt_ws.cell(row_idx, col_idx).value \
+                    if not self.cliprt_ws.cell(row_idx, col_idx).value is None \
                     else ''
                 # The DED has the fragment index.
                 frag_idx = self.ded[fragment_name].fragment_idx
@@ -190,21 +190,21 @@ class ContentWorksheet:
             # Fatal error: identifiers are required since this is client
             # information.  Identifiers identify which client the data
             # belongs too.
-            raise Exception(self.cliprt.msg(5012).format(self.wb.active.title))
+            raise Exception(self.cliprt.msg(5012).format(self.cliprt_wb.active.title))
 
         # Process the identifiers.
         for de_name, col_idx in self.identifier_col_names.items():
             if col_idx == self.ASSEMBLED_IDENTIFIER:
                 de_value = self.frag_assembler_list[de_name].assembled_value()
             else:
-                de_value = self.ws.cell(row_idx, col_idx).value
+                de_value = self.cliprt_ws.cell(row_idx, col_idx).value
             identifier = Identifier(de_name, de_value, self.ded)
             client_id_resolver.save_identifier(identifier)
 
         # Resolve the client's identity.  None returned if there are no
         # useful identifiers provided for establishing an identity.
         identity = client_id_resolver.resolve_client_identity(
-            self.settings.IDENTITY_MATCH_THRESHOLD
+            self.settings.identity_match_threshold
             )
         return identity
 
@@ -216,18 +216,18 @@ class ContentWorksheet:
         """
 
         # The first row holds the column headings.
-        row_idx = self.ws.min_row
+        row_idx = self.cliprt_ws.min_row
 
         # Scale the progress bar update threshold.
-        if self.ws.max_row > self.PROGRESS_INCREMENT:
+        if self.cliprt_ws.max_row > self.PROGRESS_INCREMENT:
             # Large content worksheets.
-            progress_threshold = int(self.ws.max_row/self.PROGRESS_INCREMENT)
+            progress_threshold = int(self.cliprt_ws.max_row/self.PROGRESS_INCREMENT)
         else:
             # Small content worksheets.
             progress_threshold = 1
 
         # Process each row of the content worksheet.
-        while row_idx < self.ws.max_row:
+        while row_idx < self.cliprt_ws.max_row:
             row_idx += 1
 
             if not progress_reporting_is_disabled and row_idx % progress_threshold == 0:
@@ -272,7 +272,7 @@ class ContentWorksheet:
 
                 # Copy the content columns to the destination worksheet.
                 for col_idx, dest_de_name in self.content_cols.items():
-                    dest_de_value = self.ws.cell(row_idx, col_idx).value
+                    dest_de_value = self.cliprt_ws.cell(row_idx, col_idx).value
 
                     if dest_de_value is None:
                         # Skip empty cells.

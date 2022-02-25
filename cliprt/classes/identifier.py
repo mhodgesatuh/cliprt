@@ -57,7 +57,7 @@ class Identifier:
         """
         Find the numeric portions of the string and join them.
         """
-        self.de_value = ''.join(re.findall("\d+", self.de_value))
+        self.de_value = ''.join(re.findall(r"\d+", self.de_value))
 
     def save_client_idno(self, client_idno):
         """

@@ -19,57 +19,57 @@ class CliprtSettings:
     # ---------------------------------
 
     # Threshold for determining that we have an identity match.
-    IDENTITY_MATCH_THRESHOLD = 2
+    identity_match_threshold = 2
 
     # Minimal number of data elements in a client content worksheet
     # required for creating a destination (reporting) worksheet.
-    MIN_REQUIRED_CONTENT_WS_COLUMNS = 3
+    min_required_content_ws_columns = 3
 
     # Default country code for the phone number format.
-    DEFAULT_COUNTRY_CODE = '1'
+    default_country_code = '1'
 
     # Default area code for the phone number format.
-    DEFAULT_AREA_CODE = '808'
+    default_area_code = '808'
 
     """
     DED Settings
     """
     # Required DED column headings.
-    COL_HEADINGS = [
+    col_headings = [
         'Content DE Name',
         'Content DE Type',
         'Dest WS',
         'Dest DE Name',
         'Dest DE Format',
     ]
-    DE_NAME_COL_IDX = 0
-    DE_TYPE_COL_IDX = 1
-    DEST_WS_COL_IDX = 2
-    DEST_DE_NAME_COL_IDX = 3
-    DEST_DE_FORMAT_COL_IDX = 4
+    de_name_col_idx = 0
+    de_type_col_idx = 1
+    dest_ws_col_idx = 2
+    dest_de_name_col_idx = 3
+    dest_de_format_col_idx = 4
 
     # Valid data element types.
-    FRAGMENT_DE_TYPE = 'fragment'
-    IDENTIFIER_DE_TYPE = 'identifier'
-    UNIT_TEST_DE_TYPE = 'unittestdet'
+    fragment_de_type = 'fragment'
+    identifier_de_type = 'identifier'
+    unit_test_de_type = 'unittestdet'
 
     # Valid data element formats.
-    DATE_FORMAT = 'date'
-    NAME_FORMAT = 'name'
-    PHONE_FORMAT = 'phone'
+    date_format = 'date'
+    name_format = 'name'
+    phone_format = 'phone'
 
     # Valid data element types list.
-    VALID_DE_TYPES = [
-        IDENTIFIER_DE_TYPE,
-        FRAGMENT_DE_TYPE,
-        UNIT_TEST_DE_TYPE,
+    valid_de_types = [
+        identifier_de_type,
+        fragment_de_type,
+        unit_test_de_type,
     ]
 
     # Valid data element formats list.
-    VALID_DE_FORMATS = [
-        DATE_FORMAT,
-        NAME_FORMAT,
-        PHONE_FORMAT,
+    valid_de_formats = [
+        date_format,
+        name_format,
+        phone_format,
     ]
 
     """
@@ -110,10 +110,10 @@ class CliprtSettings:
         Normalize the format of phone numbers if possible.
         """
         if country_code is None:
-            country_code = self.DEFAULT_COUNTRY_CODE
+            country_code = self.default_country_code
 
         if area_code is None:
-            area_code = self.DEFAULT_AREA_CODE
+            area_code = self.default_area_code
 
         # Digits only.
         pho_no = ''.join(i for i in data_value if i.isdigit())

@@ -53,9 +53,9 @@ class ClientIdentityResolverTest:
             self.client_info.client_reg,
             self.client_info.identifier_reg
         )
-        assert id_resolver.matched_identifier_types == []
-        assert id_resolver.identifiers_matched == []
-        assert id_resolver.identifiers_unmatched == []
+        assert not id_resolver.matched_identifier_types
+        assert not id_resolver.identifiers_matched
+        assert not id_resolver.identifiers_unmatched
 
     def match_existing_identity_test(self):
         """

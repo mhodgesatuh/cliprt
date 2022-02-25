@@ -5,8 +5,8 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
-import openpyxl
 import os.path
+import openpyxl
 from cliprt.classes.client_registry import ClientRegistry
 from cliprt.classes.content_worksheet import ContentWorksheet
 from cliprt.classes.data_element_dictionary_processor import DataElementDictionaryProcessor
@@ -47,8 +47,8 @@ class ClientInformationWorkbook:
         self.client_reg = ClientRegistry(self.dest_ws_reg)
         self.content_ws_names = []
         self.identifier_reg = IdentifierRegistry()
-        self.wb = openpyxl.load_workbook(filename=wb_filename)
-        self.wb_filename = wb_filename
+        self.cliprt_wb = openpyxl.load_workbook(filename=wb_filename)
+        self.cliprt_wb_filename = wb_filename
 
         # The workbook may or may not have a DED worksheet when it is
         # initially accessed.
@@ -74,7 +74,7 @@ class ClientInformationWorkbook:
         #ContentWorksheet()
         for ws_name in self.content_ws_names:
             ContentWorksheet(
-                self.wb,
+                self.cliprt_wb,
                 ws_name,
                 self.ded_processor,
                 self.client_reg,
@@ -84,7 +84,7 @@ class ClientInformationWorkbook:
 
         # Save the client report worksheets.
         if save_wb:
-            self.wb.save(self.wb_filename)
+            self.cliprt_wb.save(self.cliprt_wb_filename)
 
         return True
 
@@ -93,7 +93,7 @@ class ClientInformationWorkbook:
         Create the list of data content worksheet names.  This list
         will be looped through to produce the client reports.
         """
-        for ws_name in self.wb.sheetnames:
+        for ws_name in self.cliprt_wb.sheetnames:
             if ws_name in self.INTERNAL_WS_NAMES:
                 # Ignore the internal worksheets.
                 continue
@@ -113,8 +113,8 @@ class ClientInformationWorkbook:
         if len(self.content_ws_names) == 0:
             self.create_content_ws_names_list()
         for ws_name in self.content_ws_names:
-            ws = self.wb[ws_name]
-            for cell in ws[ws.min_row]:
+            cliprt_ws = self.cliprt_wb[ws_name]
+            for cell in cliprt_ws[cliprt_ws.min_row]:
                 if cell.value is None:
                     continue
                 de_name = cell.value.lower().strip().title()
@@ -127,12 +127,12 @@ class ClientInformationWorkbook:
         """
         Create a fresh DED worksheet for configuration.
         """
-        if self.DED_WS_NAME in self.wb:
+        if self.DED_WS_NAME in self.cliprt_wb:
             # The DED worksheet already exists.
             return False
 
         # Create the DED worksheet.
-        self.ded_ws = self.wb.create_sheet(title=self.DED_WS_NAME, index=0)
+        self.ded_ws = self.cliprt_wb.create_sheet(title=self.DED_WS_NAME, index=0)
         de_names = self.create_de_names_list()
 
         # Now that we have a DED worksheet we can instantiate the DED
@@ -142,7 +142,7 @@ class ClientInformationWorkbook:
 
         # Save the DED worksheet, unless running unit tests, for example.
         if save_wb:
-            self.wb.save(self.wb_filename)
+            self.cliprt_wb.save(self.cliprt_wb_filename)
 
         return True
 
@@ -158,8 +158,12 @@ class ClientInformationWorkbook:
         """
         if not self.has_a_ded_ws():
             return False
-        self.ded_ws = self.wb[self.DED_WS_NAME]
-        self.ded_processor = DataElementDictionaryProcessor(self.wb, self.ded_ws, self.dest_ws_reg)
+        self.ded_ws = self.cliprt_wb[self.DED_WS_NAME]
+        self.ded_processor = DataElementDictionaryProcessor(
+            self.cliprt_wb,
+            self.ded_ws,
+            self.dest_ws_reg
+        )
         return True
 
     def has_a_ded_ws(self):
@@ -167,7 +171,7 @@ class ClientInformationWorkbook:
         Check to see if the client information workbook has a
         DED worksheet.
         """
-        return self.DED_WS_NAME in self.wb.sheetnames
+        return self.DED_WS_NAME in self.cliprt_wb.sheetnames
 
     def print_ded_report(self):
         """

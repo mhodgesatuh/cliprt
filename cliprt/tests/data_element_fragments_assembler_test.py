@@ -46,8 +46,8 @@ class DataElementFragmentsAssemblerTest:
         """
         frag_assembler = FragAssembler('test de')
         assert frag_assembler.assembled_de_name == 'test de'
-        assert frag_assembler.fragments_col_indicies == {}
-        assert frag_assembler.fragments_values == {}
+        assert not frag_assembler.fragments_col_indicies
+        assert not frag_assembler.fragments_values
 
     @staticmethod
     def str_test():

@@ -14,7 +14,7 @@ class DataElementDictionaryProcessor:
     Process the data element worksheet and create the data element
     dictionary.
     """
-    def __init__(self, wb, ws, dest_ws_registry):
+    def __init__(self, cliprt_wb, cliprt_ws, dest_ws_registry):
         """
         Read the date element dictionary worksheet and hydrate the DED.
         """
@@ -27,8 +27,8 @@ class DataElementDictionaryProcessor:
         self.ded = {}
         self.ded_hydrated = False
         self.cliprt = MessageRegistry()
-        self.wb = wb
-        self.ws = ws
+        self.cliprt_wb = cliprt_wb
+        self.cliprt_ws = cliprt_ws
 
     def ded_is_hydrated(self):
         """
@@ -101,11 +101,11 @@ class DataElementDictionaryProcessor:
             multivalued (comma delimited).
         """
         # Get the DED worksheet column of data element names.
-        col_idx = col_headings[self.settings.COL_HEADINGS[self.settings.DE_NAME_COL_IDX]]
-        ws_columns = self.ws.iter_cols(
+        col_idx = col_headings[self.settings.col_headings[self.settings.de_name_col_idx]]
+        ws_columns = self.cliprt_ws.iter_cols(
             min_col=col_idx,
             max_col=col_idx,
-            min_row=self.ws.min_row+1)
+            min_row=self.cliprt_ws.min_row+1)
         de_column = list(ws_columns)[0]
 
         # From each row get the data element name and associated
@@ -113,7 +113,7 @@ class DataElementDictionaryProcessor:
         for de_cell in de_column:
             if de_cell.value is None:
                 raise Exception(
-                    self.cliprt.msg(3150).format(self.ws.title, de_cell.coordinate)
+                    self.cliprt.msg(3150).format(self.cliprt_ws.title, de_cell.coordinate)
                 )
 
             # Ensure values used for comparisons are shifted to
@@ -126,9 +126,9 @@ class DataElementDictionaryProcessor:
             # If destination worksheet indicators are specified, save
             # them to the DED.
             col_idx = col_headings[
-                self.settings.COL_HEADINGS[self.settings.DEST_WS_COL_IDX]
+                self.settings.col_headings[self.settings.dest_ws_col_idx]
             ]
-            dest_ws_cell = self.ws.cell(row=de_cell.row, column=col_idx)
+            dest_ws_cell = self.cliprt_ws.cell(row=de_cell.row, column=col_idx)
             if dest_ws_cell.value is None:
                 continue
             for ws_dest_ind in self.util_make_list(dest_ws_cell.value):
@@ -143,12 +143,12 @@ class DataElementDictionaryProcessor:
         # Get the DED worksheet column of destination data element
         # names.
         col_idx = col_headings[
-            self.settings.COL_HEADINGS[self.settings.DEST_DE_NAME_COL_IDX]
+            self.settings.col_headings[self.settings.dest_de_name_col_idx]
         ]
-        ws_columns = self.ws.iter_cols(
+        ws_columns = self.cliprt_ws.iter_cols(
             min_col=col_idx,
             max_col=col_idx,
-            min_row=self.ws.min_row+1)
+            min_row=self.cliprt_ws.min_row+1)
         de_column = list(ws_columns)[0]
 
         # From each row get the destination data element name and save
@@ -161,10 +161,10 @@ class DataElementDictionaryProcessor:
             # element dictionary.
             dest_de_name = self.settings.str_normalize(dest_de_cell.value)
 
-            DE_NAME_COL_IDX = col_headings[
-                self.settings.COL_HEADINGS[self.settings.DE_NAME_COL_IDX]
+            de_name_col_idx = col_headings[
+                self.settings.col_headings[self.settings.de_name_col_idx]
             ]
-            de_cell = self.ws.cell(row=dest_de_cell.row, column=DE_NAME_COL_IDX)
+            de_cell = self.cliprt_ws.cell(row=dest_de_cell.row, column=de_name_col_idx)
             de_name = self.settings.str_normalize(de_cell.value)
 
             # Update the DED.
@@ -180,12 +180,12 @@ class DataElementDictionaryProcessor:
         # Get the DED worksheet column of destination data element
         # formats.
         col_idx = col_headings[
-            self.settings.COL_HEADINGS[self.settings.DEST_DE_FORMAT_COL_IDX]
+            self.settings.col_headings[self.settings.dest_de_format_col_idx]
         ]
-        ws_columns = self.ws.iter_cols(
+        ws_columns = self.cliprt_ws.iter_cols(
             min_col=col_idx,
             max_col=col_idx,
-            min_row=self.ws.min_row+1)
+            min_row=self.cliprt_ws.min_row+1)
         de_column = list(ws_columns)[0]
 
         # From each row get the destination data element name and save
@@ -194,10 +194,10 @@ class DataElementDictionaryProcessor:
             if de_format_cell.value is None:
                 continue
 
-            DE_NAME_COL_IDX = col_headings[
-                self.settings.COL_HEADINGS[self.settings.DE_NAME_COL_IDX]
+            de_name_col_idx = col_headings[
+                self.settings.col_headings[self.settings.de_name_col_idx]
             ]
-            de_cell = self.ws.cell(row=de_format_cell.row, column=DE_NAME_COL_IDX)
+            de_cell = self.cliprt_ws.cell(row=de_format_cell.row, column=de_name_col_idx)
             de_name = self.settings.str_normalize(de_cell.value)
 
             dest_de_format = self.settings.str_normalize(de_format_cell.value)
@@ -216,12 +216,12 @@ class DataElementDictionaryProcessor:
         """
         # Get the DED worksheet column of data element types.
         col_idx = col_headings[
-            self.settings.COL_HEADINGS[self.settings.DE_TYPE_COL_IDX]
+            self.settings.col_headings[self.settings.de_type_col_idx]
         ]
-        ws_columns = self.ws.iter_cols(
+        ws_columns = self.cliprt_ws.iter_cols(
             min_col=col_idx,
             max_col=col_idx,
-            min_row=self.ws.min_row+1)
+            min_row=self.cliprt_ws.min_row+1)
         de_column = list(ws_columns)[0]
 
         # From each row get the destination data element name and save
@@ -230,10 +230,10 @@ class DataElementDictionaryProcessor:
             if de_format_cell.value is None:
                 continue
 
-            DE_NAME_COL_IDX = col_headings[
-                self.settings.COL_HEADINGS[self.settings.DE_NAME_COL_IDX]
+            de_name_col_idx = col_headings[
+                self.settings.col_headings[self.settings.de_name_col_idx]
             ]
-            de_cell = self.ws.cell(row=de_format_cell.row, column=DE_NAME_COL_IDX)
+            de_cell = self.cliprt_ws.cell(row=de_format_cell.row, column=de_name_col_idx)
             de_name = self.settings.str_normalize(de_cell.value)
 
             dest_de_type = self.settings.str_normalize(de_format_cell.value)
@@ -247,40 +247,62 @@ class DataElementDictionaryProcessor:
         """
         identifier_cnt = 0
 
-        for de_name, de in self.ded.items():
+        for de_name, data_element in self.ded.items():
 
-            if de.is_identifier:
+            if data_element.is_identifier:
                 identifier_cnt += 1
 
-            if not de.dest_de_name is None and ',' in de.dest_de_name:
-                raise Exception(self.cliprt.msg(3170).format(de_name, de.dest_de_name))
+            if not data_element.dest_de_name is None and\
+                    ',' in data_element.dest_de_name:
+                raise Exception(self.cliprt.msg(3170).format(
+                    de_name,
+                    data_element.dest_de_name
+                ))
 
-            if de.has_dest_ws() and not de.dest_de_name is None:
+            if data_element.has_dest_ws() and\
+                    not data_element.dest_de_name is None:
                 raise Exception(self.cliprt.msg(3204).format(de_name))
 
-            if not de.dest_de_name is None and not de.dest_de_name in self.ded:
-                raise Exception(self.cliprt.msg(3207).format(de.dest_de_name))
+            if not data_element.dest_de_name is None and\
+                    not data_element.dest_de_name in self.ded:
+                raise Exception(self.cliprt.msg(3207).format(
+                    data_element.dest_de_name
+                ))
 
-            if de.is_fragment and\
-                not de.dest_de_name is None and\
-                self.ded[de.dest_de_name].is_remapped:
-                raise Exception(self.cliprt.msg(3212).format(de.dest_de_name, de_name))
+            if data_element.is_fragment and\
+                    not data_element.dest_de_name is None and\
+                    self.ded[data_element.dest_de_name].is_remapped:
+                raise Exception(self.cliprt.msg(3212).format(
+                    data_element.dest_de_name,
+                    de_name
+                ))
 
-            if de.is_fragment and de.dest_de_name is None:
+            if data_element.is_fragment and\
+                    data_element.dest_de_name is None:
                 raise Exception(self.cliprt.msg(3214).format(de_name))
 
-            if de.is_fragment and de.dest_de_name is None:
+            if data_element.is_fragment and\
+                    data_element.dest_de_name is None:
                 raise Exception(self.cliprt.msg(3216).format(de_name))
 
-            if de.is_identifier and not de.dest_de_name is None:
-                raise Exception(self.cliprt.msg(3226).format(de.dest_de_name, de_name))
+            if data_element.is_identifier and\
+                    not data_element.dest_de_name is None:
+                raise Exception(self.cliprt.msg(3226).format(
+                    data_element.dest_de_name,
+                    de_name
+                ))
 
-            if not de.has_dest_ws() and de.dest_de_name is None:
+            if not data_element.has_dest_ws() and\
+                    data_element.dest_de_name is None:
                 raise Exception(self.cliprt.msg(3232).format(de_name))
 
             # Dest_de must reference a DE with a defined dest_ws
-            if not de.dest_de_name is None and not self.ded[de.dest_de_name].has_dest_ws():
-                raise Exception(self.cliprt.msg(3238).format(de.dest_de_name, de_name))
+            if not data_element.dest_de_name is None and\
+                    not self.ded[data_element.dest_de_name].has_dest_ws():
+                raise Exception(self.cliprt.msg(3238).format(
+                    data_element.dest_de_name,
+                    de_name
+                ))
 
         if identifier_cnt == 0:
             raise Exception(self.cliprt.msg(3229))
@@ -293,13 +315,13 @@ class DataElementDictionaryProcessor:
         """
         # Add the required DED column headings.
         col_idx = 1
-        for col_heading in self.settings.COL_HEADINGS:
-            self.ws.cell(1, col_idx, value=col_heading)
+        for col_heading in self.settings.col_headings:
+            self.cliprt_ws.cell(1, col_idx, value=col_heading)
             col_idx += 1
         # Add the list of data element names to the first column.
         row_idx = 2
         for de_name in de_names:
-            self.ws.cell(row_idx, 1, value=de_name)
+            self.cliprt_ws.cell(row_idx, 1, value=de_name)
             row_idx += 1
 
     def print_report(self):
@@ -324,7 +346,7 @@ class DataElementDictionaryProcessor:
         """
         if not ws_dest_ind in self.dest_ws_reg.dest_ws_by_ind_list:
             # Autodetect and save new destination indicators.
-            self.dest_ws_reg.add_ws(self.wb, ws_dest_ind)
+            self.dest_ws_reg.add_ws(self.cliprt_wb, ws_dest_ind)
 
         # Each column heading is assigned the next available column.
         # Increment the index of the last data element column of the
@@ -342,12 +364,12 @@ class DataElementDictionaryProcessor:
         update the data element instance accordingly.
         """
         # Validate the destination data element format designater.
-        if not dest_de_format in self.settings.VALID_DE_FORMATS:
+        if not dest_de_format in self.settings.valid_de_formats:
             # Fatal error, invalid destination format
             raise Exception(self.cliprt.msg(3217).format(
                 dest_de_format,
                 de_name,
-                self.settings.VALID_DE_FORMATS))
+                self.settings.valid_de_formats))
 
         # Save the destintion format to the DED.
         self.ded[de_name].set_dest_de_format(dest_de_format)
@@ -362,40 +384,40 @@ class DataElementDictionaryProcessor:
             raise Exception(self.cliprt.msg(3215).format(de_type, de_name))
 
         # Check for identifier type.
-        if de_type == self.settings.IDENTIFIER_DE_TYPE:
+        if de_type == self.settings.identifier_de_type:
             self.ded[de_name].set_to_identifier()
             return True
 
         # Check for fragment type.
-        if self.settings.FRAGMENT_DE_TYPE in de_type:
+        if self.settings.fragment_de_type in de_type:
             frag_idx = self.get_tuple_index(
                 de_name,
-                self.settings.FRAGMENT_DE_TYPE,
+                self.settings.fragment_de_type,
                 de_type)
             self.de_fragments_list[de_name] = frag_idx
             self.ded[de_name].set_to_fragment(self.de_fragments_list[de_name])
             return True
 
-        if not de_type in self.settings.VALID_DE_TYPES:
+        if not de_type in self.settings.valid_de_types:
             raise Exception(self.cliprt.msg(3218).format(
                 de_type,
                 de_name,
-                self.settings.VALID_DE_TYPES))
+                self.settings.valid_de_types))
         return True
 
     def read_col_headings(self, evaluate_only=False):
         """
         Get the column headings and retain the column indices.
         """
-        if self.ws is None:
+        if self.cliprt_ws is None:
             return False
 
         col_headings = {}
-        for cell in self.ws[self.ws.min_row]:
+        for cell in self.cliprt_ws[self.cliprt_ws.min_row]:
             col_headings[cell.value] = cell.col_idx
 
         # Ensure that all of the required named columns are available.
-        for ded_col_heading in self.settings.COL_HEADINGS:
+        for ded_col_heading in self.settings.col_headings:
             if ded_col_heading not in col_headings:
                 if evaluate_only:
                     # No fatal error to be thrown.
@@ -403,7 +425,7 @@ class DataElementDictionaryProcessor:
                 # Fatal error
                 raise Exception(self.cliprt.msg(3200).format(
                     ded_col_heading,
-                    self.ws.title))
+                    self.cliprt_ws.title))
         return col_headings
 
     @staticmethod
