@@ -38,12 +38,12 @@ class DestinationWorksheetsRegistry:
             return
 
         self.dest_ws_by_ind_list[ws_ind] = DestinationWorksheet(cliprt_wb, ws_ind)
-        self.dest_ws_list[ws_ind] = self.dest_ws_by_ind_list[ws_ind].ws_name
+        self.dest_ws_list[ws_ind] = self.dest_ws_by_ind_list[ws_ind].cliprt_ws_name
 
         # Update the list of destination worksheet names.
         # Later will need to skip these while processing the
         # data content worksheets.
-        self.dest_ws_names.append(self.dest_ws_by_ind_list[ws_ind].ws_name)
+        self.dest_ws_names.append(self.dest_ws_by_ind_list[ws_ind].cliprt_ws_name)
 
     def get_next_col_idx(self, ws_ind):
         """
@@ -57,8 +57,11 @@ class DestinationWorksheetsRegistry:
         Create or reset the destination worksheet in preparation for the
         next round of reporting.
         """
-        for ws_ind, dest_ws in self.dest_ws_by_ind_list.items():
+        for ws_ind_dest_ws in self.dest_ws_by_ind_list.items():
+            dest_ws = ws_ind_dest_ws[1]
             dest_ws.update_column_headings()
+        #for ws_ind, dest_ws in self.dest_ws_by_ind_list.items():
+        #    dest_ws.update_column_headings()
 
     def update_dest_ws_cell(self,
                             dest_ws_ind,

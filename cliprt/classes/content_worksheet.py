@@ -138,7 +138,8 @@ class ContentWorksheet:
         """
         ret_val = ''
         delim = ', '
-        for de_name, frag_de in self.frag_assembler_list.items():
+        for de_name_frag_de in self.frag_assembler_list.items():
+            frag_de = de_name_frag_de[1]
             ret_val += f'{delim}{ frag_de.__str__()}'
         return '[' + ret_val[len(delim):] + ']'
 
