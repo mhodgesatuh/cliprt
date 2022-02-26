@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 #pylint: disable=too-few-public-methods
+#pylint: disable=import-error
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges

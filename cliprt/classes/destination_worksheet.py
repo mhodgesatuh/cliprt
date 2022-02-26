@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#pylint: disable=too-many-instance-attributes
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
@@ -12,8 +13,6 @@ class DestinationWorksheet:
     not exist, and reset it if it does so that it is reay for the next
     reporting request.
     """
-    #pylint: disable=too-many-instance-attributes
-
     dest_ws_name_prefix = 'comm_report_for_'
 
     def __init__(self, cliprt_wb, ws_ind):

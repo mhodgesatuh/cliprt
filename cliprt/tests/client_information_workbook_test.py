@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#pylint: disable=import-error
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges

@@ -1,12 +1,13 @@
+#!/usr/bin/env python
+#pylint: disable=invalid-name
+#pylint: disable=too-few-public-methods
+#pylint: disable=redefined-outer-name
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
             CLIPRT, sounds like liberty.  Pronounced clipperty.
 @author:    mhodges
 Copyright   2020 Michael Hodges
 """
-#pylint: disable=invalid-name
-#pylint: disable=too-few-public-methods
-
 import os
 import sys
 
@@ -138,7 +139,7 @@ while input_loop:
     # Create the client reports.
     client_info_wb.ded_processor.hydrate_ded()
     client_info_wb.ded_processor.hydration_validation()
-    if client_info_wb.ded_is_verified:
+    if client_info_wb.ded_is_verified():
         request_print_ded(client_info_wb)
     request_create_client_reports(client_info_wb)
 
