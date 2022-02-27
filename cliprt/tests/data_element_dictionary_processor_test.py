@@ -3,7 +3,7 @@
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
-Copyright   2021 Michael Hodges
+Copyright   2022 Michael Hodges
 """
 import pytest
 from IPython.utils.capture import capture_output
@@ -111,7 +111,7 @@ class DataElementDictionaryProcessorTest:
             ['E3226', ['bad dest de id', 'identifier', None, 'name', 'name']],
             ['E3232', ['bad no dest ws', None, None, None, None]],
             ['E3238', ['bad dest de', None, None, 'last name', None]],
-        ]
+            ]
         # Test each test case, one at a time to ensure that it throws
         # the required error.
         for thrown_error_code, test_values in test_cases:

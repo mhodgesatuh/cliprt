@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 #pylint: disable=too-many-instance-attributes
+#pylint: disable=import-error
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
-Copyright   2020 Michael Hodges
+Copyright   2022 Michael Hodges
 """
 import os.path
 import openpyxl
@@ -132,7 +133,10 @@ class ClientInformationWorkbook:
             return False
 
         # Create the DED worksheet.
-        self.ded_ws = self.cliprt_wb.create_sheet(title=self.DED_WS_NAME, index=0)
+        self.ded_ws = self.cliprt_wb.create_sheet(
+            title=self.DED_WS_NAME,
+            index=0
+            )
         de_names = self.create_de_names_list()
 
         # Now that we have a DED worksheet we can instantiate the DED
@@ -163,7 +167,7 @@ class ClientInformationWorkbook:
             self.cliprt_wb,
             self.ded_ws,
             self.dest_ws_reg
-        )
+            )
         return True
 
     def has_a_ded_ws(self):

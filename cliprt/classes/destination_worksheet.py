@@ -3,7 +3,7 @@
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
-Copyright   2020 Michael Hodges
+Copyright   2022 Michael Hodges
 """
 from cliprt.classes.cliprt_settings import CliprtSettings
 
@@ -101,8 +101,8 @@ class DestinationWorksheet:
             self.cliprt_ws.cell(
                 row_idx,
                 col_idx,
-                value='{}, {}'.format(cell_value, formatted_data)
-            )
+                value=f'{cell_value}, {formatted_data}'
+                )
         return True
 
     def update_column_headings(self):

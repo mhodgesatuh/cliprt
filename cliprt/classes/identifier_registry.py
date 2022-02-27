@@ -2,7 +2,7 @@
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
-Copyright   2020 Michael Hodges
+Copyright   2022 Michael Hodges
 """
 class IdentifierRegistry:
     """

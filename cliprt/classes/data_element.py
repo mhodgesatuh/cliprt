@@ -3,7 +3,7 @@
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
-Copyright   2020 Michael Hodges
+Copyright   2022 Michael Hodges
 """
 class DataElement:
     """
@@ -52,19 +52,19 @@ class DataElement:
             str_val[i] = self.util_format_dict_output(
                 'fragment_idx',
                 self.fragment_idx
-            )
+                )
             i += 1
         if self.dest_de_format is not None:
             str_val[i] = self.util_format_dict_output(
                 'dest_de_format',
                 self.dest_de_format
-            )
+                )
             i += 1
         for dest_ws_ind, dest_info in self.dest_ws_info.items():
             str_val[i] = self.util_format_dict_output(
                 dest_ws_ind,
                 dest_info
-            )
+                )
             i += 1
         ret_val = ''
         i = 0

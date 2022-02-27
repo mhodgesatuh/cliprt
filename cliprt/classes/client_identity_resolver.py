@@ -2,7 +2,7 @@
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
-Copyright   2020 Michael Hodges
+Copyright   2022 Michael Hodges
 """
 import re
 import operator
@@ -71,7 +71,7 @@ class ClientIdentityResolver:
             idno_match_cnt.items(),
             key=operator.itemgetter(1),
             reverse=True
-        )
+            )
 
         # The best-match client id is in the first key of the first
         # tuple.
@@ -143,12 +143,12 @@ class ClientIdentityResolver:
             self.identifier_reg.save_identifier_client_idno(
                 identifier.key,
                 identity.client_idno
-            )
+                )
         for identifier in self.identifiers_unmatched:
             self.identifier_reg.save_identifier_client_idno(
                 identifier.key,
                 identity.client_idno
-            )
+                )
 
         return identity
 

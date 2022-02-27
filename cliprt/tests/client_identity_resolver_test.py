@@ -2,7 +2,7 @@
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
-Copyright   2021 Michael Hodges
+Copyright   2022 Michael Hodges
 """
 from cliprt.classes.client_identity_resolver import ClientIdentityResolver
 from cliprt.classes.client_information_workbook import ClientInformationWorkbook
@@ -37,7 +37,7 @@ class ClientIdentityResolverTest:
         id_resolver = ClientIdentityResolver(
             self.client_info.client_reg,
             self.client_info.identifier_reg
-        )
+            )
         client_identity = id_resolver.create_identity()
         assert client_identity.client_idno == 1000
         assert client_identity.dest_ws == {'ims': 2, 'fb': 2}
@@ -52,7 +52,7 @@ class ClientIdentityResolverTest:
         id_resolver = ClientIdentityResolver(
             self.client_info.client_reg,
             self.client_info.identifier_reg
-        )
+            )
         assert not id_resolver.matched_identifier_types
         assert not id_resolver.identifiers_matched
         assert not id_resolver.identifiers_unmatched
@@ -65,7 +65,7 @@ class ClientIdentityResolverTest:
         id_resolver = ClientIdentityResolver(
             self.client_info.client_reg,
             self.client_info.identifier_reg
-        )
+            )
 
         # Create a set of identifiers to be matched.
         identifiers = [
@@ -73,7 +73,7 @@ class ClientIdentityResolverTest:
             ['phone', '(999) 888-0001'],
             ['home phone', '(999) 888-0001'],
             ['email', 'albe@gmail.not'],
-        ]
+            ]
         for id_data in identifiers:
             identifier = Identifier(id_data[0], id_data[1], test_ded)
             assert id_resolver.save_identifier(identifier)
@@ -83,7 +83,7 @@ class ClientIdentityResolverTest:
             ['client id', '99912345'],
             ['mobile phone', '999-888-0001'],
             ['email', 'albe@gmail.not'],
-        ]
+            ]
         for id_data in matching_identifiers:
             identifier = Identifier(id_data[0], id_data[1], test_ded)
             assert id_resolver.save_identifier(identifier)
@@ -103,7 +103,7 @@ class ClientIdentityResolverTest:
         id_resolver = ClientIdentityResolver(
             self.client_info.client_reg,
             self.client_info.identifier_reg
-        )
+            )
         assert id_resolver.resolve_client_identity(3) is None
 
         # Test identity-matching logic.
@@ -124,13 +124,12 @@ class ClientIdentityResolverTest:
                 ['client id', '99912345'],
                 ['mobile phone', '999-888-0001'],
                 ['email', 'albe@gmail.not'],
-            ],
-        ]
+            ],]
         for identifiers in identifiers_lists:
             id_resolver = ClientIdentityResolver(
                 self.client_info.client_reg,
                 self.client_info.identifier_reg
-            )
+                )
             for id_data in identifiers:
                 identifier = Identifier(id_data[0], id_data[1], test_ded)
                 id_resolver.save_identifier(identifier)
@@ -152,7 +151,7 @@ class ClientIdentityResolverTest:
         id_resolver = ClientIdentityResolver(
             self.client_info.client_reg,
             self.client_info.identifier_reg
-        )
+            )
 
         # Test bad identifiers.
         bad_identifiers = [
@@ -161,7 +160,7 @@ class ClientIdentityResolverTest:
             ['home phone', '12345'],
             ['email', 'noemail'],
             ['email', 'botched@com'],
-        ]
+            ]
         for id_data in bad_identifiers:
             bad_identifier = Identifier(id_data[0], id_data[1], test_ded)
             assert not id_resolver.save_identifier(bad_identifier)
@@ -170,7 +169,7 @@ class ClientIdentityResolverTest:
         good_identifiers = [
             ['home phone', '(999) 888-0001'],
             ['email', 'albe@gmail.not'],
-        ]
+            ]
         for id_data in good_identifiers:
             identifier = Identifier(id_data[0], id_data[1], test_ded)
             assert id_resolver.save_identifier(identifier)
@@ -182,7 +181,7 @@ class ClientIdentityResolverTest:
         # identifier.
         identifiers = [
             ['client id', '123456789'],
-        ]
+            ]
         for id_data in identifiers:
             identifier = Identifier(id_data[0], id_data[1], test_ded)
             assert id_resolver.save_identifier(identifier)

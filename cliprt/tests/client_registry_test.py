@@ -2,7 +2,7 @@
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
-Copyright   2021 Michael Hodges
+Copyright   2022 Michael Hodges
 """
 from cliprt.classes.client_registry import ClientRegistry
 from cliprt.classes.destination_worksheets_registry import DestinationWorksheetsRegistry

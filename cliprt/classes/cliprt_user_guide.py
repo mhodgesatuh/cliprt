@@ -3,14 +3,13 @@
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
-Copyright   2020 Michael Hodges
+Copyright   2022 Michael Hodges
 """
 class CliprtUserGuide:
     """
     User guide available from the command line.
     """
-
-    USER_GUIDE_RESOURCE = '/cliprt_user_guide.txt'
+    user_guide_resource = '/cliprt_user_guide.txt'
 
     def __init__(self, user_guide_path='./cliprt/resources'):
         """
@@ -18,6 +17,6 @@ class CliprtUserGuide:
         the call is from the cliprt CLI script.  Unit testing requires
         another path.
         """
-        user_guide_file = open(user_guide_path + self.USER_GUIDE_RESOURCE)
-        print(user_guide_file.read())
-        user_guide_file.close()
+        user_guide_file = user_guide_path + self.user_guide_resource
+        with open(user_guide_file, "r", encoding='utf8'):
+            print(user_guide_file.read())

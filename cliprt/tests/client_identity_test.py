@@ -2,7 +2,7 @@
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
-Copyright   2021 Michael Hodges
+Copyright   2022 Michael Hodges
 """
 from cliprt.classes.client_identity import ClientIdentity
 from cliprt.classes.client_information_workbook import ClientInformationWorkbook
@@ -24,7 +24,7 @@ class ClientIdentityTest:
         """
         self.client_id.add_dest_ws_info(
             self.client_info.dest_ws_reg.dest_ws_by_ind_list
-        )
+            )
         assert self.client_id.dest_ws == {'ims': 3, 'fb': 3}
         assert self.client_id.get_row_idx('ims') == 3
 

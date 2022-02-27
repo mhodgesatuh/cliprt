@@ -6,7 +6,7 @@
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
             CLIPRT, sounds like liberty.  Pronounced clipperty.
 @author:    mhodges
-Copyright   2020 Michael Hodges
+Copyright   2022 Michael Hodges
 """
 import os
 import sys

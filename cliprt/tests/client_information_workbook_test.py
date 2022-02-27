@@ -3,7 +3,7 @@
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
-Copyright   2021 Michael Hodges
+Copyright   2022 Michael Hodges
 """
 import pytest
 from IPython.utils.capture import capture_output
@@ -51,7 +51,7 @@ class ClientInformationWorkbookTest:
         self.client_info.ded_ws = self.client_info.cliprt_wb.create_sheet(
             title=test_ws_title,
             index=0
-        )
+            )
         assert self.client_info.create_ded_worksheet(False) is False
 
     def ded_is_verified_test(self):

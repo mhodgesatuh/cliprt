@@ -4,7 +4,7 @@
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
-Copyright   2020 Michael Hodges
+Copyright   2022 Michael Hodges
 """
 from cliprt.classes.client_identity_resolver import ClientIdentityResolver
 from cliprt.classes.cliprt_settings import CliprtSettings
@@ -166,7 +166,8 @@ class ContentWorksheet:
             # There are no fragments to process.
             return False
 
-        for dest_de_name, fragments_assembler in self.frag_assembler_list.items():
+        for dest_de_name_fragments_assembler in self.frag_assembler_list.items():
+            fragments_assembler = dest_de_name_fragments_assembler[1]
             # Get each data element fragment name, look up its worksheet
             # column index and get the fragment's value from the
             # worksheet row and save it to the assembler.
@@ -180,7 +181,7 @@ class ContentWorksheet:
                 # The DED has the fragment index.
                 frag_idx = self.ded[fragment_name].fragment_idx
                 # Provide the data value to the fragment assembler.
-                self.frag_assembler_list[dest_de_name].add_fragment_value(frag_idx, frag_value)
+                fragments_assembler.add_fragment_value(frag_idx, frag_value)
         return True
 
     def process_row_de_identifiers(self, client_id_resolver, row_idx):
@@ -222,7 +223,8 @@ class ContentWorksheet:
         # Scale the progress bar update threshold.
         if self.cliprt_ws.max_row > self.PROGRESS_INCREMENT:
             # Large content worksheets.
-            progress_threshold = int(self.cliprt_ws.max_row/self.PROGRESS_INCREMENT)
+            progress_threshold =\
+                int(self.cliprt_ws.max_row/self.PROGRESS_INCREMENT)
         else:
             # Small content worksheets.
             progress_threshold = 1
@@ -231,7 +233,8 @@ class ContentWorksheet:
         while row_idx < self.cliprt_ws.max_row:
             row_idx += 1
 
-            if not progress_reporting_is_disabled and row_idx % progress_threshold == 0:
+            if not progress_reporting_is_disabled and\
+                    row_idx % progress_threshold == 0:
                 # Update the progress report indicator.
                 print('x', end='')
 
@@ -244,11 +247,11 @@ class ContentWorksheet:
             client_id_resolver = ClientIdentityResolver(
                 self.client_reg,
                 self.identifier_reg
-            )
+                )
             identity = self.process_row_de_identifiers(
                 client_id_resolver,
                 row_idx
-            )
+                )
 
             # Copy the matched identifiers values to the destination worksheet.
             for dest_ws_ind, dest_row_idx in identity.dest_ws.items():

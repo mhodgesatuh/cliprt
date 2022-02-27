@@ -3,7 +3,7 @@
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
-Copyright   2020 Michael Hodges
+Copyright   2022 Michael Hodges
 """
 from cliprt.classes.cliprt_settings import CliprtSettings
 from cliprt.classes.data_element import DataElement
@@ -48,7 +48,7 @@ class DataElementDictionaryProcessor:
                     de_name,
                     de_type_str,
                     de_type
-                ))
+                    ))
 
             tuple_parts = tuple_info.split('=', 1)
             if not tuple_parts[0] == de_type:
@@ -57,14 +57,14 @@ class DataElementDictionaryProcessor:
                     de_name,
                     de_type_str,
                     de_type
-                ))
+                    ))
             if not tuple_parts[1].isdigit():
                 # Fatal error
                 raise Exception(self.cliprt.msg(3210).format(
                     de_name,
                     de_type_str,
                     de_type
-                ))
+                    ))
 
             # Return the index value.
             return tuple_parts[1]
@@ -114,7 +114,7 @@ class DataElementDictionaryProcessor:
             if de_cell.value is None:
                 raise Exception(
                     self.cliprt.msg(3150).format(self.cliprt_ws.title, de_cell.coordinate)
-                )
+                    )
 
             # Ensure values used for comparisons are shifted to
             # lowercase to reduce sensitivity to typos in the DED.
@@ -127,7 +127,7 @@ class DataElementDictionaryProcessor:
             # them to the DED.
             col_idx = col_headings[
                 self.settings.col_headings[self.settings.dest_ws_col_idx]
-            ]
+                ]
             dest_ws_cell = self.cliprt_ws.cell(row=de_cell.row, column=col_idx)
             if dest_ws_cell.value is None:
                 continue
@@ -144,7 +144,7 @@ class DataElementDictionaryProcessor:
         # names.
         col_idx = col_headings[
             self.settings.col_headings[self.settings.dest_de_name_col_idx]
-        ]
+            ]
         ws_columns = self.cliprt_ws.iter_cols(
             min_col=col_idx,
             max_col=col_idx,
@@ -163,8 +163,11 @@ class DataElementDictionaryProcessor:
 
             de_name_col_idx = col_headings[
                 self.settings.col_headings[self.settings.de_name_col_idx]
-            ]
-            de_cell = self.cliprt_ws.cell(row=dest_de_cell.row, column=de_name_col_idx)
+                ]
+            de_cell = self.cliprt_ws.cell(
+                row=dest_de_cell.row,
+                column=de_name_col_idx
+                )
             de_name = self.settings.str_normalize(de_cell.value)
 
             # Update the DED.
@@ -181,7 +184,7 @@ class DataElementDictionaryProcessor:
         # formats.
         col_idx = col_headings[
             self.settings.col_headings[self.settings.dest_de_format_col_idx]
-        ]
+            ]
         ws_columns = self.cliprt_ws.iter_cols(
             min_col=col_idx,
             max_col=col_idx,
@@ -196,8 +199,10 @@ class DataElementDictionaryProcessor:
 
             de_name_col_idx = col_headings[
                 self.settings.col_headings[self.settings.de_name_col_idx]
-            ]
-            de_cell = self.cliprt_ws.cell(row=de_format_cell.row, column=de_name_col_idx)
+                ]
+            de_cell = self.cliprt_ws.cell(
+                row=de_format_cell.row,
+                column=de_name_col_idx)
             de_name = self.settings.str_normalize(de_cell.value)
 
             dest_de_format = self.settings.str_normalize(de_format_cell.value)
@@ -217,7 +222,7 @@ class DataElementDictionaryProcessor:
         # Get the DED worksheet column of data element types.
         col_idx = col_headings[
             self.settings.col_headings[self.settings.de_type_col_idx]
-        ]
+            ]
         ws_columns = self.cliprt_ws.iter_cols(
             min_col=col_idx,
             max_col=col_idx,
@@ -232,8 +237,11 @@ class DataElementDictionaryProcessor:
 
             de_name_col_idx = col_headings[
                 self.settings.col_headings[self.settings.de_name_col_idx]
-            ]
-            de_cell = self.cliprt_ws.cell(row=de_format_cell.row, column=de_name_col_idx)
+                ]
+            de_cell = self.cliprt_ws.cell(
+                row=de_format_cell.row,
+                column=de_name_col_idx
+                )
             de_name = self.settings.str_normalize(de_cell.value)
 
             dest_de_type = self.settings.str_normalize(de_format_cell.value)
@@ -257,7 +265,7 @@ class DataElementDictionaryProcessor:
                 raise Exception(self.cliprt.msg(3170).format(
                     de_name,
                     data_element.dest_de_name
-                ))
+                    ))
 
             if data_element.has_dest_ws() and\
                     not data_element.dest_de_name is None:
@@ -267,7 +275,7 @@ class DataElementDictionaryProcessor:
                     not data_element.dest_de_name in self.ded:
                 raise Exception(self.cliprt.msg(3207).format(
                     data_element.dest_de_name
-                ))
+                    ))
 
             if data_element.is_fragment and\
                     not data_element.dest_de_name is None and\
@@ -275,7 +283,7 @@ class DataElementDictionaryProcessor:
                 raise Exception(self.cliprt.msg(3212).format(
                     data_element.dest_de_name,
                     de_name
-                ))
+                    ))
 
             if data_element.is_fragment and\
                     data_element.dest_de_name is None:
@@ -290,7 +298,7 @@ class DataElementDictionaryProcessor:
                 raise Exception(self.cliprt.msg(3226).format(
                     data_element.dest_de_name,
                     de_name
-                ))
+                    ))
 
             if not data_element.has_dest_ws() and\
                     data_element.dest_de_name is None:
@@ -302,7 +310,7 @@ class DataElementDictionaryProcessor:
                 raise Exception(self.cliprt.msg(3238).format(
                     data_element.dest_de_name,
                     de_name
-                ))
+                    ))
 
         if identifier_cnt == 0:
             raise Exception(self.cliprt.msg(3229))

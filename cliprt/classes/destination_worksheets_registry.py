@@ -3,7 +3,7 @@
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
-Copyright   2020 Michael Hodges
+Copyright   2022 Michael Hodges
 """
 from cliprt.classes.destination_worksheet import DestinationWorksheet
 
@@ -76,4 +76,4 @@ class DestinationWorksheetsRegistry:
             col_idx,
             cell_data,
             data_format
-        )
+            )

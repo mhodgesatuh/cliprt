@@ -3,7 +3,7 @@
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
-Copyright   2021 Michael Hodges
+Copyright   2022 Michael Hodges
 """
 from dateutil.parser import parse
 
@@ -42,7 +42,7 @@ class CliprtSettings:
         'Dest WS',
         'Dest DE Name',
         'Dest DE Format',
-    ]
+        ]
     de_name_col_idx = 0
     de_type_col_idx = 1
     dest_ws_col_idx = 2
@@ -64,14 +64,14 @@ class CliprtSettings:
         identifier_de_type,
         fragment_de_type,
         unit_test_de_type,
-    ]
+        ]
 
     # Valid data element formats list.
     valid_de_formats = [
         date_format,
         name_format,
         phone_format,
-    ]
+        ]
 
     """
     Data formatting functions.
@@ -129,21 +129,21 @@ class CliprtSettings:
                 area_code,
                 pho_no[0:3],
                 pho_no[3:7]
-            )
+                )
         if len(pho_no) == 10:
             return pho_mask.format(
                 country_code,
                 pho_no[0:3],
                 pho_no[3:6],
                 pho_no[6:10]
-            )
+                )
         if len(pho_no) == 11:
             return pho_mask.format(
                 pho_no[0:1],
                 pho_no[1:4],
                 pho_no[4:7],
                 pho_no[7:11]
-            )
+                )
         return data_value
 
     @staticmethod

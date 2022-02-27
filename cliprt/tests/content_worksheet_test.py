@@ -3,7 +3,7 @@
 """
 Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
-Copyright   2021 Michael Hodges
+Copyright   2022 Michael Hodges
 """
 import pytest
 from IPython.utils.capture import capture_output
@@ -45,7 +45,7 @@ class ContentWorksheetTest:
             self.client_info.client_reg,
             self.client_info.identifier_reg,
             self.client_info.dest_ws_reg
-        )
+            )
 
     @staticmethod
     def _update_test_content_ws(cliprt_ws, test_data):
@@ -72,7 +72,7 @@ class ContentWorksheetTest:
             self.client_info.client_reg,
             self.client_info.identifier_reg,
             self.client_info.dest_ws_reg
-        )
+            )
         content_ws.build_etl_map()
         assert len(content_ws.frag_assembler_list) == 1
         assert len(content_ws.identifier_col_names) == 4
@@ -85,7 +85,7 @@ class ContentWorksheetTest:
         test_data = [
             ['not in ded', 'client id', 'phone', 'first name', 'last name'],
             ['rubbish', '100', '999-123-1234', 'jane', 'doe']
-        ]
+            ]
         self._update_test_content_ws(test_content.cliprt_ws, test_data)
         test_content.build_etl_map()
         assert 'not in ded' not in test_content.de_names
@@ -101,7 +101,7 @@ class ContentWorksheetTest:
             ['id', 'client id', 'phone', 'first name', 'last name'],
             ['100000', '101', '999-123-1201', 'jane1', 'doe'],
             ['100001', '102', '999-123-1202', 'jane1', 'doe'],
-        ]
+            ]
         self._update_test_content_ws(test_content.cliprt_ws, test_data)
         with capture_output() as captured:
             test_content.client_report()
@@ -123,7 +123,7 @@ class ContentWorksheetTest:
             ['id', 'client id', 'phone', 'first name', 'last name', 'gender'],
             ['100000', '101', '999-123-1201', 'jane1', 'doe', 'f'],
             ['100022', '122', '999-123-1222', 'jane2', 'doe', None],
-        ]
+            ]
         self._update_test_content_ws(test_content.cliprt_ws, test_data)
         assert test_content.client_report()
         assert test_content.content_cols == {6: 'gender'}
@@ -146,12 +146,12 @@ class ContentWorksheetTest:
         test_data = [
             ['id', 'client id', 'phone', 'first name', 'last name'],
             ['100000', '101', '999-123-1201', 'jane1', 'doe'],
-        ]
+            ]
         self._update_test_content_ws(test_content.cliprt_ws, test_data)
         identity_resolver = ClientIdentityResolver(
             self.client_info.client_reg,
             self.client_info.identifier_reg
-        )
+            )
         with pytest.raises(Exception) as excinfo:
             test_content.process_row_de_identifiers(identity_resolver, 2)
         assert '(E5012)' in excinfo.value.args[0]
@@ -162,12 +162,12 @@ class ContentWorksheetTest:
         test_data = [
             ['id', 'client id', 'phone', 'first name', 'last name'],
             ['100000', '', None, 'jane1', 'doe'],
-        ]
+            ]
         self._update_test_content_ws(test_content.cliprt_ws, test_data)
         identity_resolver = ClientIdentityResolver(
             self.client_info.client_reg,
             self.client_info.identifier_reg
-        )
+            )
         test_content.identifier_col_names['id'] = 1
         test_content.process_row_de_identifiers(identity_resolver, 2)
         assert len(identity_resolver.identifiers_matched) == 1
@@ -187,7 +187,7 @@ class ContentWorksheetTest:
             self.client_info.client_reg,
             self.client_info.identifier_reg,
             self.client_info.dest_ws_reg
-        )
+            )
         assert content_ws.cliprt_ws.max_row == 20
 
         content_ws.build_etl_map()
