@@ -11,8 +11,8 @@ class DataElementTest:
     """
     Data element unit testing harness.
     """
-    wb_file = 'cliprt/tests/test_workbook.xlsx'
-    client_info = ClientInformationWorkbook(wb_file)
+    cliprt_wb_file = 'cliprt/tests/resources/test_workbook.xlsx'
+    client_info = ClientInformationWorkbook(cliprt_wb_file)
     client_info.ded_processor.hydrate_ded()
 
     # Test data

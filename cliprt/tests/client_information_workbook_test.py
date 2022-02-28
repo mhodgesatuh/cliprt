@@ -16,8 +16,8 @@ class ClientInformationWorkbookTest:
     """
     cliprt = MessageRegistry()
 
-    wb_file = 'cliprt/tests/test_workbook.xlsx'
-    client_info = ClientInformationWorkbook(wb_file)
+    client_wb_file = 'cliprt/tests/resources/test_workbook.xlsx'
+    client_info = ClientInformationWorkbook(client_wb_file)
 
     def create_client_reports_test(self):
         """

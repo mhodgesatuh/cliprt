@@ -19,11 +19,11 @@ class DataElementDictionaryProcessorTest:
     settings = CliprtSettings()
 
     # Client workbook with a configured.
-    wb_file = 'cliprt/tests/test_workbook.xlsx'
-    client_info = ClientInformationWorkbook(wb_file)
+    client_wb_file = 'cliprt/tests/resources/test_workbook.xlsx'
+    client_info = ClientInformationWorkbook(client_wb_file)
 
     # Client workbook with no DED.
-    noded_wb_file = 'cliprt/tests/test_noded_workbook.xlsx'
+    noded_wb_file = 'cliprt/tests/resources/test_noded_workbook.xlsx'
     noded_client_info = ClientInformationWorkbook(noded_wb_file)
 
     # DED heading column indicies + 1 yields cell columns.

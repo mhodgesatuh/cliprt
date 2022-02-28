@@ -12,8 +12,8 @@ class DestinationWorksheetsRegistryTest:
     Client destination worksheet registry test harness.
     """
     # Test data
-    wb_file = 'cliprt/tests/test_workbook.xlsx'
-    client_info = ClientInformationWorkbook(wb_file)
+    client_wb_file = 'cliprt/tests/resources/test_workbook.xlsx'
+    client_info = ClientInformationWorkbook(client_wb_file)
     dest_ws = DestinationWorksheet(client_info.cliprt_wb, 'fb')
     client_info.dest_ws_reg.add_ws(client_info.cliprt_wb, 'fb')
 

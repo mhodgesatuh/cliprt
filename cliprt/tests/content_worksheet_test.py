@@ -15,8 +15,8 @@ class ContentWorksheetTest:
     """
     Content worksheet test harness.
     """
-    wb_file = 'cliprt/tests/test_workbook.xlsx'
-    client_info = ClientInformationWorkbook(wb_file)
+    client_wb_file = 'cliprt/tests/resources/test_workbook.xlsx'
+    client_info = ClientInformationWorkbook(client_wb_file)
     client_info.ded_processor.hydrate_ded()
 
     # Helper functions for the unit tests start with an '_'.
