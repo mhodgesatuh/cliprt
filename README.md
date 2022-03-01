@@ -23,9 +23,9 @@ Pronunciation: "cliprt" sounds a bit like "liberty" (clipperty)
   * [Version 0.1.0 - prototype](#version-010---prototype)
 - [References](#references)
 # Overview
-For a small business that use multiple social media and 3rd-party applications to collect customer data,
+For a small business that uses multiple social media and 3rd-party applications to collect customer data,
 prove a tool for defining how to merge the data to create reports, unique (deduplicated) customer lists,
-etc to be used for marketing, communications and other purposes. Use a singe Excel-compatible workbook
+etc to be used for marketing, communications and other purposes. Use a single Excel-compatible workbook
 with multipe spreadsheets to collect the customer data into one place, define the reporting requirements,
 and to generate the requested reports.
 # Requirements
