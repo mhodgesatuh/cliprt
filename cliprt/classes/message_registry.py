@@ -53,7 +53,8 @@ class MessageRegistry:
         self.message[3200] =\
             'Error: required column heading "{}" not found in worksheet "{}".' + utc
         self.message[3204] =\
-            'Error: specify either a "Dest WS" or a "Dest DE Name" for "{}", but not both.' + utc
+            'Error: specify either a "Dest WS" or a "Dest DE Name" for "{}", but not both.'\
+            + utc
         self.message[3207] =\
             'Error: see column "Dest DE Name" for invalid entry "{}". '\
             'It must reference a entry in the colum "Data Element".' + utc
@@ -62,7 +63,7 @@ class MessageRegistry:
             'Value seen is "{}", {}="n" where "n" is an integer is expected.' + utc
         self.message[3212] =\
             'Error: invalid Dest DE Name "{}" specified for "{}". '\
-            'A fragment must reference Dest DE Name with a Dest Ws designation.' + utc
+            'A fragment must reference Dest DE Name with a Dest WS designation.' + utc
         self.message[3214] =\
             'Error: missing Dest DE Name specified for "{}". '\
             'A fragment must reference a destination data element for assembly.' + utc
@@ -70,9 +71,11 @@ class MessageRegistry:
             'Error: invalid Content DE Type for "{}". Content DE Type must not be a list: '\
             '"{}"; only one allowed.' + utc
         self.message[3217] =\
-            'Error: invalid Dest DE Format "{}" specified for "{}".\nValid values: "{}".' + utc
+            'Error: invalid Dest DE Format "{}" specified for "{}".\nValid values: "{}".'\
+            + utc
         self.message[3218] =\
-            'Error: invalid Content DE Type "{}" specified for "{}".\nValid values: "{}".' + utc
+            'Error: invalid Content DE Type "{}" specified for "{}".\nValid values: "{}".'\
+            + utc
         self.message[3226] =\
             'Error: invalid Dest DE Name "{}" specified for "{}". '\
             'An identifier cannot be remapped to another Dest DE Name.' + utc

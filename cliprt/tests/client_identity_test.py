@@ -6,12 +6,14 @@ Copyright   2022 Michael Hodges
 """
 from cliprt.classes.client_identity import ClientIdentity
 from cliprt.classes.client_information_workbook import ClientInformationWorkbook
+from cliprt.classes.cliprt_settings import CliprtSettings
 
 class ClientIdentityTest:
     """
     Client identity test harness.
     """
-    wb_file = 'cliprt/tests/resources/test_workbook.xlsx'
+    settings = CliprtSettings()
+    wb_file = settings.test_resources_path + '/test_workbook.xlsx'
     client_info = ClientInformationWorkbook(wb_file)
     client_info.ded_processor.hydrate_ded()
 

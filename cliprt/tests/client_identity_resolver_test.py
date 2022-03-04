@@ -7,12 +7,14 @@ Copyright   2022 Michael Hodges
 from cliprt.classes.client_identity_resolver import ClientIdentityResolver
 from cliprt.classes.client_information_workbook import ClientInformationWorkbook
 from cliprt.classes.identifier import Identifier
+from cliprt.classes.cliprt_settings import CliprtSettings
 
 class ClientIdentityResolverTest:
     """
     Client Identity Resolver test harness.
     """
-    cliprt_wb_file = 'cliprt/tests/resources/test_workbook.xlsx'
+    settings = CliprtSettings()
+    cliprt_wb_file = settings.test_resources_path + '/test_workbook.xlsx'
     client_info = ClientInformationWorkbook(cliprt_wb_file)
     client_info.ded_processor.hydrate_ded()
 
@@ -91,7 +93,11 @@ class ClientIdentityResolverTest:
         # Useful identifiers are stored in the identifier registry.
         assert len(self.client_info.identifier_reg.identifier_list) == 3
         assert len(id_resolver.identifiers_matched) == 3
-        assert id_resolver.matched_identifier_types == ['phone', 'client id', 'email']
+        assert id_resolver.matched_identifier_types == [
+            'phone',
+            'client id',
+            'email'
+            ]
         self._reset__registries()
 
     def resolve_client_identity_test(self):

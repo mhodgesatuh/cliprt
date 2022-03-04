@@ -16,7 +16,11 @@ class IdentifierTest:
     client_info.ded_processor.hydrate_ded()
 
     # Test data
-    client_id = Identifier('phone', '1 (800) 123-1234', client_info.ded_processor.ded)
+    client_id = Identifier(
+        'phone',
+        '1 (800) 123-1234',
+        client_info.ded_processor.ded
+        )
     client_id.save_client_idno('9989')
 
     def init_test(self):

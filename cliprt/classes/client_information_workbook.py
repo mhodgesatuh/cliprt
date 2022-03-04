@@ -10,8 +10,10 @@ import os.path
 import openpyxl
 from cliprt.classes.client_registry import ClientRegistry
 from cliprt.classes.content_worksheet import ContentWorksheet
-from cliprt.classes.data_element_dictionary_processor import DataElementDictionaryProcessor
-from cliprt.classes.destination_worksheets_registry import DestinationWorksheetsRegistry
+from cliprt.classes.data_element_dictionary_processor\
+    import DataElementDictionaryProcessor
+from cliprt.classes.destination_worksheets_registry\
+    import DestinationWorksheetsRegistry
 from cliprt.classes.identifier_registry import IdentifierRegistry
 from cliprt.classes.message_registry import MessageRegistry
 
@@ -55,7 +57,11 @@ class ClientInformationWorkbook:
         # initially accessed.
         self.init_ded_processor()
 
-    def create_client_reports(self, progress_reporting_is_disabled=False, save_wb=True):
+    def create_client_reports(
+            self,
+            progress_reporting_is_disabled=False,
+            save_wb=True
+        ):
         """
         Utilize and process the various worksheets in the workbook in
         order to create the destination report worksheets.

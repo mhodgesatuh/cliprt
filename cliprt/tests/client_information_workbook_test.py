@@ -9,14 +9,16 @@ import pytest
 from IPython.utils.capture import capture_output
 from cliprt.classes.client_information_workbook import ClientInformationWorkbook
 from cliprt.classes.message_registry import MessageRegistry
+from cliprt.classes.cliprt_settings import CliprtSettings
 
 class ClientInformationWorkbookTest:
     """
     Client information workbook test harness.
     """
     cliprt = MessageRegistry()
+    settings = CliprtSettings()
 
-    client_wb_file = 'cliprt/tests/resources/test_workbook.xlsx'
+    client_wb_file = settings.test_resources_path + '/test_workbook.xlsx'
     client_info = ClientInformationWorkbook(client_wb_file)
 
     def create_client_reports_test(self):

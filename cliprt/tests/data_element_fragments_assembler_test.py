@@ -4,8 +4,8 @@ Project:    CLIPRT - Client Information Parsing and Reporting Tool.
 @author:    mhodges
 Copyright   2022 Michael Hodges
 """
-from cliprt.classes.data_element_fragments_assembler import DataElementFragmentsAssembler\
-        as FragAssembler
+from cliprt.classes.data_element_fragments_assembler\
+    import DataElementFragmentsAssembler as FragAssembler
 
 class DataElementFragmentsAssemblerTest:
     """

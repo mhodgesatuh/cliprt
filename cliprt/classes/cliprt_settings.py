@@ -14,6 +14,11 @@ class CliprtSettings:
     - Reporting parameters control the output to the destination
         worksheets.
     """
+    # -----
+    # Paths
+    # -----
+    resources_path = 'cliprt/resources'
+    test_resources_path = 'cliprt/tests/resources'
 
     # ---------------------------------
     # Client content reporting settings

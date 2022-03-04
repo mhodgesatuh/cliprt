@@ -10,12 +10,14 @@ from IPython.utils.capture import capture_output
 from cliprt.classes.client_identity_resolver import ClientIdentityResolver
 from cliprt.classes.client_information_workbook import ClientInformationWorkbook
 from cliprt.classes.content_worksheet import ContentWorksheet
+from cliprt.classes.cliprt_settings import CliprtSettings
 
 class ContentWorksheetTest:
     """
     Content worksheet test harness.
     """
-    client_wb_file = 'cliprt/tests/resources/test_workbook.xlsx'
+    settings = CliprtSettings()
+    client_wb_file = settings.test_resources_path + '/test_workbook.xlsx'
     client_info = ClientInformationWorkbook(client_wb_file)
     client_info.ded_processor.hydrate_ded()
 

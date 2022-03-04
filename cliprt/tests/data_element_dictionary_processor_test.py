@@ -19,11 +19,11 @@ class DataElementDictionaryProcessorTest:
     settings = CliprtSettings()
 
     # Client workbook with a configured.
-    client_wb_file = 'cliprt/tests/resources/test_workbook.xlsx'
+    client_wb_file = settings.test_resources_path + '/test_workbook.xlsx'
     client_info = ClientInformationWorkbook(client_wb_file)
 
     # Client workbook with no DED.
-    noded_wb_file = 'cliprt/tests/resources/test_noded_workbook.xlsx'
+    noded_wb_file = settings.test_resources_path + '/test_noded_workbook.xlsx'
     noded_client_info = ClientInformationWorkbook(noded_wb_file)
 
     # DED heading column indicies + 1 yields cell columns.
@@ -46,12 +46,16 @@ class DataElementDictionaryProcessorTest:
         # To make testing more resilient, also delete row 4 if it is not
         # set to "birthday" because if it isn't there's still test data
         # left from a previous test.
-        if not ded_processor.cliprt_ws.cell(row=4, column=self.de_idx).value == "birthday":
+        if not ded_processor.cliprt_ws.cell(
+                row=4,
+                column=self.de_idx).value == "birthday":
             ded_processor.cliprt_ws.delete_rows(4, 1)
 
         # To make testing more resilient, also ensure that the original
         # identifiers are restored.
-        self._remove_identifiers_temporarily(ded_processor.cliprt_ws, action="restore")
+        self._remove_identifiers_temporarily(
+            ded_processor.cliprt_ws,
+            action="restore")
 
     def _remove_identifiers_temporarily(self, cliprt_ws, action="remove"):
         """

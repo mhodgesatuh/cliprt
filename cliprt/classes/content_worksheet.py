@@ -8,7 +8,8 @@ Copyright   2022 Michael Hodges
 """
 from cliprt.classes.client_identity_resolver import ClientIdentityResolver
 from cliprt.classes.cliprt_settings import CliprtSettings
-from cliprt.classes.data_element_fragments_assembler import DataElementFragmentsAssembler\
+from cliprt.classes.data_element_fragments_assembler\
+    import DataElementFragmentsAssembler\
         as FragAssembler
 from cliprt.classes.identifier import Identifier
 from cliprt.classes.message_registry import MessageRegistry
@@ -98,9 +99,11 @@ class ContentWorksheet:
                 # element fragment assemblers.
                 if not dest_de_name in self.frag_assembler_list:
                     # Create a fragments assembler if needed.
-                    self.frag_assembler_list[dest_de_name] = FragAssembler(dest_de_name)
+                    self.frag_assembler_list[dest_de_name]\
+                        = FragAssembler(dest_de_name)
                 if not dest_de_name in self.identifier_col_names:
-                    self.identifier_col_names[dest_de_name] = self.ASSEMBLED_IDENTIFIER
+                    self.identifier_col_names[dest_de_name]\
+                        = self.ASSEMBLED_IDENTIFIER
                 # Add the new data element fragment to the assembler.
                 self.frag_assembler_list[dest_de_name].add_fragment_col_index(
                     ws_de_name,
@@ -122,8 +125,7 @@ class ContentWorksheet:
         if not progress_reporting_is_disabled:
             self.print_progress_report()
 
-        if len(self.content_cols) + len(self.identifier_col_names) < \
-                self.settings.min_required_content_ws_columns:
+        if not self.has_sufficent_data():
             # Skip worksheets with insufficient data to report.
             if not progress_reporting_is_disabled:
                 print(self.cliprt.msg(5000).format(self.cliprt_ws_name))
@@ -131,6 +133,13 @@ class ContentWorksheet:
 
         self.process_ws_rows(progress_reporting_is_disabled)
         return True
+
+    def has_sufficent_data(self):
+        """
+        Determine if the worksheet as a minimal amount of content.
+        """
+        return len(self.content_cols) + len(self.identifier_col_names)\
+                >= self.settings.min_required_content_ws_columns
 
     def print_frag_assembler_list(self):
         """
@@ -142,7 +151,6 @@ class ContentWorksheet:
             frag_de = de_name_frag_de[1]
             ret_val += f'{delim}{ frag_de.__str__()}'
         return '[' + ret_val[len(delim):] + ']'
-
 
     def print_progress_report(self):
         """
@@ -255,46 +263,17 @@ class ContentWorksheet:
 
             # Copy the matched identifiers values to the destination worksheet.
             for dest_ws_ind, dest_row_idx in identity.dest_ws.items():
-
                 for identifier in client_id_resolver.identifiers_matched:
-                    # Update the destination report worksheet.
-                    dest_de_name = identifier.de_name
-                    dest_col_idx = self.ded[dest_de_name].get_col_by_dest_ws_ind(dest_ws_ind)
-                    if dest_col_idx is False:
-                        # There is no destination worksheet specified
-                        # for this data eleement.
-                        continue
-                    dest_de_value = identifier.de_value
-                    dest_de_format = self.ded[dest_de_name].dest_de_format
-                    self.dest_ws_reg.update_dest_ws_cell(
-                        dest_ws_ind,
-                        dest_row_idx,
-                        dest_col_idx,
-                        dest_de_value,
-                        dest_de_format
-                        )
+                    self.update_dest_ws(identifier, dest_ws_ind, dest_row_idx)
 
                 # Copy the content columns to the destination worksheet.
                 for col_idx, dest_de_name in self.content_cols.items():
                     dest_de_value = self.cliprt_ws.cell(row_idx, col_idx).value
-
-                    if dest_de_value is None:
-                        # Skip empty cells.
-                        continue
-                    if not self.ded[dest_de_name].is_mapped_to_dest_ws(dest_ws_ind):
-                        # Not all content gets copied to all destination
-                        # worksheets.
-                        continue
-
-                    # Update the destination report worksheet.
-                    dest_col_idx = self.ded[dest_de_name].get_col_by_dest_ws_ind(dest_ws_ind)
-                    dest_de_format = self.ded[dest_de_name].dest_de_format
-                    self.dest_ws_reg.update_dest_ws_cell(
+                    self.update_dest_ws_with_content(
+                        dest_de_name,
                         dest_ws_ind,
-                        dest_row_idx,
-                        dest_col_idx,
                         dest_de_value,
-                        dest_de_format
+                        dest_row_idx
                         )
 
                 # Copy assembled content fragments to the destination
@@ -318,3 +297,53 @@ class ContentWorksheet:
             print()
 
         return True
+
+    def update_dest_ws(self, identifier, dest_ws_ind, dest_row_idx):
+        """
+        Update the destination report worksheet.
+        """
+        dest_de_name = identifier.de_name
+        dest_col_idx = self.ded[dest_de_name].get_col_by_dest_ws_ind(dest_ws_ind)
+        if dest_col_idx is False:
+            # There is no destination worksheet specified
+            # for this data eleement.
+            return
+
+        dest_de_value = identifier.de_value
+        dest_de_format = self.ded[dest_de_name].dest_de_format
+        self.dest_ws_reg.update_dest_ws_cell(
+            dest_ws_ind,
+            dest_row_idx,
+            dest_col_idx,
+            dest_de_value,
+            dest_de_format
+            )
+
+    def update_dest_ws_with_content(
+            self,
+            dest_de_name,
+            dest_ws_ind,
+            dest_de_value,
+            dest_row_idx
+        ):
+        """
+        Update the destination report worksheet.
+        """
+        if dest_de_value is None:
+            # Skip empty cells.
+            return
+
+        if not self.ded[dest_de_name].is_mapped_to_dest_ws(dest_ws_ind):
+            # Not all content gets copied to all destination worksheets.
+            return
+
+        # Update the destination report worksheet.
+        dest_col_idx = self.ded[dest_de_name].get_col_by_dest_ws_ind(dest_ws_ind)
+        dest_de_format = self.ded[dest_de_name].dest_de_format
+        self.dest_ws_reg.update_dest_ws_cell(
+            dest_ws_ind,
+            dest_row_idx,
+            dest_col_idx,
+            dest_de_value,
+            dest_de_format
+            )

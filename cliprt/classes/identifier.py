@@ -50,7 +50,7 @@ class Identifier:
         """
         Ensure that values are lowercase strings and easily searchable.
         """
-        return str_value.strip().lower() \
+        return str_value.strip().lower()\
             if isinstance(str_value, str) else str(str_value)
 
     def santize_phone_value(self):

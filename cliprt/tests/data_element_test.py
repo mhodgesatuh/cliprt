@@ -6,12 +6,14 @@ Copyright   2022 Michael Hodges
 """
 from cliprt.classes.client_information_workbook import ClientInformationWorkbook
 from cliprt.classes.data_element import DataElement
+from cliprt.classes.cliprt_settings import CliprtSettings
 
 class DataElementTest:
     """
     Data element unit testing harness.
     """
-    cliprt_wb_file = 'cliprt/tests/resources/test_workbook.xlsx'
+    settings = CliprtSettings()
+    cliprt_wb_file = settings.test_resources_path + '/test_workbook.xlsx'
     client_info = ClientInformationWorkbook(cliprt_wb_file)
     client_info.ded_processor.hydrate_ded()
 
@@ -30,7 +32,10 @@ class DataElementTest:
     frag_data_element = DataElement('frag_de', client_info.ded_processor.ded)
     frag_data_element.set_to_fragment(1)
 
-    identifier_data_element = DataElement('identifier_de', client_info.ded_processor.ded)
+    identifier_data_element = DataElement(
+        'identifier_de',
+        client_info.ded_processor.ded
+        )
     identifier_data_element.set_to_identifier()
 
     def add_dest_ws_ind_test(self):
@@ -52,9 +57,9 @@ class DataElementTest:
         """
         Unit test
         """
-        assert self.data_element.get_identifier_type() == \
+        assert self.data_element.get_identifier_type() ==\
             self.data_element.name
-        assert self.remapped_data_element.get_identifier_type() == \
+        assert self.remapped_data_element.get_identifier_type() ==\
             self.remapped_data_element.dest_de_name
 
     def has_dest_ws_test(self):
@@ -104,21 +109,21 @@ class DataElementTest:
         """
         data_element = DataElement('test_de', self.client_info.ded_processor.ded)
         data_element.add_dest_ws_ind('fb', 1)
-        assert data_element.__str__() == \
+        assert data_element.__str__() ==\
             "is_content, {'fb': {'col_idx': 1}}"
-        assert self.remapped_data_element.__str__() == \
-            "{'dest_de_name': 'dest_de'}, is_content, {'dest_de_format': 'phone'}, " + \
+        assert self.remapped_data_element.__str__() ==\
+            "{'dest_de_name': 'dest_de'}, is_content, {'dest_de_format': 'phone'}, " +\
             "{'fb': {'col_idx': 2}}"
-        assert self.frag_data_element.__str__() == \
+        assert self.frag_data_element.__str__() ==\
             "{'fragment_idx': 1}"
-        assert self.identifier_data_element.__str__() == \
+        assert self.identifier_data_element.__str__() ==\
             "is_identifier"
 
     def util_format_dict_output_test(self):
         """
         Unit test
         """
-        assert self.data_element.util_format_dict_output('key', 'val') == \
+        assert self.data_element.util_format_dict_output('key', 'val') ==\
             "{'key': 'val'}"
-        assert self.data_element.util_format_dict_output('key', 999) == \
+        assert self.data_element.util_format_dict_output('key', 999) ==\
             "{'key': 999}"

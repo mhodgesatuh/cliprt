@@ -111,7 +111,8 @@ class ClientIdentityResolver:
         """
         client_id_sets = []
         for identifier in self.identifiers_matched:
-            idno_set = self.identifier_reg.identifier_list[identifier.key].client_ids
+            idno_set =\
+                self.identifier_reg.identifier_list[identifier.key].client_ids
             client_id_sets.append(idno_set)
         return self.client_idno_matcher(client_id_sets)
 

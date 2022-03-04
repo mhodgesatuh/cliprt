@@ -13,11 +13,11 @@ class DestinationWorksheetTest:
     Data destination worksheet testing harness.
     """
     # Test data.
-    cliprt_wb_file = 'cliprt/tests/resources/test_workbook.xlsx'
+    settings = CliprtSettings()
+    cliprt_wb_file = settings.test_resources_path + '/test_workbook.xlsx'
     client_info = ClientInformationWorkbook(cliprt_wb_file)
     dest_ws = DestinationWorksheet(client_info.cliprt_wb, 'fb')
     client_info.dest_ws_reg.add_ws(client_info.cliprt_wb, 'fb')
-    settings = CliprtSettings()
 
     def init_test(self):
         """
