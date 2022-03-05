@@ -8,7 +8,6 @@ cliprt/__pycache__/
 .pytest_cache/
 a.pytest_cache/
 .coverage
-coverage.xml
 cliprt/tests/resources/~$test_workbook.xlsx
 cliprt/tests/resources/~$test_noded_workbook.xlsx
 *.pyc
