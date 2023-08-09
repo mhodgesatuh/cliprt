@@ -75,7 +75,7 @@ You can find a sample workbook in /resources
 - Identifier
   - Client data includes data elements that can be used to identify a person.
   - Examples include name, phone number, email address.
-  - By default client data across multiple sources can be matched of 3 or more identifiers match.
+  - By default client data across multiple sources can be matched if 3 or more identifiers match.
 - Identity
   - Each client has a unique identity based on a set of identifiers.
   - Identity matching is the process of determining if a single client's information is available across multiple sources/worksheets.
